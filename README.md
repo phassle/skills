@@ -24,14 +24,14 @@ Inside Claude Code:
 
 ```
 /plugin marketplace add phassle/skills
-/plugin install monterro-skills@monterro
+/plugin install monterro-skills@phassle
 ```
 
 Or from your shell:
 
 ```bash
 claude plugin marketplace add phassle/skills
-claude plugin install monterro-skills@monterro
+claude plugin install monterro-skills@phassle
 ```
 
 ## Use
