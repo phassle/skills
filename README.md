@@ -1,26 +1,26 @@
-# Monterro skills
+# Phassle skills
 
 [![skills.sh](https://skills.sh/b/phassle/skills)](https://skills.sh/phassle/skills)
 
-Shared agent skills for Monterro engineers. Works with Claude Code and other agents that support the skills format.
+Agent skills I use to run AI coding agents efficiently — starting with what they silently cost. Built at [Monterro](https://www.monterro.com), shared so my colleagues (and you) can use them too.
 
-## Skills
+Skills in this repo are small, auditable, and work across harnesses: Claude Code first, with fallbacks for Codex, GitHub Copilot, and other Agent-Skills-standard agents.
 
-| Skill | Category | What it does |
-|-------|----------|--------------|
-| [tokenomics](skills/productivity/tokenomics/) | productivity | Audits what your AI coding setup loads into context every session vs what you actually use (from your own transcripts), then publishes an interactive report with removal candidates, per-harness config tips (Claude Code, Codex CLI, GitHub Copilot), and ready-to-run apply-prompts. |
+## Quickstart (30-second setup)
 
-## Install
-
-### Option 1 — skills.sh installer (any agent)
+1. Run the skills.sh installer:
 
 ```bash
 npx skills@latest add phassle/skills
 ```
 
-Pick the skills and agents you want. Re-run to update.
+2. Pick the skills you want and which agents to install them to.
 
-### Option 2 — Claude Code plugin (managed, auto-updating)
+3. Run `/tokenomics` in your agent. Done.
+
+## Install as a Claude Code plugin
+
+Prefer a managed install you don't maintain by hand? These skills also ship as a native [Claude Code plugin](https://code.claude.com/docs/en/plugins) — a read-only bundle that updates when a new version ships.
 
 Inside Claude Code:
 
@@ -36,28 +36,64 @@ claude plugin marketplace add phassle/skills
 claude plugin install phassle-skills@phassle
 ```
 
-## Use
+Two ways to install, two philosophies:
 
-Run `/tokenomics` in any project — or just ask "what can I remove from my context?". The analysis reads your own session transcripts under `~/.claude/projects/`, so every engineer gets their own personal report. Nothing changes automatically; the report generates prompts you review and run yourself.
+- **[skills.sh](https://skills.sh/phassle/skills)** copies the skills into your project so you can hack on them and make them your own.
+- **The plugin** keeps them as an always-current bundle you don't edit — best when you just want the set to work and follow along as it evolves.
 
-## Repo layout
+> Using Codex or another agent? The skills.sh installer puts these skills into Codex, Copilot, and other Agent-Skills-standard harnesses today. The skills detect which harness they run in and adapt (for example, tokenomics writes its report to a local HTML file where Claude's Artifact hosting isn't available).
 
-```
-.claude-plugin/
-├── marketplace.json   # Claude Code marketplace manifest (marketplace: "monterro")
-└── plugin.json        # plugin manifest (plugin: "monterro-skills")
-skills/
-├── engineering/       # category folders, one skill folder per skill
-└── productivity/
-    └── tokenomics/    # each skill folder has a SKILL.md
-```
+## Why these skills exist
+
+### #1: You pay for context you never use
+
+**The problem.** Every session of Claude Code (or Codex, or Copilot) starts by loading plugins, skills, agent definitions, MCP schemas, and memory files into context — before you type a single character. That overhead rides along with *every message*, at real token prices. Most setups accumulate tools that are never invoked: a plugin installed for one demo, an MCP server from a POC, a skill pack that seemed useful. Nothing tells you they're still costing you.
+
+**The fix** is **[/tokenomics](./skills/productivity/tokenomics/SKILL.md)**. It reads your actual session transcripts — every skill invocation, agent call, slash command, and MCP call you have ever made — and scores everything installed against real usage. The result is an interactive report:
+
+- Removal candidates ranked by cost, with a live token-savings counter
+- An "installed globally" inventory of everything your account loads
+- Config tips per harness — model defaults, subagent models, thinking budgets, compaction, junk-read blocking — each verified against official docs
+- A scope choice (this project only, or global user settings), then one ready-to-run apply-prompt per harness
+
+Nothing changes automatically. The report generates prompts; you read them, then run them in the harness they belong to.
+
+Run it once, clean up, then re-run monthly — `/usage` in Claude Code shows spend per skill and plugin, and tokenomics turns that into decisions.
+
+## Reference
+
+Skills split on one axis — who can invoke them. **User-invoked** skills are reachable when you type them (e.g. `/tokenomics`); **model-invoked** skills can also be reached automatically by the agent when a task fits.
+
+### Productivity
+
+General workflow tools, not tied to one codebase.
+
+**User-invoked**
+
+- **[tokenomics](./skills/productivity/tokenomics/SKILL.md)** — Audit what your AI coding setup loads into context vs what you actually use, from your own transcripts. Publishes an interactive report with removal candidates, per-harness config tips (Claude Code, Codex CLI, GitHub Copilot), and one apply-prompt per harness.
+
+### Engineering
+
+Code-focused skills. Nothing released here yet — this is where they will land.
 
 ## Adding skills
 
 The repo is built to hold many skills, with a test-first flow:
 
-1. **Drop a folder** with a `SKILL.md` under `skills/<name>/` (subfolders like `skills/engineering/<name>/` work too). It is immediately installable via `npx skills add phassle/skills` — unreleased skills show under the **Other** group in the picker.
-2. **Promote it** when it's ready: add `"./skills/<name>"` to the `skills` array in `.claude-plugin/plugin.json` and bump `version`. It moves to the **Phassle Skills** group, and everyone on the Claude Code plugin gets it on their next update.
-3. Add a row to the table at the top of this README.
+1. **Drop a folder** with a `SKILL.md` under `skills/<category>/<name>/`. It is immediately installable via `npx skills add phassle/skills` — unreleased skills show under the **Other** group in the picker.
+2. **Promote it** when it's ready: add `"./skills/<category>/<name>"` to the `skills` array in `.claude-plugin/plugin.json` and bump `version`. It moves to the **Phassle Skills** group, and everyone on the Claude Code plugin gets it on their next update.
+3. Add it to the Reference section above, under its category, with a one-line description of what it does and when to reach for it.
 
 Skills in the repo but not in `plugin.json` never ship to plugin users — that's the curation line between "testing" and "released".
+
+## Repo layout
+
+```
+.claude-plugin/
+├── marketplace.json   # Claude Code marketplace manifest (marketplace: "phassle")
+└── plugin.json        # plugin manifest (plugin: "phassle-skills") — the released set
+skills/
+├── engineering/       # category folders, one skill folder per skill
+└── productivity/
+    └── tokenomics/    # each skill folder has a SKILL.md
+```
