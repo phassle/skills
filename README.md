@@ -16,7 +16,7 @@ npx skills@latest add phassle/skills
 
 2. Pick the skills you want and which agents to install them to.
 
-3. Run `/tokenomics` in your agent. Done.
+3. Run `/tokenomics` in your agent. It analyzes your usage history and publishes an interactive report — removal candidates, live token savings, and one apply-prompt per harness.
 
 ## Install as a Claude Code plugin
 
@@ -55,6 +55,8 @@ Two ways to install, two philosophies:
 - An "installed globally" inventory of everything your account loads
 - Config tips per harness — model defaults, subagent models, thinking budgets, compaction, junk-read blocking — each verified against official docs
 - A scope choice (this project only, or global user settings), then one ready-to-run apply-prompt per harness
+
+![The tokenomics report](./docs/tokenomics-report.png)
 
 Nothing changes automatically. The report generates prompts; you read them, then run them in the harness they belong to.
 
