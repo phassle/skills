@@ -50,4 +50,12 @@ skills/
 └── tokenomics/        # one folder per skill, each with SKILL.md
 ```
 
-Add a new skill by dropping a folder with a `SKILL.md` under `skills/` and listing it in `.claude-plugin/plugin.json`.
+## Adding skills
+
+The repo is built to hold many skills, with a test-first flow:
+
+1. **Drop a folder** with a `SKILL.md` under `skills/<name>/` (subfolders like `skills/engineering/<name>/` work too). It is immediately installable via `npx skills add phassle/skills` — unreleased skills show under the **Other** group in the picker.
+2. **Promote it** when it's ready: add `"./skills/<name>"` to the `skills` array in `.claude-plugin/plugin.json` and bump `version`. It moves to the **Phassle Skills** group, and everyone on the Claude Code plugin gets it on their next update.
+3. Add a row to the table at the top of this README.
+
+Skills in the repo but not in `plugin.json` never ship to plugin users — that's the curation line between "testing" and "released".
