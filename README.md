@@ -6,9 +6,9 @@ Shared agent skills for Monterro engineers. Works with Claude Code and other age
 
 ## Skills
 
-| Skill | What it does |
-|-------|--------------|
-| [tokenomics](skills/tokenomics/) | Audits what your AI coding setup loads into context every session vs what you actually use (from your own transcripts), then publishes an interactive report with removal candidates, per-harness config tips (Claude Code, Codex CLI, GitHub Copilot), and ready-to-run apply-prompts. |
+| Skill | Category | What it does |
+|-------|----------|--------------|
+| [tokenomics](skills/productivity/tokenomics/) | productivity | Audits what your AI coding setup loads into context every session vs what you actually use (from your own transcripts), then publishes an interactive report with removal candidates, per-harness config tips (Claude Code, Codex CLI, GitHub Copilot), and ready-to-run apply-prompts. |
 
 ## Install
 
@@ -47,7 +47,9 @@ Run `/tokenomics` in any project — or just ask "what can I remove from my cont
 ├── marketplace.json   # Claude Code marketplace manifest (marketplace: "monterro")
 └── plugin.json        # plugin manifest (plugin: "monterro-skills")
 skills/
-└── tokenomics/        # one folder per skill, each with SKILL.md
+├── engineering/       # category folders, one skill folder per skill
+└── productivity/
+    └── tokenomics/    # each skill folder has a SKILL.md
 ```
 
 ## Adding skills
