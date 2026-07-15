@@ -13,7 +13,7 @@ Shared agent skills for Monterro engineers. Works with Claude Code and other age
 ### Option 1 — skills.sh installer (any agent)
 
 ```bash
-npx skills@latest add <owner>/<repo>
+npx skills@latest add phassle/skills
 ```
 
 Pick the skills and agents you want. Re-run to update.
@@ -23,14 +23,14 @@ Pick the skills and agents you want. Re-run to update.
 Inside Claude Code:
 
 ```
-/plugin marketplace add <owner>/<repo>
+/plugin marketplace add phassle/skills
 /plugin install monterro-skills@monterro
 ```
 
 Or from your shell:
 
 ```bash
-claude plugin marketplace add <owner>/<repo>
+claude plugin marketplace add phassle/skills
 claude plugin install monterro-skills@monterro
 ```
 
