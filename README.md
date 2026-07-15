@@ -1,5 +1,7 @@
 # Monterro skills
 
+[![skills.sh](https://skills.sh/b/phassle/skills)](https://skills.sh/phassle/skills)
+
 Shared agent skills for Monterro engineers. Works with Claude Code and other agents that support the skills format.
 
 ## Skills
