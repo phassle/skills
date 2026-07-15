@@ -53,6 +53,7 @@ Tips may cover other harnesses the user runs (Codex CLI via `~/.codex/config.tom
 1. Copy `~/.claude/skills/tokenomics/template.html` to the scratchpad. The template is **Monterro-branded** (design system baked in: off-white/navy, orange accent lines, Arial, embedded logo) — don't restyle it; only replace the data placeholder. Brand tone in all copy: sentence case, no emoji, no hype words.
 2. Replace the single placeholder `/*__DATA__*/ null` with a JSON object (see [DATA-SHAPE.md](DATA-SHAPE.md)) — including `purpose` (the skill's point: save tokens), `global` (the "Installed globally" tab: plugins w/ version+scope, user skills, MCP servers, hooks, marketplaces from the collect script), and `tips` (each with `harness`).
 3. Publish via the Artifact tool — favicon `🧹`, keep title "Tokenomics — Claude Code context audit".
+4. If no Artifact tool exists (running in Codex, Copilot, or another harness), write the finished HTML to `tokenomics-report.html` in the working directory instead and tell the user to open it in a browser.
 
 ### 6. Summarize
 
