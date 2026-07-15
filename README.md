@@ -71,29 +71,3 @@ General workflow tools, not tied to one codebase.
 **User-invoked**
 
 - **[tokenomics](./skills/productivity/tokenomics/SKILL.md)** — Audit what your AI coding setup loads into context vs what you actually use, from your own transcripts. Publishes an interactive report with removal candidates, per-harness config tips (Claude Code, Codex CLI, GitHub Copilot), and one apply-prompt per harness.
-
-### Engineering
-
-Code-focused skills. Nothing released here yet — this is where they will land.
-
-## Adding skills
-
-The repo is built to hold many skills, with a test-first flow:
-
-1. **Drop a folder** with a `SKILL.md` under `skills/<category>/<name>/`. It is immediately installable via `npx skills add phassle/skills` — unreleased skills show under the **Other** group in the picker.
-2. **Promote it** when it's ready: add `"./skills/<category>/<name>"` to the `skills` array in `.claude-plugin/plugin.json` and bump `version`. It moves to the **Phassle Skills** group, and everyone on the Claude Code plugin gets it on their next update.
-3. Add it to the Reference section above, under its category, with a one-line description of what it does and when to reach for it.
-
-Skills in the repo but not in `plugin.json` never ship to plugin users — that's the curation line between "testing" and "released".
-
-## Repo layout
-
-```
-.claude-plugin/
-├── marketplace.json   # Claude Code marketplace manifest (marketplace: "phassle")
-└── plugin.json        # plugin manifest (plugin: "phassle-skills") — the released set
-skills/
-├── engineering/       # category folders, one skill folder per skill
-└── productivity/
-    └── tokenomics/    # each skill folder has a SKILL.md
-```
