@@ -7,7 +7,7 @@
   "description": "Monterro's shared agent skills, installable as Claude Code plugins.",
   "plugins": [
     {
-      "name": "monterro-skills",
+      "name": "phassle-skills",
       "source": "./",
       "description": "Monterro's agent skills — tokenomics (audit AI-tool token spend across Claude Code, Codex CLI and GitHub Copilot) and more to come.",
       "category": "productivity",
