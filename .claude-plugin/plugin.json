@@ -1,0 +1,21 @@
+{
+  "name": "monterro-skills",
+  "version": "1.0.0",
+  "description": "Monterro's agent skills — tokenomics audits what your AI coding setup loads into context vs what you actually use, and generates per-harness savings prompts.",
+  "author": {
+    "name": "Per Hassle",
+    "url": "https://www.monterro.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "tokens",
+    "cost",
+    "audit",
+    "claude-code",
+    "codex",
+    "copilot"
+  ],
+  "skills": [
+    "./skills/tokenomics"
+  ]
+}

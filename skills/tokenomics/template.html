@@ -1,0 +1,514 @@
+<title>Tokenomics — Claude Code context audit</title>
+<style>
+  /* Monterro design system — colors_and_type.css tokens */
+  @font-face { font-family: 'Arial'; font-style: normal; font-weight: 300 400; src: local('Arial'), local('ArialMT'), local('Helvetica Neue'), local('Helvetica'); }
+  @font-face { font-family: 'Arial'; font-style: normal; font-weight: 500 700; src: local('Arial Bold'), local('Arial-BoldMT'), local('Helvetica Neue Bold'), local('Helvetica Bold'); }
+
+  :root {
+    --navy: #010031;
+    --orange: #FC6C54;
+    --orange-dark: #fe5a3e;
+    --yellow: #FFEC9B;
+    --sand: #FFDFD1;
+    --aqua: #6470F6;
+    --status-green: #64ce91;
+    --status-orange: #fdd761;
+    --status-red: #fd6461;
+
+    --bg: #FAFAF4;
+    --surface: #ffffff;
+    --surface-2: #f4f3ec;
+    --ink: #0C0D0E;
+    --ink-head: #010031;
+    --ink-2: #4a4b5c;
+    --ink-3: #80819a;
+    --line: #e6e3da;
+    --accent: #FC6C54;
+    --sel-bg: #fff7f0;
+    --code-bg: #010031;
+    --code-ink: #FAFAF4;
+    --code-line: #2a2856;
+    --shadow-sm: 0 1px 2px rgba(1, 0, 49, 0.06);
+    --shadow-md: 0 6px 18px rgba(1, 0, 49, 0.08);
+    --grad-warm: linear-gradient(90deg, #ff6c52 0%, #ffb893 55%, #ffec9b 100%);
+
+    --r-sm: 8px;
+    --r-md: 14px;
+    --r-pill: 999px;
+    --dur: 320ms;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --font: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #010031;
+      --surface: #0a0945;
+      --surface-2: #131144;
+      --ink: #FAFAF4;
+      --ink-head: #FAFAF4;
+      --ink-2: #c1c0cc;
+      --ink-3: #80819a;
+      --line: #2a2856;
+      --sel-bg: #1b1950;
+      --code-bg: #0C0D0E;
+      --code-ink: #FAFAF4;
+      --code-line: #2e2f31;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #010031; --surface: #0a0945; --surface-2: #131144;
+    --ink: #FAFAF4; --ink-head: #FAFAF4; --ink-2: #c1c0cc; --ink-3: #80819a;
+    --line: #2a2856; --sel-bg: #1b1950;
+    --code-bg: #0C0D0E; --code-ink: #FAFAF4; --code-line: #2e2f31;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3); --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.35);
+  }
+  :root[data-theme="light"] {
+    --bg: #FAFAF4; --surface: #ffffff; --surface-2: #f4f3ec;
+    --ink: #0C0D0E; --ink-head: #010031; --ink-2: #4a4b5c; --ink-3: #80819a;
+    --line: #e6e3da; --sel-bg: #fff7f0;
+    --code-bg: #010031; --code-ink: #FAFAF4; --code-line: #2a2856;
+    --shadow-sm: 0 1px 2px rgba(1, 0, 49, 0.06); --shadow-md: 0 6px 18px rgba(1, 0, 49, 0.08);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.55;
+    margin: 0;
+    padding: 0 24px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; }
+
+  header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; padding-top: 44px; }
+  .logo { height: 26px; width: auto; flex: none; margin-top: 6px; }
+  .logo-white { display: none; }
+  @media (prefers-color-scheme: dark) { .logo-navy { display: none; } .logo-white { display: block; } }
+  :root[data-theme="dark"] .logo-navy { display: none; }
+  :root[data-theme="dark"] .logo-white { display: block; }
+  :root[data-theme="light"] .logo-navy { display: block; }
+  :root[data-theme="light"] .logo-white { display: none; }
+
+  h1 {
+    font-size: 40px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--ink-head);
+    margin: 0 0 12px;
+    text-wrap: balance;
+  }
+  .accent-line { border: 0; border-top: 2px solid var(--orange); margin: 0 0 20px; width: 100%; animation: rule-grow 900ms var(--ease) both; }
+  @keyframes rule-grow { from { transform: scaleX(0); transform-origin: left; } to { transform: scaleX(1); transform-origin: left; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise 540ms var(--ease) both; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; } }
+
+  .purpose { font-size: 18px; color: var(--ink-head); margin: 0 0 8px; max-width: 72ch; text-wrap: pretty; }
+  .sub { color: var(--ink-2); margin: 0 0 8px; max-width: 76ch; font-size: 14px; }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink-head);
+    margin: 44px 0 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--orange);
+    text-wrap: balance;
+  }
+  code, .mono { font-family: var(--mono); font-size: .9em; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* stat tiles */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 20px; }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px 20px; box-shadow: var(--shadow-sm); }
+  .tile .label { font-size: 12px; color: var(--ink-3); margin-bottom: 6px; }
+  .tile .value { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink-head); }
+  .tile .hint { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+  .tile.save .value { color: var(--orange); }
+
+  /* savings bar */
+  .barbox { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px 20px; margin-top: 12px; box-shadow: var(--shadow-sm); }
+  .bar { height: 12px; border-radius: var(--r-pill); background: var(--surface-2); overflow: hidden; }
+  .bar .fill { height: 100%; background: var(--grad-warm); transition: width var(--dur) var(--ease); }
+  .barmeta { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--ink-2); margin-top: 10px; }
+
+  /* tabs */
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin: 28px 0 4px; }
+  .tab { border: none; background: none; color: var(--ink-3); font-family: var(--font); font-size: 15px; font-weight: 600; padding: 10px 16px 12px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 180ms var(--ease); }
+  .tab:hover { color: var(--ink-head); }
+  .tab[aria-selected="true"] { color: var(--ink-head); border-bottom-color: var(--orange); }
+  .tab:focus-visible { outline: 2px solid var(--aqua); outline-offset: -2px; }
+
+  /* filters */
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 16px 0 12px; }
+  .chip { border: 1.5px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: var(--r-pill); padding: 6px 16px; font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; transition: background 180ms var(--ease), color 180ms var(--ease), border-color 180ms var(--ease); }
+  .chip:hover { border-color: var(--ink-head); color: var(--ink-head); }
+  .chip[aria-pressed="true"] { background: var(--ink-head); color: var(--bg); border-color: var(--ink-head); }
+  .chip:focus-visible, .copybtn:focus-visible, input:focus-visible { outline: 2px solid var(--aqua); outline-offset: 2px; }
+  #search { margin-left: auto; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: var(--r-sm); padding: 7px 14px; font-family: var(--font); font-size: 13.5px; min-width: 190px; }
+
+  /* table */
+  .tablebox { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); overflow-x: auto; box-shadow: var(--shadow-sm); }
+  table { border-collapse: collapse; width: 100%; min-width: 740px; }
+  th { text-align: left; font-size: 12px; font-weight: 600; color: var(--ink-3); padding: 12px 16px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th.r, td.r { text-align: right; }
+  td { padding: 10px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr.grp td { background: var(--surface-2); font-size: 12px; font-weight: 600; color: var(--ink-2); padding: 8px 16px; }
+  td .name { font-weight: 600; color: var(--ink-head); }
+  td .desc { font-size: 12.5px; color: var(--ink-2); max-width: 46ch; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+  .badge::before { content: ""; width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .badge.remove::before { background: var(--status-red); }
+  .badge.borderline::before { background: var(--status-orange); }
+  .badge.keep::before { background: var(--status-green); }
+  .uses0 { color: var(--status-red); font-weight: 600; }
+  @media (prefers-color-scheme: light) { .uses0 { color: #c43e33; } }
+  :root[data-theme="light"] .uses0 { color: #c43e33; }
+  input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--orange); cursor: pointer; }
+  td.chk { width: 36px; }
+  tr.selected td { background: var(--sel-bg); }
+
+  /* tips */
+  .tips { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-top: 16px; }
+  .tip { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px 18px; box-shadow: var(--shadow-sm); display: flex; gap: 12px; align-items: flex-start; cursor: pointer; transition: border-color 180ms var(--ease); }
+  .tip:hover { border-color: var(--ink-3); }
+  .tip.selected { border-color: var(--orange); }
+  .tip input { margin-top: 2px; flex: none; }
+  .tip .t { font-weight: 600; font-size: 14px; color: var(--ink-head); }
+  .tip .tags { display: inline-flex; gap: 6px; margin-left: 8px; vertical-align: 1px; }
+  .tag { font-size: 11px; font-weight: 600; border-radius: var(--r-pill); padding: 1px 9px; white-space: nowrap; }
+  .tag.save { color: var(--ink-head); background: var(--yellow); }
+  .tag.harness { color: var(--ink-2); border: 1px solid var(--line); }
+  @media (prefers-color-scheme: dark) { .tag.save { color: #010031; } }
+  .tip .d { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; }
+  .tip .d code { background: var(--surface-2); padding: 0 4px; border-radius: 4px; }
+
+  /* scope selector */
+  .scopebox { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px 18px; margin: 16px 0; box-shadow: var(--shadow-sm); display: grid; gap: 10px; }
+  .scopetitle { font-weight: 600; font-size: 14px; color: var(--ink-head); }
+  .scopeopt { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--ink-2); cursor: pointer; max-width: 76ch; }
+  .scopeopt input { margin-top: 2px; flex: none; accent-color: var(--orange); }
+  .scopeopt strong { color: var(--ink-head); }
+
+  /* prompt panels */
+  .prompthead { display: flex; align-items: center; gap: 10px; margin: 20px 0 8px; font-weight: 600; font-size: 14px; color: var(--ink-head); }
+  .prompthead .tag { font-size: 11px; }
+  .promptbox { background: var(--code-bg); color: var(--code-ink); border: 1px solid var(--code-line); border-radius: var(--r-md); padding: 20px; margin-top: 16px; position: relative; box-shadow: var(--shadow-md); }
+  #prompts .promptbox { margin-top: 0; }
+  .promptbox pre { margin: 0; white-space: pre-wrap; word-break: break-word; font-family: var(--mono); font-size: 13px; line-height: 1.6; }
+  .copybtn { position: absolute; top: 14px; right: 14px; background: var(--orange); color: #FAFAF4; border: none; border-radius: var(--r-pill); padding: 8px 20px; font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; transition: background 180ms var(--ease); }
+  .copybtn:hover { background: var(--orange-dark); }
+  .copybtn:active { transform: translateY(1px); }
+
+  /* collapsibles */
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); margin: 0 0 10px; box-shadow: var(--shadow-sm); }
+  summary { padding: 14px 18px; font-weight: 600; font-size: 14px; color: var(--ink-head); cursor: pointer; }
+  details .inner { padding: 0 18px 16px; overflow-x: auto; }
+  details table { min-width: 0; font-size: 13.5px; }
+  .note { font-size: 13px; color: var(--ink-2); max-width: 76ch; }
+  .note code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+</style>
+
+<div class="wrap">
+  <header class="rise">
+    <div>
+      <h1>Tokenomics — context audit</h1>
+    </div>
+    <img class="logo logo-navy" alt="Monterro" src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTM0Ljc1IDE2MC40MyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaWQ9IkxheWVyXzEiIG92ZXJmbG93PSJoaWRkZW4iPgo8ZGVmcz48L2RlZnM+PHBhdGggZD0iTTgwLjIgMEMzNS45OCAwIDAgMzUuOTggMCA4MC4yMSAwIDEyNC40NCAzNS45OCAxNjAuNDIgODAuMiAxNjAuNDIgMTI0LjQyIDE2MC40MiAxNjAuNCAxMjQuNDQgMTYwLjQgODAuMjEgMTYwLjQgMzUuOTggMTI0LjQyIDAgODAuMiAwWk0xNTQuMDMgODAuMjFDMTU0LjAzIDEyMC45MyAxMjAuOTEgMTU0LjA1IDgwLjIgMTU0LjA1IDM5LjQ5IDE1NC4wNSA2LjM3IDEyMC45MyA2LjM3IDgwLjIxIDYuMzcgMzkuNDkgMzkuNDkgNi4zNyA4MC4yIDYuMzcgMTIwLjkxIDYuMzcgMTU0LjAzIDM5LjUgMTU0LjAzIDgwLjIxWiIgY2xhc3M9Ik1zZnRPZmNUaG1fVGV4dDJfRmlsbF92MiIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJidXR0IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbWl0ZXJsaW1pdD0iNCIgZmlsbD0iIzAxMDAzMCIgZmlsbC1vcGFjaXR5PSIxIj48L3BhdGg+PHBhdGggZD0iTTY0LjAyIDk5LjAzIDU3LjkyIDk5LjAzIDU3LjkyIDYyLjg3IDY3LjQ0IDYyLjg3IDc4LjM1IDg1LjU4IDg5LjI2IDYyLjg3IDk4LjcyIDYyLjg3IDk4LjcyIDk5LjAzIDkyLjYyIDk5LjAzIDkyLjYyIDcwLjc5IDgwIDk1Ljg4IDc2LjU5IDk1Ljg4IDY0LjAyIDcwLjc5IDY0LjAyIDk5LjAzWiIgY2xhc3M9Ik1zZnRPZmNUaG1fVGV4dDJfRmlsbF92MiIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJidXR0IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbWl0ZXJsaW1pdD0iNCIgZmlsbD0iIzAxMDAzMCIgZmlsbC1vcGFjaXR5PSIxIj48L3BhdGg+PHBhdGggZD0iTTExMC4xNSA5OS4yM0MxMDguNTMgOTkuMjMgMTA3LjE0IDk4LjY1IDEwNi4wMSA5Ny40OSAxMDQuODkgOTYuMzQgMTA0LjMzIDk0Ljk1IDEwNC4zMyA5My4zNCAxMDQuMzMgOTEuNzMgMTA0LjkgOTAuMzQgMTA2LjAyIDg5LjIxIDEwNy4xNSA4OC4wOCAxMDguNTQgODcuNTEgMTEwLjE1IDg3LjUxIDExMS43NiA4Ny41MSAxMTMuMTUgODguMDggMTE0LjMgODkuMTkgMTE1LjQ1IDkwLjMyIDExNi4wNCA5MS43MiAxMTYuMDQgOTMuMzMgMTE2LjA0IDk0Ljk0IDExNS40NiA5Ni4zNCAxMTQuMzIgOTcuNDkgMTEzLjE3IDk4LjY0IDExMS43NyA5OS4yMiAxMTAuMTYgOTkuMjJaTTExMC4xNSA5MC42OUMxMDkuMzkgOTAuNjkgMTA4Ljc4IDkwLjkzIDEwOC4yNiA5MS40NiAxMDcuNzQgOTEuOTggMTA3LjQ5IDkyLjU5IDEwNy40OSA5My4zNSAxMDcuNDkgOTQuMTEgMTA3Ljc0IDk0Ljc0IDEwOC4yNyA5NS4yOCAxMDguNzkgOTUuODEgMTA5LjM5IDk2LjA2IDExMC4xNSA5Ni4wNiAxMTAuOTEgOTYuMDYgMTExLjUzIDk1LjgxIDExMi4wNyA5NS4yNiAxMTIuNjEgOTQuNzIgMTEyLjg2IDk0LjExIDExMi44NiA5My4zNCAxMTIuODYgOTIuNTcgMTEyLjYxIDkxLjk5IDExMi4wNyA5MS40NiAxMTEuNTMgOTAuOTMgMTEwLjkxIDkwLjY4IDExMC4xNCA5MC42OFoiIGNsYXNzPSJNc2Z0T2ZjVGhtX1RleHQyX0ZpbGxfdjIiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWNhcD0iYnV0dCIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIgc3Ryb2tlLW1pdGVybGltaXQ9IjQiIGZpbGw9IiMwMTAwMzAiIGZpbGwtb3BhY2l0eT0iMSI+PC9wYXRoPjxwYXRoIGQ9Ik0yMTAuOTkgOTkuMjkgMjA0Ljg3IDk5LjI5IDIwNC44NyA2My4wNyAyMTQuNDEgNjMuMDcgMjI1LjM0IDg1LjgyIDIzNi4yNyA2My4wNyAyNDUuNzUgNjMuMDcgMjQ1Ljc1IDk5LjI5IDIzOS42NCA5OS4yOSAyMzkuNjQgNzEgMjI3IDk2LjEzIDIyMy41OCA5Ni4xMyAyMTAuOTkgNzEgMjEwLjk5IDk5LjI5WiIgY2xhc3M9Ik1zZnRPZmNUaG1fVGV4dDJfRmlsbF92MiIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJidXR0IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbWl0ZXJsaW1pdD0iNCIgZmlsbD0iIzAxMDAzMCIgZmlsbC1vcGFjaXR5PSIxIj48L3BhdGg+PHBhdGggZD0iTTMyOS4wOCA2My4wNyAzMzUuMiA2My4wNyAzMzUuMiA5OS4yOSAzMjguNTcgOTkuMjkgMzA4LjA2IDcyLjg2IDMwOC4wNiA5OS4yOSAzMDEuOTQgOTkuMjkgMzAxLjk0IDYzLjA3IDMwOC4wNiA2My4wNyAzMjkuMDkgOTAuMTIgMzI5LjA5IDYzLjA3WiIgY2xhc3M9Ik1zZnRPZmNUaG1fVGV4dDJfRmlsbF92MiIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJidXR0IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbWl0ZXJsaW1pdD0iNCIgZmlsbD0iIzAxMDAzMCIgZmlsbC1vcGFjaXR5PSIxIj48L3BhdGg+PHBhdGggZD0iTTM2MC44NyA2OC42NyAzNjAuODcgOTkuMjkgMzU0Ljc2IDk5LjI5IDM1NC43NiA2OC42NyAzNDMuNzggNjguNjcgMzQzLjc4IDYzLjA3IDM3MS44NiA2My4wNyAzNzEuODYgNjguNjcgMzYwLjg4IDY4LjY3WiIgY2xhc3M9Ik1zZnRPZmNUaG1fVGV4dDJfRmlsbF92MiIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJidXR0IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbWl0ZXJsaW1pdD0iNCIgZmlsbD0iIzAxMDAzMCIgZmlsbC1vcGFjaXR5PSIxIj48L3BhdGg+PHBhdGggZD0iTTQwNy4wMyA2My4wNyA0MDcuMDMgNjguODIgMzg3LjcxIDY4LjgyIDM4Ny43MSA3OC40IDQwMy4zNyA3OC40IDQwMy4zNyA4My44NCAzODcuNzEgODMuODQgMzg3LjcxIDkzLjUzIDQwNy42NSA5My41MyA0MDcuNjUgOTkuMjggMzgxLjU5IDk5LjI4IDM4MS41OSA2My4wNiA0MDcuMDMgNjMuMDZaIiBjbGFzcz0iTXNmdE9mY1RobV9UZXh0Ml9GaWxsX3YyIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiIHN0cm9rZS1taXRlcmxpbWl0PSI0IiBmaWxsPSIjMDEwMDMwIiBmaWxsLW9wYWNpdHk9IjEiPjwvcGF0aD48cGF0aCBkPSJNNDQ3LjQ5IDc0LjgzQzQ0Ny40OSA4MC44MSA0NDQuODggODQuNTcgNDM5LjY3IDg2LjEzTDQ0OS4xNSA5OS4yOSA0NDEuMzggOTkuMjkgNDMyLjczIDg3LjExIDQyNC43IDg3LjExIDQyNC43IDk5LjI5IDQxOC41OCA5OS4yOSA0MTguNTggNjMuMDcgNDMyLjA1IDYzLjA3QzQzNy41OCA2My4wNyA0NDEuNTMgNjQgNDQzLjkxIDY1Ljg3IDQ0Ni4zIDY3Ljc0IDQ0Ny40OCA3MC43MiA0NDcuNDggNzQuODNaTTQzOS4zNSA3OS45NkM0NDAuNiA3OC44OSA0NDEuMjIgNzcuMTcgNDQxLjIyIDc0LjggNDQxLjIyIDcyLjQzIDQ0MC41OCA3MC44MSA0MzkuMyA2OS45MyA0MzguMDIgNjkuMDUgNDM1Ljc1IDY4LjYxIDQzMi40NiA2OC42MUw0MjQuNjkgNjguNjEgNDI0LjY5IDgxLjU2IDQzMi4zIDgxLjU2QzQzNS43NSA4MS41NiA0MzguMSA4MS4wMyA0MzkuMzQgNzkuOTVaIiBjbGFzcz0iTXNmdE9mY1RobV9UZXh0Ml9GaWxsX3YyIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiIHN0cm9rZS1taXRlcmxpbWl0PSI0IiBmaWxsPSIjMDEwMDMwIiBmaWxsLW9wYWNpdHk9IjEiPjwvcGF0aD48cGF0aCBkPSJNNDg4LjMxIDc0LjgzQzQ4OC4zMSA4MC44MSA0ODUuNyA4NC41NyA0ODAuNDkgODYuMTNMNDg5Ljk3IDk5LjI5IDQ4Mi4yIDk5LjI5IDQ3My41NSA4Ny4xMSA0NjUuNTIgODcuMTEgNDY1LjUyIDk5LjI5IDQ1OS40IDk5LjI5IDQ1OS40IDYzLjA3IDQ3Mi44NyA2My4wN0M0NzguNCA2My4wNyA0ODIuMzUgNjQgNDg0LjczIDY1Ljg3IDQ4Ny4xMiA2Ny43NCA0ODguMyA3MC43MiA0ODguMyA3NC44M1pNNDgwLjE4IDc5Ljk2QzQ4MS40MyA3OC44OSA0ODIuMDUgNzcuMTcgNDgyLjA1IDc0LjggNDgyLjA1IDcyLjQzIDQ4MS40MSA3MC44MSA0ODAuMTMgNjkuOTMgNDc4Ljg1IDY5LjA1IDQ3Ni41OCA2OC42MSA0NzMuMjkgNjguNjFMNDY1LjUyIDY4LjYxIDQ2NS41MiA4MS41NiA0NzMuMTMgODEuNTZDNDc2LjU4IDgxLjU2IDQ3OC45MyA4MS4wMyA0ODAuMTcgNzkuOTVaIiBjbGFzcz0iTXNmdE9mY1RobV9UZXh0Ml9GaWxsX3YyIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiIHN0cm9rZS1taXRlcmxpbWl0PSI0IiBmaWxsPSIjMDEwMDMwIiBmaWxsLW9wYWNpdHk9IjEiPjwvcGF0aD48cGF0aCBkPSJNMjczLjUzIDY2Ljk5QzI4MS4xIDY2Ljk5IDI4Ny4yNiA3My4xNSAyODcuMjYgODAuNzMgMjg3LjI2IDg4LjMxIDI4MS4xIDk0LjQ3IDI3My41MyA5NC40NyAyNjUuOTYgOTQuNDcgMjU5LjggODguMzEgMjU5LjggODAuNzMgMjU5LjggNzMuMTUgMjY1Ljk2IDY2Ljk5IDI3My41MyA2Ni45OU0yNzMuNTMgNjEuMjdDMjYyLjc5IDYxLjI3IDI1NC4wOCA2OS45OCAyNTQuMDggODAuNzMgMjU0LjA4IDkxLjQ4IDI2Mi43OSAxMDAuMTkgMjczLjUzIDEwMC4xOSAyODQuMjcgMTAwLjE5IDI5Mi45OCA5MS40OCAyOTIuOTggODAuNzMgMjkyLjk4IDY5Ljk4IDI4NC4yNyA2MS4yNyAyNzMuNTMgNjEuMjdMMjczLjUzIDYxLjI3WiIgY2xhc3M9Ik1zZnRPZmNUaG1fVGV4dDJfRmlsbF92MiIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJidXR0IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbWl0ZXJsaW1pdD0iNCIgZmlsbD0iIzAxMDAzMCIgZmlsbC1vcGFjaXR5PSIxIj48L3BhdGg+PHBhdGggZD0iTTUxNS4zIDY2Ljk5QzUyMi44NyA2Ni45OSA1MjkuMDMgNzMuMTUgNTI5LjAzIDgwLjczIDUyOS4wMyA4OC4zMSA1MjIuODcgOTQuNDcgNTE1LjMgOTQuNDcgNTA3LjczIDk0LjQ3IDUwMS41NyA4OC4zMSA1MDEuNTcgODAuNzMgNTAxLjU3IDczLjE1IDUwNy43MyA2Ni45OSA1MTUuMyA2Ni45OU01MTUuMyA2MS4yN0M1MDQuNTYgNjEuMjcgNDk1Ljg1IDY5Ljk4IDQ5NS44NSA4MC43MyA0OTUuODUgOTEuNDggNTA0LjU2IDEwMC4xOSA1MTUuMyAxMDAuMTkgNTI2LjA0IDEwMC4xOSA1MzQuNzUgOTEuNDggNTM0Ljc1IDgwLjczIDUzNC43NSA2OS45OCA1MjYuMDQgNjEuMjcgNTE1LjMgNjEuMjdMNTE1LjMgNjEuMjdaIiBjbGFzcz0iTXNmdE9mY1RobV9UZXh0Ml9GaWxsX3YyIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiIHN0cm9rZS1taXRlcmxpbWl0PSI0IiBmaWxsPSIjMDEwMDMwIiBmaWxsLW9wYWNpdHk9IjEiPjwvcGF0aD48L3N2Zz4=">
+    <img class="logo logo-white" alt="Monterro" src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTM0Ljc1IDE2MC40MyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaWQ9IkxheWVyXzEiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjwvZGVmcz48cGF0aCBkPSJNODAuMiAwQzM1Ljk4IDAgMCAzNS45OCAwIDgwLjIxIDAgMTI0LjQ0IDM1Ljk4IDE2MC40MiA4MC4yIDE2MC40MiAxMjQuNDIgMTYwLjQyIDE2MC40IDEyNC40NCAxNjAuNCA4MC4yMSAxNjAuNCAzNS45OCAxMjQuNDIgMCA4MC4yIDBaTTE1NC4wMyA4MC4yMUMxNTQuMDMgMTIwLjkzIDEyMC45MSAxNTQuMDUgODAuMiAxNTQuMDUgMzkuNDkgMTU0LjA1IDYuMzcgMTIwLjkzIDYuMzcgODAuMjEgNi4zNyAzOS40OSAzOS40OSA2LjM3IDgwLjIgNi4zNyAxMjAuOTEgNi4zNyAxNTQuMDMgMzkuNSAxNTQuMDMgODAuMjFaIiBmaWxsPSIjRkFGQUY0Ij48L3BhdGg+PHBhdGggZD0iTTY0LjAyIDk5LjAzIDU3LjkyIDk5LjAzIDU3LjkyIDYyLjg3IDY3LjQ0IDYyLjg3IDc4LjM1IDg1LjU4IDg5LjI2IDYyLjg3IDk4LjcyIDYyLjg3IDk4LjcyIDk5LjAzIDkyLjYyIDk5LjAzIDkyLjYyIDcwLjc5IDgwIDk1Ljg4IDc2LjU5IDk1Ljg4IDY0LjAyIDcwLjc5IDY0LjAyIDk5LjAzWiIgZmlsbD0iI0ZBRkFGNCI+PC9wYXRoPjxwYXRoIGQ9Ik0xMTAuMTUgOTkuMjNDMTA4LjUzIDk5LjIzIDEwNy4xNCA5OC42NSAxMDYuMDEgOTcuNDkgMTA0Ljg5IDk2LjM0IDEwNC4zMyA5NC45NSAxMDQuMzMgOTMuMzQgMTA0LjMzIDkxLjczIDEwNC45IDkwLjM0IDEwNi4wMiA4OS4yMSAxMDcuMTUgODguMDggMTA4LjU0IDg3LjUxIDExMC4xNSA4Ny41MSAxMTEuNzYgODcuNTEgMTEzLjE1IDg4LjA4IDExNC4zIDg5LjE5IDExNS40NSA5MC4zMiAxMTYuMDQgOTEuNzIgMTE2LjA0IDkzLjMzIDExNi4wNCA5NC45NCAxMTUuNDYgOTYuMzQgMTE0LjMyIDk3LjQ5IDExMy4xNyA5OC42NCAxMTEuNzcgOTkuMjIgMTEwLjE2IDk5LjIyWk0xMTAuMTUgOTAuNjlDMTA5LjM5IDkwLjY5IDEwOC43OCA5MC45MyAxMDguMjYgOTEuNDYgMTA3Ljc0IDkxLjk4IDEwNy40OSA5Mi41OSAxMDcuNDkgOTMuMzUgMTA3LjQ5IDk0LjExIDEwNy43NCA5NC43NCAxMDguMjcgOTUuMjggMTA4Ljc5IDk1LjgxIDEwOS4zOSA5Ni4wNiAxMTAuMTUgOTYuMDYgMTEwLjkxIDk2LjA2IDExMS41MyA5NS44MSAxMTIuMDcgOTUuMjYgMTEyLjYxIDk0LjcyIDExMi44NiA5NC4xMSAxMTIuODYgOTMuMzQgMTEyLjg2IDkyLjU3IDExMi42MSA5MS45OSAxMTIuMDcgOTEuNDYgMTExLjUzIDkwLjkzIDExMC45MSA5MC42OCAxMTAuMTQgOTAuNjhaIiBmaWxsPSIjRkFGQUY0Ij48L3BhdGg+PHBhdGggZD0iTTIxMC45OSA5OS4yOSAyMDQuODcgOTkuMjkgMjA0Ljg3IDYzLjA3IDIxNC40MSA2My4wNyAyMjUuMzQgODUuODIgMjM2LjI3IDYzLjA3IDI0NS43NSA2My4wNyAyNDUuNzUgOTkuMjkgMjM5LjY0IDk5LjI5IDIzOS42NCA3MSAyMjcgOTYuMTMgMjIzLjU4IDk2LjEzIDIxMC45OSA3MSAyMTAuOTkgOTkuMjlaIiBmaWxsPSIjRkFGQUY0Ij48L3BhdGg+PHBhdGggZD0iTTMyOS4wOCA2My4wNyAzMzUuMiA2My4wNyAzMzUuMiA5OS4yOSAzMjguNTcgOTkuMjkgMzA4LjA2IDcyLjg2IDMwOC4wNiA5OS4yOSAzMDEuOTQgOTkuMjkgMzAxLjk0IDYzLjA3IDMwOC4wNiA2My4wNyAzMjkuMDkgOTAuMTIgMzI5LjA5IDYzLjA3WiIgZmlsbD0iI0ZBRkFGNCI+PC9wYXRoPjxwYXRoIGQ9Ik0zNjAuODcgNjguNjcgMzYwLjg3IDk5LjI5IDM1NC43NiA5OS4yOSAzNTQuNzYgNjguNjcgMzQzLjc4IDY4LjY3IDM0My43OCA2My4wNyAzNzEuODYgNjMuMDcgMzcxLjg2IDY4LjY3IDM2MC44OCA2OC42N1oiIGZpbGw9IiNGQUZBRjQiPjwvcGF0aD48cGF0aCBkPSJNNDA3LjAzIDYzLjA3IDQwNy4wMyA2OC44MiAzODcuNzEgNjguODIgMzg3LjcxIDc4LjQgNDAzLjM3IDc4LjQgNDAzLjM3IDgzLjg0IDM4Ny43MSA4My44NCAzODcuNzEgOTMuNTMgNDA3LjY1IDkzLjUzIDQwNy42NSA5OS4yOCAzODEuNTkgOTkuMjggMzgxLjU5IDYzLjA2IDQwNy4wMyA2My4wNloiIGZpbGw9IiNGQUZBRjQiPjwvcGF0aD48cGF0aCBkPSJNNDQ3LjQ5IDc0LjgzQzQ0Ny40OSA4MC44MSA0NDQuODggODQuNTcgNDM5LjY3IDg2LjEzTDQ0OS4xNSA5OS4yOSA0NDEuMzggOTkuMjkgNDMyLjczIDg3LjExIDQyNC43IDg3LjExIDQyNC43IDk5LjI5IDQxOC41OCA5OS4yOSA0MTguNTggNjMuMDcgNDMyLjA1IDYzLjA3QzQzNy41OCA2My4wNyA0NDEuNTMgNjQgNDQzLjkxIDY1Ljg3IDQ0Ni4zIDY3Ljc0IDQ0Ny40OCA3MC43MiA0NDcuNDggNzQuODNaTTQzOS4zNSA3OS45NkM0NDAuNiA3OC44OSA0NDEuMjIgNzcuMTcgNDQxLjIyIDc0LjggNDQxLjIyIDcyLjQzIDQ0MC41OCA3MC44MSA0MzkuMyA2OS45MyA0MzguMDIgNjkuMDUgNDM1Ljc1IDY4LjYxIDQzMi40NiA2OC42MUw0MjQuNjkgNjguNjEgNDI0LjY5IDgxLjU2IDQzMi4zIDgxLjU2QzQzNS43NSA4MS41NiA0MzguMSA4MS4wMyA0MzkuMzQgNzkuOTVaIiBmaWxsPSIjRkFGQUY0Ij48L3BhdGg+PHBhdGggZD0iTTQ4OC4zMSA3NC44M0M0ODguMzEgODAuODEgNDg1LjcgODQuNTcgNDgwLjQ5IDg2LjEzTDQ4OS45NyA5OS4yOSA0ODIuMiA5OS4yOSA0NzMuNTUgODcuMTEgNDY1LjUyIDg3LjExIDQ2NS41MiA5OS4yOSA0NTkuNCA5OS4yOSA0NTkuNCA2My4wNyA0NzIuODcgNjMuMDdDNDc4LjQgNjMuMDcgNDgyLjM1IDY0IDQ4NC43MyA2NS44NyA0ODcuMTIgNjcuNzQgNDg4LjMgNzAuNzIgNDg4LjMgNzQuODNaTTQ4MC4xOCA3OS45NkM0ODEuNDMgNzguODkgNDgyLjA1IDc3LjE3IDQ4Mi4wNSA3NC44IDQ4Mi4wNSA3Mi40MyA0ODEuNDEgNzAuODEgNDgwLjEzIDY5LjkzIDQ3OC44NSA2OS4wNSA0NzYuNTggNjguNjEgNDczLjI5IDY4LjYxTDQ2NS41MiA2OC42MSA0NjUuNTIgODEuNTYgNDczLjEzIDgxLjU2QzQ3Ni41OCA4MS41NiA0NzguOTMgODEuMDMgNDgwLjE3IDc5Ljk1WiIgZmlsbD0iI0ZBRkFGNCI+PC9wYXRoPjxwYXRoIGQ9Ik0yNzMuNTMgNjYuOTlDMjgxLjEgNjYuOTkgMjg3LjI2IDczLjE1IDI4Ny4yNiA4MC43MyAyODcuMjYgODguMzEgMjgxLjEgOTQuNDcgMjczLjUzIDk0LjQ3IDI2NS45NiA5NC40NyAyNTkuOCA4OC4zMSAyNTkuOCA4MC43MyAyNTkuOCA3My4xNSAyNjUuOTYgNjYuOTkgMjczLjUzIDY2Ljk5TTI3My41MyA2MS4yN0MyNjIuNzkgNjEuMjcgMjU0LjA4IDY5Ljk4IDI1NC4wOCA4MC43MyAyNTQuMDggOTEuNDggMjYyLjc5IDEwMC4xOSAyNzMuNTMgMTAwLjE5IDI4NC4yNyAxMDAuMTkgMjkyLjk4IDkxLjQ4IDI5Mi45OCA4MC43MyAyOTIuOTggNjkuOTggMjg0LjI3IDYxLjI3IDI3My41MyA2MS4yN0wyNzMuNTMgNjEuMjdaIiBmaWxsPSIjRkFGQUY0Ij48L3BhdGg+PHBhdGggZD0iTTUxNS4zIDY2Ljk5QzUyMi44NyA2Ni45OSA1MjkuMDMgNzMuMTUgNTI5LjAzIDgwLjczIDUyOS4wMyA4OC4zMSA1MjIuODcgOTQuNDcgNTE1LjMgOTQuNDcgNTA3LjczIDk0LjQ3IDUwMS41NyA4OC4zMSA1MDEuNTcgODAuNzMgNTAxLjU3IDczLjE1IDUwNy43MyA2Ni45OSA1MTUuMyA2Ni45OU01MTUuMyA2MS4yN0M1MDQuNTYgNjEuMjcgNDk1Ljg1IDY5Ljk4IDQ5NS44NSA4MC43MyA0OTUuODUgOTEuNDggNTA0LjU2IDEwMC4xOSA1MTUuMyAxMDAuMTkgNTI2LjA0IDEwMC4xOSA1MzQuNzUgOTEuNDggNTM0Ljc1IDgwLjczIDUzNC43NSA2OS45OCA1MjYuMDQgNjEuMjcgNTE1LjMgNjEuMjdMNTE1LjMgNjEuMjdaIiBmaWxsPSIjRkFGQUY0Ij48L3BhdGg+PC9zdmc+">
+  </header>
+  <hr class="accent-line">
+  <p class="purpose rise" id="purpose"></p>
+  <p class="sub rise" id="sub"></p>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-tab="audit">Audit</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="global">Installed globally</button>
+  </div>
+
+  <section id="tab-audit">
+  <div class="tiles rise" id="tiles"></div>
+
+  <div class="barbox">
+    <div class="bar"><div class="fill" id="barFill" style="width:0%"></div></div>
+    <div class="barmeta"><span id="barLeft">0 tokens selected</span><span id="barRight"></span></div>
+  </div>
+
+  <h2>MCP servers</h2>
+  <p class="note" id="mcpNote"></p>
+
+  <h2>Plugins and skills — check to disable</h2>
+  <div class="filters" role="group" aria-label="Filter rows">
+    <button class="chip" aria-pressed="true" data-f="all">All</button>
+    <button class="chip" aria-pressed="false" data-f="remove">Remove</button>
+    <button class="chip" aria-pressed="false" data-f="borderline">Borderline</button>
+    <button class="chip" aria-pressed="false" data-f="keep">Keep</button>
+    <input id="search" type="search" placeholder="Search" aria-label="Search rows">
+  </div>
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th></th><th>Item</th><th>Source</th><th class="r">Est. tokens</th><th class="r">Uses (all-time)</th><th>Verdict</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <p class="note" style="margin-top:10px" id="scopeNote"></p>
+
+  <h2>Save more tokens — config tips</h2>
+  <div class="tips" id="tips"></div>
+
+  <h2>Apply — choose scope, then run each prompt in its own harness</h2>
+  <div class="scopebox">
+    <div class="scopetitle">Where should changes land?</div>
+    <label class="scopeopt"><input type="radio" name="scope" value="project" checked>
+      <span><strong>This project only</strong> — changes go to project-level config (e.g. <code>.claude/settings.local.json</code>); anything global-only is skipped and listed back to you.</span></label>
+    <label class="scopeopt"><input type="radio" name="scope" value="global">
+      <span><strong>Also global user settings</strong> — changes apply in <code>~/.claude</code>, <code>~/.codex</code> and account settings so every project benefits.</span></label>
+  </div>
+  <div id="prompts"></div>
+
+  <h2>Evidence — raw usage counts</h2>
+  <div id="evidence"></div>
+  </section>
+
+  <section id="tab-global" hidden>
+    <p class="note" id="globalNote" style="margin:16px 0"></p>
+    <div id="global"></div>
+  </section>
+</div>
+
+<script>
+// __DATA__ is replaced by the tokenomics skill with real audit results.
+const DATA = /*__DATA__*/ null;
+
+const fmt = n => n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, "") + "k" : String(n);
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const ITEMS = DATA.items;
+const TIPS = DATA.tips || [];
+const TOTAL = DATA.totalTokens;
+
+document.getElementById("purpose").innerHTML = DATA.purpose || "Purpose: save tokens — pay only for context you actually use.";
+document.getElementById("sub").innerHTML = DATA.subtitle;
+document.getElementById("mcpNote").innerHTML = DATA.mcpNote;
+document.getElementById("scopeNote").innerHTML = DATA.scopeNote;
+document.getElementById("barRight").textContent = DATA.totalLabel;
+
+const tilesEl = document.getElementById("tiles");
+for (const t of DATA.tiles) {
+  tilesEl.insertAdjacentHTML("beforeend",
+    `<div class="tile"><div class="label">${esc(t.label)}</div><div class="value num">${esc(t.value)}</div><div class="hint">${esc(t.hint)}</div></div>`);
+}
+tilesEl.insertAdjacentHTML("beforeend",
+  `<div class="tile save"><div class="label">You save</div><div class="value num" id="saveTotal">0</div><div class="hint" id="savePct"></div></div>`);
+
+const tbody = document.getElementById("rows");
+let filter = "all", query = "";
+
+function render() {
+  tbody.innerHTML = "";
+  let lastGrp = null;
+  for (const it of ITEMS) {
+    const visible = (filter === "all" || it.verdict === filter) &&
+      (query === "" || (it.name + " " + it.src + " " + it.desc).toLowerCase().includes(query));
+    if (!visible) continue;
+    if (it.grp && it.grp !== lastGrp) {
+      const g = document.createElement("tr");
+      g.className = "grp";
+      g.innerHTML = `<td colspan="6">${esc(it.grp)}</td>`;
+      tbody.appendChild(g);
+    }
+    if (it.grp) lastGrp = it.grp;
+    const tr = document.createElement("tr");
+    if (it.checked) tr.className = "selected";
+    const removable = it.verdict !== "keep";
+    const verdictLabel = { remove: "Remove", borderline: "Borderline", keep: "Keep" }[it.verdict];
+    tr.innerHTML = `
+      <td class="chk">${removable ? `<input type="checkbox" data-id="${esc(it.id)}" ${it.checked ? "checked" : ""} aria-label="Disable ${esc(it.name)}">` : ""}</td>
+      <td><div class="name">${esc(it.name)}</div><div class="desc">${esc(it.desc)}</div></td>
+      <td class="mono" style="font-size:12px;color:var(--ink-3)">${esc(it.src)}</td>
+      <td class="r num">~${fmt(it.tok)}</td>
+      <td class="r num ${it.uses === 0 ? "uses0" : ""}">${it.uses === null ? "—" : it.uses}</td>
+      <td><span class="badge ${it.verdict}">${verdictLabel}</span></td>`;
+    tbody.appendChild(tr);
+  }
+  update();
+}
+
+const tipsEl = document.getElementById("tips");
+for (const t of TIPS) {
+  const div = document.createElement("label");
+  div.className = "tip" + (t.checked ? " selected" : "");
+  div.innerHTML = `
+    <input type="checkbox" data-tip="${esc(t.id)}" ${t.checked ? "checked" : ""} aria-label="Apply tip: ${esc(t.title)}">
+    <div><span class="t">${esc(t.title)}</span><span class="tags">${t.harness ? `<span class="tag harness">${esc(t.harness)}</span>` : ""}${t.save ? `<span class="tag save">${esc(t.save)}</span>` : ""}</span>
+    <div class="d">${t.desc}</div></div>`;
+  tipsEl.appendChild(div);
+}
+tipsEl.addEventListener("change", e => {
+  const t = TIPS.find(x => x.id === e.target.getAttribute("data-tip"));
+  if (t) { t.checked = e.target.checked; e.target.closest(".tip").classList.toggle("selected", t.checked); update(); }
+});
+
+function update() {
+  const sel = ITEMS.filter(i => i.checked);
+  const tok = sel.reduce((s, i) => s + i.tok, 0);
+  document.getElementById("saveTotal").textContent = "−" + fmt(tok);
+  document.getElementById("savePct").textContent = Math.round(tok / TOTAL * 100) + "% of " + DATA.totalLabel;
+  document.getElementById("barFill").style.width = Math.min(100, tok / TOTAL * 100) + "%";
+  document.getElementById("barLeft").textContent = sel.length + " items, ~" + fmt(tok) + " tokens freed per session";
+  buildPrompt(sel);
+}
+
+function getScope() {
+  const el = document.querySelector('input[name="scope"]:checked');
+  return el ? el.value : "project";
+}
+
+function claudePrompt(sel, tips, scope) {
+  const plugins = sel.filter(i => i.kind === "plugin").map(i => i.id);
+  const skills = sel.filter(i => i.kind === "skill").map(i => i.id);
+  const mcps = sel.filter(i => i.kind === "mcp").map(i => i.id);
+  if (!plugins.length && !skills.length && !mcps.length && !tips.length) return null;
+  let p = "Clean up my Claude Code token usage based on the tokenomics audit.\n";
+  p += scope === "project"
+    ? "\nSCOPE: THIS PROJECT ONLY. Make every change in this repo's project config (.claude/settings.local.json — create it if missing; enabledPlugins and env overrides go there). Do NOT edit ~/.claude/settings.json, ~/.claude/skills, or ~/.claude.json. If an action below is global-only (user skills, global mcpServers), SKIP it and list it at the end under \"Requires global scope\".\n"
+    : "\nSCOPE: GLOBAL. Apply changes in my user settings (~/.claude/settings.json, ~/.claude/skills, ~/.claude.json) so every project benefits. Repo-specific items (.claudeignore, project CLAUDE.md) still go in this repo.\n";
+  let step = 1;
+  if (plugins.length) p += `\n${step++}. Disable these plugins (enabledPlugins → false):\n` + plugins.map(x => "   - " + x).join("\n") + "\n";
+  if (skills.length) p += `\n${step++}. Disable these user skills by moving them from ~/.claude/skills/ to ~/.claude/skills-disabled/ (create the dir; never delete):\n` + skills.map(x => "   - " + x).join("\n") + "\n";
+  if (mcps.length) p += `\n${step++}. Remove these servers from the top-level mcpServers in ~/.claude.json (back up the removed JSON to ~/.claude/mcp-disabled.json first):\n` + mcps.map(x => "   - " + x).join("\n") + "\n";
+  if (tips.length) p += `\n${step++}. Apply these config changes (adapt file paths to the scope above):\n` + tips.map(t => "   - " + t.apply).join("\n") + "\n";
+  p += "\nDon't touch anything else (hooks, marketplaces, other plugins/servers). Show a diff-style summary of what changed, list anything skipped, and remind me to restart the session.";
+  return p;
+}
+
+function codexPrompt(tips, scope) {
+  if (!tips.length) return null;
+  let p = "Optimize my Codex CLI token usage based on an external audit.\n";
+  p += scope === "project"
+    ? "\nSCOPE: THIS PROJECT ONLY. Only change project-level files (this repo's AGENTS.md or project config). ~/.codex/config.toml is global — do NOT edit it; instead print the exact TOML for each change below and ask me to confirm before anything global happens.\n"
+    : "\nSCOPE: GLOBAL. You may edit ~/.codex/config.toml directly. Back up the file first (config.toml.bak).\n";
+  p += "\nChanges:\n" + tips.map(t => "- " + t.apply.replace(/^In ~\/\.codex\/config\.toml,?\s*/i, "In config: ")).join("\n") + "\n";
+  p += "\nShow a diff of every file you changed and a list of anything you could not do at this scope.";
+  return p;
+}
+
+function copilotPrompt(tips, scope) {
+  if (!tips.length) return null;
+  let p = "Help me reduce my GitHub Copilot cost based on an external audit.\n";
+  p += scope === "project"
+    ? "\nSCOPE: THIS PROJECT ONLY. Only touch repo files (e.g. .github/copilot-instructions.md). Account/org settings are global — present those as a manual checklist with exact navigation paths instead of changing anything.\n"
+    : "\nSCOPE: GLOBAL ALLOWED. Repo files may be edited directly; account/org settings still need me — give a manual checklist with exact navigation paths for those.\n";
+  p += "\nItems:\n" + tips.map(t => {
+    let a = t.apply.replace(/^Remind me to\s+/i, "").replace(/\s*\(manual (step|habit)\)$/i, "");
+    return "- " + a.charAt(0).toUpperCase() + a.slice(1);
+  }).join("\n") + "\n";
+  p += "\nEnd with the checklist of manual steps in the order I should do them.";
+  return p;
+}
+
+const HARNESSES = [
+  { name: "Claude Code", build: (sel, tips, scope) => claudePrompt(sel, tips.filter(t => !t.harness || t.harness === "Claude Code"), scope) },
+  { name: "Codex CLI", build: (sel, tips, scope) => codexPrompt(tips.filter(t => t.harness === "Codex CLI"), scope) },
+  { name: "GitHub Copilot", build: (sel, tips, scope) => copilotPrompt(tips.filter(t => t.harness === "GitHub Copilot"), scope) },
+];
+
+function buildPrompt(sel) {
+  const tips = TIPS.filter(t => t.checked);
+  const scope = getScope();
+  const el = document.getElementById("prompts");
+  el.innerHTML = "";
+  let any = false;
+  for (const h of HARNESSES) {
+    const text = h.build(sel, tips, scope);
+    if (!text) continue;
+    any = true;
+    el.insertAdjacentHTML("beforeend",
+      `<div class="prompthead">Run this in ${esc(h.name)}<span class="tag harness">${esc(h.name)}</span></div>
+       <div class="promptbox"><button class="copybtn" data-copy>Copy</button><pre>${esc(text)}</pre></div>`);
+  }
+  if (!any) el.innerHTML = `<div class="promptbox"><pre>(Nothing selected — check items above and the prompts appear here, one per harness.)</pre></div>`;
+}
+
+document.querySelectorAll('input[name="scope"]').forEach(r => r.addEventListener("change", update));
+
+tbody.addEventListener("change", e => {
+  const it = ITEMS.find(i => i.id === e.target.getAttribute("data-id"));
+  if (it) { it.checked = e.target.checked; e.target.closest("tr").classList.toggle("selected", it.checked); update(); }
+});
+
+document.querySelectorAll(".chip").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", "false"));
+  b.setAttribute("aria-pressed", "true");
+  filter = b.dataset.f;
+  render();
+}));
+document.getElementById("search").addEventListener("input", e => { query = e.target.value.toLowerCase(); render(); });
+
+async function copyText(text, pre) {
+  try { await navigator.clipboard.writeText(text); return true; } catch {}
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;pointer-events:none";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    const ok = document.execCommand("copy");
+    ta.remove();
+    if (ok) return true;
+  } catch {}
+  const r = document.createRange();
+  r.selectNodeContents(pre);
+  getSelection().removeAllRanges();
+  getSelection().addRange(r);
+  return false;
+}
+
+document.getElementById("prompts").addEventListener("click", async e => {
+  const btn = e.target.closest("[data-copy]");
+  if (!btn) return;
+  const pre = btn.parentElement.querySelector("pre");
+  const ok = await copyText(pre.textContent, pre);
+  btn.textContent = ok ? "Copied" : "Selected — press Cmd+C";
+  setTimeout(() => { btn.textContent = "Copy"; }, ok ? 1600 : 3200);
+});
+
+const evEl = document.getElementById("evidence");
+for (const section of DATA.evidence) {
+  const rows = section.rows.map(([name, n]) =>
+    `<tr><td>${esc(name)}</td><td class="r num ${n === 0 ? "uses0" : ""}">${esc(n)}</td></tr>`).join("");
+  evEl.insertAdjacentHTML("beforeend",
+    `<details><summary>${esc(section.title)}</summary><div class="inner"><table><tbody>${rows}</tbody></table></div></details>`);
+}
+
+document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(t === b)));
+  document.getElementById("tab-audit").hidden = b.dataset.tab !== "audit";
+  document.getElementById("tab-global").hidden = b.dataset.tab !== "global";
+}));
+
+document.getElementById("globalNote").innerHTML = (DATA.global && DATA.global.note) || "";
+const globalEl = document.getElementById("global");
+for (const sec of (DATA.global ? DATA.global.sections : [])) {
+  const head = sec.cols ? `<thead><tr>${sec.cols.map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead>` : "";
+  const rows = sec.rows.map(r =>
+    `<tr>${r.map((c, i) => `<td class="${i === 0 ? "mono" : ""}">${esc(c)}</td>`).join("")}</tr>`).join("");
+  globalEl.insertAdjacentHTML("beforeend",
+    `<details open><summary>${esc(sec.title)}${sec.count != null ? ` <span style="color:var(--ink-3);font-weight:400">(${sec.count})</span>` : ""}</summary><div class="inner">${sec.note ? `<p class="note" style="margin-top:0">${sec.note}</p>` : ""}<table>${head}<tbody>${rows}</tbody></table></div></details>`);
+}
+
+render();
+</script>
