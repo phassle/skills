@@ -36,7 +36,7 @@ Replace `/*__DATA__*/ null` in `template.html` with one JSON object:
     {
       "id": "subagent-model",
       "title": "Subagent default model → haiku",
-      "harness": "Claude Code",        // REQUIRED when tips span harnesses: "Claude Code" | "Codex CLI" | "GitHub Copilot" — shown as a tag; non-Claude harnesses get a [Harness] prefix in the apply-prompt
+      "harness": "Claude Code",        // REQUIRED when tips span harnesses: "Claude Code" | "Codex CLI" | "GitHub Copilot" (usage-based/token-metered since Jun 2026 — no premium-request multipliers) — shown as a tag; non-Claude harnesses get a [Harness] prefix in the apply-prompt
       "save": "big on fan-outs",       // optional badge text
       "desc": "Subagents inherit the parent model. Set <code>CLAUDE_CODE_SUBAGENT_MODEL</code>… (HTML ok)",
       "apply": "In ~/.claude/settings.json add env.CLAUDE_CODE_SUBAGENT_MODEL = \"haiku\"",  // one line, imperative — copied verbatim into the prompt
@@ -68,6 +68,7 @@ Replace `/*__DATA__*/ null` in `template.html` with one JSON object:
 ```
 
 Notes:
+- **Tokens, not dollars.** All values (`tok`, `totalTokens`, tiles, `save` badges, `desc`) are token / qualitative — never prices, $/month, or hardcoded rates/multipliers (they go stale). `save` is a qualitative badge (e.g. "big on fan-outs"), not a figure.
 - First cell of every row renders in monospace; rows are plain string arrays (any column count matching `cols`).
 - `kind: "mcp"` rows generate a "remove from ~/.claude.json mcpServers" step in the apply-prompt.
 - Keep ids exact — the user pastes the generated prompt back and Claude follows it literally.

@@ -3,6 +3,7 @@
 # Usage: collect-usage.sh [projects-dir]   (default: ~/.claude/projects)
 set -euo pipefail
 DIR="${1:-$HOME/.claude/projects}"
+ORIG_PWD="$PWD"   # user's project dir, before we cd into the transcripts dir
 cd "$DIR"
 
 echo "== Sessions per project =="
@@ -49,3 +50,13 @@ echo "-- marketplaces:"
 python3 -c "import json,os;d=json.load(open(os.path.expanduser('~/.claude/settings.json')));print('\n'.join(d.get('extraKnownMarketplaces',{}).keys()))" 2>/dev/null || echo "(none)"
 echo "-- global hooks (settings.json events):"
 python3 -c "import json,os;d=json.load(open(os.path.expanduser('~/.claude/settings.json')));print('\n'.join(d.get('hooks',{}).keys()))" 2>/dev/null || echo "(none)"
+
+echo; echo "== Config hygiene (token-tip signals) =="
+echo "-- global CLAUDE.md lines:"; awk 'END{print NR}' "$HOME/.claude/CLAUDE.md" 2>/dev/null || echo "(none)"
+echo "-- context files in project ($ORIG_PWD):"; for f in CLAUDE.md AGENTS.md .claude/CLAUDE.md; do [ -f "$ORIG_PWD/$f" ] && echo "$(awk 'END{print NR}' "$ORIG_PWD/$f")  $f"; done || true
+echo "-- AGENTS.md present but no CLAUDE.md / .claude/CLAUDE.md (Claude Code won't load it):"
+if [ -f "$ORIG_PWD/AGENTS.md" ] && [ ! -e "$ORIG_PWD/CLAUDE.md" ] && [ ! -e "$ORIG_PWD/.claude/CLAUDE.md" ]; then echo "YES — drift risk (add symlink or thin CLAUDE.md importing @AGENTS.md)"; else echo "no"; fi
+echo "-- Agent Teams flag (CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS; each teammate is a full instance, so substantially more tokens):"
+if [ -n "${CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS:-}" ]; then echo "$CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS (from environment)"; else python3 -c "import json,os;print(json.load(open(os.path.expanduser('~/.claude/settings.json'))).get('env',{}).get('CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS','unset'))" 2>/dev/null || echo "unset"; fi
+echo "-- CLIs present (prefer over MCP servers):"
+for c in gh aws gcloud sentry-cli; do command -v "$c" >/dev/null 2>&1 && echo "$c: yes" || echo "$c: no"; done

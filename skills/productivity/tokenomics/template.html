@@ -382,7 +382,7 @@ function claudePrompt(sel, tips, scope) {
   let p = "Clean up my Claude Code token usage based on the tokenomics audit.\n";
   p += scope === "project"
     ? "\nSCOPE: THIS PROJECT ONLY. Make every change in this repo's project config (.claude/settings.local.json — create it if missing; enabledPlugins and env overrides go there). Do NOT edit ~/.claude/settings.json, ~/.claude/skills, or ~/.claude.json. If an action below is global-only (user skills, global mcpServers), SKIP it and list it at the end under \"Requires global scope\".\n"
-    : "\nSCOPE: GLOBAL. Apply changes in my user settings (~/.claude/settings.json, ~/.claude/skills, ~/.claude.json) so every project benefits. Repo-specific items (.claudeignore, project CLAUDE.md) still go in this repo.\n";
+    : "\nSCOPE: GLOBAL. Apply changes in my user settings (~/.claude/settings.json, ~/.claude/skills, ~/.claude.json) so every project benefits. Repo-specific items (project permissions.deny rules, project CLAUDE.md) still go in this repo.\n";
   let step = 1;
   if (plugins.length) p += `\n${step++}. Disable these plugins (enabledPlugins → false):\n` + plugins.map(x => "   - " + x).join("\n") + "\n";
   if (skills.length) p += `\n${step++}. Disable these user skills by moving them from ~/.claude/skills/ to ~/.claude/skills-disabled/ (create the dir; never delete):\n` + skills.map(x => "   - " + x).join("\n") + "\n";
