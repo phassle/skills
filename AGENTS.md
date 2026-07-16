@@ -14,7 +14,7 @@ Also installable into Codex, GitHub Copilot, and other harnesses following the A
 
 ## WHY
 
-Every agent session loads plugins/skills/agents/MCP schemas into context before the user types anything — most of that is never invoked, and nothing surfaces the waste. This repo's skills exist to find and cut that waste. Flagship: `tokenomics` (README.md:46-63).
+Every agent session loads plugins, model-invoked skills, agents, and MCP schemas into context before the user types anything — most of that is never invoked, and nothing surfaces the waste. This repo's skills exist to find and cut that waste. Flagship: `tokenomics` (README.md:46-63).
 
 ## HOW — commands
 
@@ -38,7 +38,7 @@ claude plugin install phassle-skills@phassle    # install the plugin bundle
 
 ## Critical workflow 1: add and test a new skill (unreleased)
 
-1. Create `skills/<category>/<name>/SKILL.md` with YAML frontmatter (`name`, `description`) — see skills/productivity/tokenomics/SKILL.md:1-4 for the shape.
+1. Create `skills/<category>/<name>/SKILL.md` with YAML frontmatter (`name`, `description`; add `disable-model-invocation: true` for slash-only skills that shouldn't sit in context) — see skills/productivity/tokenomics/SKILL.md:1-5 for the shape.
 2. Drop supporting files (scripts, templates, reference docs) next to it — keep SKILL.md thin, link out (docs/architectural_patterns.md pattern 3).
 3. Install locally: `npx skills@latest add phassle/skills`, pick the new skill — it shows under the **Other** group (not yet in plugin.json).
 4. Invoke it in a real agent session and iterate. Not in `plugin.json` = not shipped to plugin users (CONTRIBUTING.md:13).
@@ -55,7 +55,7 @@ claude plugin install phassle-skills@phassle    # install the plugin bundle
 
 1. Deterministic collection first, no model calls — e.g. scripts/collect-usage.sh.
 2. SKILL.md orchestrates in numbered steps: run script → classify results → fill a documented data contract (e.g. DATA-SHAPE.md) → publish via the Artifact tool.
-3. Never let the skill mutate user config directly — it generates a copy-paste apply-prompt the user runs themselves (skills/productivity/tokenomics/SKILL.md:8, :67).
+3. Never let the skill mutate user config directly — it generates a copy-paste apply-prompt the user runs themselves (skills/productivity/tokenomics/SKILL.md:9, :77).
 
 ## Unresolved questions
 

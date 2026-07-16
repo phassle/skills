@@ -1,6 +1,7 @@
 ---
 name: tokenomics
-description: Audit Claude Code context spend vs actual usage — analyze all session transcripts to find never-used plugins, skills, agents, and MCP servers, then publish an interactive HTML report (checkboxes → live token savings → copy-paste apply-prompt). Use when the user runs /tokenomics, asks "what can I remove", "trim my context", "which skills/plugins do I never use", mentions context bloat, or wants to reduce per-session token overhead.
+description: Audit what Claude Code loads into context every session vs what you actually use, then publish an interactive report with copy-paste apply-prompts. User-invoked — run /tokenomics.
+disable-model-invocation: true
 ---
 
 # Tokenomics — context audit

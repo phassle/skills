@@ -23,7 +23,7 @@ Nothing is changed automatically — the report generates prompts you paste back
 
 ## Use
 
-Run `/tokenomics` in any project, or just ask "what can I remove from my context?". The analysis reads your own transcripts under `~/.claude/projects/` — results are personal per machine.
+Run `/tokenomics` in any project. The skill is user-invoked (slash only) — it doesn't sit in context until invoked, so it won't auto-fire; you invoke it by name. The analysis reads your own transcripts under `~/.claude/projects/` — results are personal per machine.
 
 ## Contents
 
@@ -33,5 +33,6 @@ tokenomics/
 ├── DATA-SHAPE.md            # JSON contract for the report template
 ├── template.html            # Monterro-branded interactive report (self-contained)
 ├── scripts/collect-usage.sh # deterministic transcript/inventory analysis
+├── EVALS.md                 # invariants every run must hold (regression checklist)
 └── README.md                # this file
 ```
