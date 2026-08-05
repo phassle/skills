@@ -66,6 +66,8 @@ Use the host's general-purpose/task subagent primitive and request a fresh conte
 
 For acceptance review, "fresh" means zero conversation history. Start a new top-level harness process/session with persistence and memory disabled when supported. Never use a native subagent, resume, continue, compact, summarize, or fork the planner/implementer/merger session as the review coordinator. Matt's clean review coordinator then creates its required Standards and Spec child agents. Repository instructions and the minimal review packet may be loaded fresh; prior agent reasoning may not.
 
+Every launch runs on the machine's existing harness authentication — a subscription login is a first-class route, and no step may require an API key where the verified route runs without one. A launch flag can change the permitted authentication sources, so only the exact live-verified launch mode counts as a route.
+
 Preserve these launch semantics, adapting flags to the installed version:
 
 - Codex: start a new `codex exec --ephemeral --ignore-user-config`/review process with an explicit verified model, never resume a session or attach the root Goal transcript. Restrict repository mutation and put any build artifacts in an isolated temp/output directory.

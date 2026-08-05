@@ -5,6 +5,8 @@ description: "Orient repository work when explicitly invoked without an issue, o
 
 One sufficiently specified issue goes in and a ready pull request comes out, evidence-backed, without any single context window holding the whole build. This skill orchestrates the project's installed skills; it never replaces their TDD, review, issue-tracker, or Git rules.
 
+The execution model is the **sandcastle loop**: each work unit gets a fresh dedicated worktree and a fresh agent — a new headless session with zero conversation history — and hands back commits and artifacts, never conversation. One unit, one branch, one worktree, one agent; the merger folds the commits back. Isolation is the worktree, branch, and run token rather than a container, which is exactly what lets the run work on a **subscription login**: workers are the machine's own harness CLIs, authenticating however this machine already does, so no API key and no container image is required. Nothing in the run may assume API-key billing — a route that reports no money reports turns and duration instead.
+
 An admitted run is autonomous all the way to **the gate** — the human decision to merge into `develop` or `main`. Everything short of it is work to do: agent recovery, review findings, fixes, re-reviews, conflict resolution, integration, push, tracker updates, calibration.
 
 Everything the run knows about its own state comes from **live inspection**. Concurrent agents make remembered branch, worktree, and agent status untrustworthy, so the run reads before it writes and verifies before it claims.
@@ -66,6 +68,15 @@ Always create or reuse a dedicated worktree for the assigned branch, including i
 
 After selecting each agent route, mint its immutable `agent_identity` as `Codex (<selected model> / <selected effort>)`, record it in the run ledger and that agent's activity record, and pass it in the delegated prompt. The selected route is the identity source even where the host exposes no runtime model identifier. Capture token and cost telemetry only where the active host exposes it; never infer token totals from agent labels.
 
+## Token economy
+
+Context is the run's scarcest resource; spend it like money. The currency between agents is the **artifact, never the transcript** — SHAs, diffs, failing commands, report files, log events — and every packet an agent receives is the minimum its role contract names:
+
+- A delegated prompt carries the unit's own issue text, seams, base, branch, worktree, and route — never this skill, another role's contract, the ledger, or the run history. The role contracts define each packet exactly; anything they do not name stays out.
+- Point at files rather than pasting them: workers read the installed skills and repository instructions from disk in their own context, and the coordinator passes paths.
+- The coordinator reads each reference at its phase and carries forward only the ledger, the frontier, and the forecast — completed waves live in the ledger and on the tracker, not in context.
+- An escalation or recovery inherits the artifact handoff in [implementer-contract.md](references/implementer-contract.md), never the failed conversation.
+
 ## Required references
 
 Read each completely before its phase:
@@ -100,7 +111,7 @@ An admitted invocation carrying no issue, URL, or smoke-test flag reads and exec
 Reach these only when the explicit invocation names one issue number or URL, and complete them before creating a branch, worktree, issue, PR, or commit.
 
 1. Load `~/.agents/dynamic-skills/capabilities.json`, or the path in `DYNAMIC_SKILLS_PROFILE`, requiring the current effort-aware schema. Evaluate freshness **only for the harnesses this run will use** — the implementer harness and the selected reviewer harness — each requiring `status: verified`, an unexpired `catalog.expiresAt`, its ladder's own `fingerprint`, and a live-verified `escalationLadder` containing the selected start step. A stale or absent entry for an unused harness blocks nothing. Where a needed harness fails a check, or its route fails at launch, stop before mutation: give the active host's exact manual `dynamic-skills-setup` command from [platform-adapters.md](references/platform-adapters.md), name the harness and the exact missing or stale evidence, and ask the user to rerun Dynamic Implement afterward. Setup is never invoked automatically.
-2. Honour the profile's route restrictions. Select planner, implementer, reviewer, and merger routes from that harness's `escalationLadder` only. An `auxiliaryRoutes` entry serves its `allowedRoles` and never a `forbiddenRoles` one, however cheap and verified. A `candidateEscalationSteps` entry marked `status: declined` was excluded by user policy, not capability, and stays excluded.
+2. Honour the profile's route restrictions. Select planner, implementer, reviewer, and merger routes from that harness's `escalationLadder` only. An `auxiliaryRoutes` entry serves its `allowedRoles` and never a `forbiddenRoles` one, however cheap and verified. A `candidateEscalationSteps` entry marked `status: declined` was excluded by user policy, not capability, and stays excluded — a `subscription-only` directive that ruled out API-key-billed routes is the common case.
 3. Read repository instructions (`AGENTS.md`, `CLAUDE.md`, contribution docs, nested instructions), issue-tracker configuration, domain context, and relevant ADRs. Load `.agents/dynamic-implement/model-calibration.json` where present — the repository owns learned model/effort outcomes; an installed skill directory never stores findings and a personal cache is never authoritative.
 4. Fetch the full issue: comments, hierarchy, native dependencies, every descendant. A default-limited listing is not the graph.
 5. Confirm the issue is specified enough to implement — observable outcome, acceptance criteria, resolved product decisions.
