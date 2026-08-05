@@ -2,6 +2,8 @@
 name: tokenomics
 description: Audit what Claude Code loads into context every session vs what you actually use, then publish an interactive report with copy-paste apply-prompts. User-invoked — run /tokenomics.
 disable-model-invocation: true
+metadata:
+  version: 1.3.0
 ---
 
 # Tokenomics — context audit
@@ -64,7 +66,7 @@ Tips may cover other harnesses the user runs (Codex CLI via `~/.codex/config.tom
 **Report content rule — savings in tokens, never dollars.** Everything the report shows (tiles, row costs, the savings counter, tip text, notes) is framed in **tokens removed / standing context saved**, computed from the user's own `/context`. Do **not** put prices, $/month, per-model rates, or hardcoded multipliers (5×, 90%, etc.) in the report — they go stale and become a maintenance burden. State savings qualitatively ("removes standing context loaded every session → lower cost"); the *why* and any live figure belong in `references/RATIONALE.md`, not on the page.
 
 1. Copy `template.html` (next to this SKILL.md) to a temp/scratch location. The template is **Monterro-branded** (design system baked in: off-white/navy, orange accent lines, Arial, embedded logo) — don't restyle it; only replace the data placeholder. Brand tone in all copy: sentence case, no emoji, no hype words.
-2. Replace the single placeholder `/*__DATA__*/ null` with a JSON object (see [DATA-SHAPE.md](references/DATA-SHAPE.md)) — including `purpose` (the skill's point: save tokens), `global` (the "Installed globally" tab: plugins w/ version+scope, user skills, MCP servers, hooks, marketplaces from the collect script), `tips` (each with `harness`), and `rationale.md` (the **verbatim** contents of `references/RATIONALE.md` — the template renders it in the "Why & sources" tab so the sourced reasoning behind every tip travels with the report).
+2. Replace the single placeholder `/*__DATA__*/ null` with a JSON object (see [DATA-SHAPE.md](references/DATA-SHAPE.md)) — including `purpose` (the skill's point: save tokens), `global` (the "Installed globally" tab: plugins w/ version+scope, user skills, MCP servers, hooks, marketplaces from the collect script), `tips` (each with `harness`), and `rationale` — an object whose `md` field (i.e. `DATA.rationale.md`, not a key literally named `rationale.md`) holds the **verbatim** contents of `references/RATIONALE.md` — the template renders it in the "Why & sources" tab so the sourced reasoning behind every tip travels with the report).
 3. Publish via the Artifact tool — favicon `🧹`, keep title "Tokenomics — Claude Code context audit".
 4. If no Artifact tool exists (running in Codex, Copilot, or another harness), write the finished HTML to `tokenomics-report.html` in the working directory instead and tell the user to open it in a browser.
 

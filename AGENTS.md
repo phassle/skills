@@ -56,6 +56,18 @@ npx skills@latest add . --list       # what a skills.sh user would be offered
 
 Committing a staged skill is therefore a soft release. Gate real WIP by keeping it uncommitted or out of the repo.
 
+## Versioning
+
+Three things carry a version, and only one of them is authoritative.
+
+- **`plugin.json` `version`** — the release version, semver, checked by `claude plugin validate`. This is what plugin users update against. Bump it on every release (workflow 2).
+- **skills.sh** — no version at all. `skills-lock.json` records the source repo, the skill path, and a SHA-256 `computedHash` of the content; `skills update` compares that hash against the repo's **default branch**. The commit is the version. This is why `main` is the default branch and feature work merges into `develop`.
+- **`metadata.version` in `SKILL.md`** — a per-skill marker for humans, so a contract change is legible without reading the diff. `metadata` is the Agent Skills spec's free-form map: legal everywhere, and Claude Code explicitly does not act on its contents.
+
+There is no top-level `version` frontmatter field. Some published skills (including Anthropic's own `plugin-dev` bundle) set one anyway; every loader ignores it. Don't copy that — it reads as official and isn't.
+
+Staged skills start at `0.1.0`. A released skill's `metadata.version` and `plugin.json`'s `version` move together.
+
 ## Tooling — LSP
 
 Install a language server per language so agents resolve symbols directly (go-to-definition, find-references) instead of grepping:
@@ -94,7 +106,7 @@ Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`
 
 ## Workflow 1: add + test a skill (unreleased)
 
-1. Create `skills/other/<name>/SKILL.md`. Frontmatter `name` + `description`; add `disable-model-invocation: true` when the skill must not sit in context. Copy the shape from `tokenomics`.
+1. Create `skills/other/<name>/SKILL.md`. Frontmatter `name` + `description` + `metadata.version: 0.1.0`; add `disable-model-invocation: true` when the skill must not sit in context. Copy the shape from `tokenomics`.
 2. Keep `SKILL.md` thin — orchestration in numbered steps. Push detail into `references/`, deterministic collection into `scripts/` (patterns 3, 4).
 3. `npx skills@latest add . --list` — confirm it is discovered, under **General**. Then `npx skills@latest add .` and pick it.
 4. Invoke in a real agent session, iterate. Absent from `skills` in `plugin.json` = not shipped to *plugin* users — but committing it does expose it to skills.sh users. Keep genuine WIP uncommitted.
@@ -102,7 +114,7 @@ Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`
 ## Workflow 2: release a skill
 
 1. Move folder to its category: `skills/productivity/<name>/` or `skills/engineering/<name>/`.
-2. Append `"./skills/<category>/<name>"` to `skills` in `plugin.json`; bump `version`.
+2. Append `"./skills/<category>/<name>"` to `skills` in `plugin.json`; bump its `version` and the skill's own `metadata.version` together (see Versioning).
 3. Add a one-line entry under the matching heading in README.md's **Reference** section. Create the category heading only if this is its first released skill.
 4. `claude plugin validate .`, then `npx skills@latest add phassle/skills --list` — confirm the skill lists as released, not Other.
 5. Commit + push. Plugin users get it on next update.

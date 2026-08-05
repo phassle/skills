@@ -1,6 +1,8 @@
 ---
 name: dynamic-run-dashboard
 description: Publish or refresh the operations dashboard for a Dynamic Implement run — one page carrying what is being built, who builds and reviews each unit, and what the run has learned. Use when the user asks for a dashboard, one-pager, or status page for a run, or to refresh one after an integration milestone.
+metadata:
+  version: 0.1.0
 ---
 
 A Dynamic Implement run outruns its transcript: a dependency graph, a per-unit review history, a routing policy that shifts mid-run, and a ledger nobody wants to read. This skill turns that into one page the user keeps open.

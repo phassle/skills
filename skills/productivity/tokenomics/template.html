@@ -525,11 +525,20 @@ document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () =>
 // Minimal Markdown → HTML for the rationale tab (headings, hr, tables, lists,
 // bold, inline code, links) — the skill passes references/RATIONALE.md verbatim.
 function mdToHtml(md) {
+  // Only http(s) and mailto reach an href, and the value is quote-escaped:
+  // the rationale doc is rendered via innerHTML, so a link target must never
+  // be able to close the attribute or carry a javascript: scheme.
+  const safeHref = u =>
+    /^(https?:|mailto:)/i.test(u) ? u.replace(/"/g, "&quot;").replace(/'/g, "&#39;") : "";
   const inline = s => s
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
     .replace(/`([^`]+)`/g, (_, c) => "<code>" + c + "</code>")
     .replace(/\*\*([^*]+)\*\*/g, (_, c) => "<strong>" + c + "</strong>")
-    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, t, u) => '<a href="' + u + '" target="_blank" rel="noopener">' + t + "</a>");
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, t, u) => {
+      const href = safeHref(u);
+      return href ? '<a href="' + href + '" target="_blank" rel="noopener">' + t + "</a>" : t;
+    });
   const lines = String(md || "").split("\n");
   const out = [];
   let i = 0, list = null;

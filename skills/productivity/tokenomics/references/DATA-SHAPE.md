@@ -77,4 +77,4 @@ Notes:
 - First cell of every row renders in monospace; rows are plain string arrays (any column count matching `cols`).
 - `kind: "mcp"` rows generate a "remove from ~/.claude.json mcpServers" step in the apply-prompt.
 - Keep ids exact — the user pastes the generated prompt back and Claude follows it literally.
-- `rationale.md` is the **raw** Markdown of `references/RATIONALE.md`, passed through unchanged — the template renders it (headings, tables, links). Don't hand-convert to HTML and don't edit it; the file is the single source of truth.
+- The `md` field of the `rationale` object — `DATA.rationale.md`, not a key literally named `rationale.md` — is the **raw** Markdown of `references/RATIONALE.md`, passed through unchanged — the template renders it (headings, tables, links). Don't hand-convert to HTML and don't edit it; the file is the single source of truth.
