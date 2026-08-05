@@ -1,1 +1,8 @@
 .DS_Store
+__pycache__/
+*.pyc
+
+# Repo-maintenance skills — local tooling, not published.
+# skills.sh scans every subdirectory for SKILL.md, so anything committed here
+# would be offered to users as an installable skill. Keep it out of the package.
+.agents/

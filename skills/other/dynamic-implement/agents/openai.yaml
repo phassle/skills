@@ -1,0 +1,6 @@
+interface:
+  display_name: "Dynamic Implement"
+  short_description: "Orient work or drive an issue to integration"
+  default_prompt: "Use $dynamic-implement with no argument to inspect current work, or with an issue to implement it."
+policy:
+  allow_implicit_invocation: false

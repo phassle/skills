@@ -29,10 +29,12 @@ Run `/tokenomics` in any project. The skill is user-invoked (slash only) — it 
 
 ```
 tokenomics/
-├── SKILL.md                 # workflow the agent follows
-├── DATA-SHAPE.md            # JSON contract for the report template
-├── template.html            # Monterro-branded interactive report (self-contained)
-├── scripts/collect-usage.sh # deterministic transcript/inventory analysis
-├── EVALS.md                 # invariants every run must hold (regression checklist)
-└── README.md                # this file
+├── SKILL.md                    # workflow the agent follows
+├── references/
+│   ├── DATA-SHAPE.md           # JSON contract for the report template
+│   └── RATIONALE.md            # verified why + official-doc sources behind every tip
+├── template.html               # Monterro-branded interactive report (self-contained)
+├── scripts/collect-usage.sh    # deterministic transcript/inventory analysis
+├── EVALS.md                    # invariants every run must hold (regression checklist)
+└── README.md                   # this file
 ```

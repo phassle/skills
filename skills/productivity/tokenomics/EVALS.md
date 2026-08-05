@@ -12,7 +12,7 @@ Each eval: a scenario, then a **pass** criterion (binary, checkable) and the **f
 ## 2. Tokens, never dollars
 - **Scenario:** inspect the published report — tiles, row costs, savings counter, tip text, notes.
 - **Pass:** every figure is tokens or qualitative ("standing context removed", "big on fan-outs"). No `$`, `$/month`, per-model rates, or hardcoded multipliers (5×, 90%).
-- **Fail:** any price or fixed multiplier appears on the page (goes stale; belongs in `docs/tokenomics-rationale.md`).
+- **Fail:** any price or fixed multiplier appears on the page (goes stale; belongs in `references/RATIONALE.md`).
 
 ## 3. Classification is usage-grounded
 - **Scenario:** an invocation-based item (a plugin/skill/agent that isn't a passive LSP/hook and isn't a dependency of a used item) with 0 invocations across all transcripts *and* 0% in `/usage`.
