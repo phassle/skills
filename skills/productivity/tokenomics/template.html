@@ -247,12 +247,12 @@
   <p class="sub rise" id="sub"></p>
 
   <div class="tabs" role="tablist">
-    <button class="tab" role="tab" aria-selected="true" data-tab="audit">Audit</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="global">Installed globally</button>
-    <button class="tab" role="tab" aria-selected="false" data-tab="rationale">Why &amp; sources</button>
+    <button class="tab" role="tab" id="tabbtn-audit" aria-controls="tab-audit" aria-selected="true" data-tab="audit">Audit</button>
+    <button class="tab" role="tab" id="tabbtn-global" aria-controls="tab-global" aria-selected="false" tabindex="-1" data-tab="global">Installed globally</button>
+    <button class="tab" role="tab" id="tabbtn-rationale" aria-controls="tab-rationale" aria-selected="false" tabindex="-1" data-tab="rationale">Why &amp; sources</button>
   </div>
 
-  <section id="tab-audit">
+  <section id="tab-audit" role="tabpanel" aria-labelledby="tabbtn-audit" tabindex="0">
   <div class="tiles rise" id="tiles"></div>
 
   <div class="barbox">
@@ -298,12 +298,12 @@
   <div id="evidence"></div>
   </section>
 
-  <section id="tab-global" hidden>
+  <section id="tab-global" role="tabpanel" aria-labelledby="tabbtn-global" tabindex="0" hidden>
     <p class="note" id="globalNote" style="margin:16px 0"></p>
     <div id="global"></div>
   </section>
 
-  <section id="tab-rationale" hidden>
+  <section id="tab-rationale" role="tabpanel" aria-labelledby="tabbtn-rationale" tabindex="0" hidden>
     <p class="note" id="rationaleNote" style="margin:16px 0"></p>
     <div class="rationale" id="rationale"></div>
   </section>
@@ -517,10 +517,27 @@ for (const section of DATA.evidence) {
 }
 
 const TAB_IDS = ["audit", "global", "rationale"];
-document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => {
-  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(t === b)));
+const tabBtns = [...document.querySelectorAll(".tab")];
+// Roving tabindex: a tablist takes one Tab stop, arrows move between tabs.
+function selectTab(b, focus) {
+  for (const t of tabBtns) {
+    const on = t === b;
+    t.setAttribute("aria-selected", String(on));
+    t.tabIndex = on ? 0 : -1;
+  }
   for (const id of TAB_IDS) document.getElementById("tab-" + id).hidden = b.dataset.tab !== id;
-}));
+  if (focus) b.focus();
+}
+tabBtns.forEach((b, i) => {
+  b.addEventListener("click", () => selectTab(b));
+  b.addEventListener("keydown", e => {
+    const last = tabBtns.length - 1;
+    const to = { ArrowRight: i === last ? 0 : i + 1, ArrowLeft: i === 0 ? last : i - 1, Home: 0, End: last }[e.key];
+    if (to === undefined) return;
+    e.preventDefault();
+    selectTab(tabBtns[to], true);
+  });
+});
 
 // Minimal Markdown → HTML for the rationale tab (headings, hr, tables, lists,
 // bold, inline code, links) — the skill passes references/RATIONALE.md verbatim.
