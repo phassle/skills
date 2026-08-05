@@ -96,6 +96,17 @@ large file merge cleanly; a file-level prediction over-serializes an entire modu
 wrong. A symbol-level prediction is also cheap for the orchestrator to check against the real diff,
 which makes it falsifiable rather than merely cautious.
 
+**Where several units write one file, give each an insertion anchor — "distinct sections" is not the
+same as distinct insertion points.** A planner can be entirely right that twelve units own twelve
+semantically separate sections and still have them collide, because two agents appending at
+end-of-file write the same line. Name an explicit textual anchor per concurrent unit rather than a
+section, and define it against **what is last in that unit's own base**, not against the intended
+final document. One run called two anchors well separated because one inserted after a named section
+and the other appended at EOF; in their shared base that named section *was* last, so both named the
+same point and they conflicted. Where an anchor cannot be made unambiguous, hold the unit until the
+one it would collide with merges, and record the hold as a scheduling decision rather than
+discovering it as a conflict.
+
 Say plainly that these predictions are the planner's forecast and may be overridden on evidence: if
 the orchestrator inspects the actual change and finds the named symbols untouched, it may promote a
 `stack` or `serial` pair to `parallel` and record that it did.
