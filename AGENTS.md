@@ -1,62 +1,123 @@
 # AGENTS.md
 
 Be extremely concise. Sacrifice grammar for concision.
+Always write in English — chat replies, code, comments, commits, docs, skill content — regardless of the language the user writes in.
 At the end of each plan, list unresolved questions.
 
 ## WHAT
 
-Repo of Agent Skills for AI coding agents. Maintained by Per Hassle (Monterro). No app code, no build, no test suite — content is Markdown (SKILL.md files), one Bash script, one self-contained HTML report template. Distributed two ways:
+Repo of Agent Skills for AI coding agents. Maintained by Per Hassle (Monterro). No app code, no build, no test suite. Content:
 
-- **skills.sh** (`npx skills@latest add phassle/skills`) — copies skill folders into the user's own repo, editable.
-- **Claude Code plugin** (`.claude-plugin/`) — read-only managed bundle, updates on version bump.
+- Markdown skill bundles — `SKILL.md` + optional `references/`, `scripts/`, `agents/`.
+- Bash — `collect-usage.sh` (tokenomics collector).
+- Python — `agent_log.py` (dynamic-implement activity logger).
+- Self-contained HTML+JS — `template.html` (tokenomics report; functions `render`, `buildPrompt`, `claudePrompt`, `codexPrompt`, `copilotPrompt`, `getScope`, `mdToHtml`).
+- JSON manifests — `plugin.json`, `marketplace.json`.
 
-Also installable into Codex, GitHub Copilot, and other harnesses following the Agent-Skills standard; skills detect their harness and adapt (README.md:44).
+Two distribution paths:
+
+- **skills.sh** (`npx skills@latest add phassle/skills`) — copies skill folders into the user's repo, editable. Reads the filesystem; sees every skill folder.
+- **Claude Code plugin** (`.claude-plugin/`) — read-only managed bundle. Ships only what the `skills` array in `plugin.json` lists.
+
+Also installs into Codex, GitHub Copilot, other Agent-Skills-standard harnesses. Skills detect their harness and swap output mechanism (pattern 6).
 
 ## WHY
 
-Every agent session loads plugins, model-invoked skills, agents, and MCP schemas into context before the user types anything — most of that is never invoked, and nothing surfaces the waste. This repo's skills exist to find and cut that waste. Flagship: `tokenomics` (README.md:46-63).
+Every agent session loads plugins, model-invoked skills, agent definitions, and MCP schemas into context before the user types anything. Most is never invoked; nothing surfaces the waste. Skills here find and cut it. Flagship: `tokenomics`.
+
+Second theme (staged, unreleased): `dynamic-*` — multi-agent orchestration of one issue end to end without one context window holding the whole build.
 
 ## HOW — commands
 
 ```bash
-npx skills@latest add phassle/skills           # install skills for local testing
+npx skills@latest add phassle/skills           # install skills locally for testing
 npx skills@latest add phassle/skills --list    # list installable skills (release check)
 claude plugin validate .                        # validate plugin manifest (release check)
-claude plugin marketplace add phassle/skills    # add marketplace (one-time, for plugin path)
+claude plugin marketplace add phassle/skills    # add marketplace (one-time)
 claude plugin install phassle-skills@phassle    # install the plugin bundle
 ```
 
+No CI, no linters configured. `claude plugin validate .` is the only automated gate.
+
+## skills.sh format — the published contract
+
+This repo is published to [skills.sh](https://skills.sh/phassle/skills) as `phassle/skills`. Its discovery rules, not `plugin.json`, decide what a skills.sh user sees.
+
+- **Discovery walks every subdirectory** for `SKILL.md`. No allowlist, no manifest, no per-directory opt-out. Category dirs, staging dirs, dot-dirs — all scanned.
+- Exception: a `SKILL.md` at repo root makes that the *only* skill unless `--full-depth`. This repo has none, so the full scan applies.
+- Consequence: **anything committed containing a `SKILL.md` is an installable skill.** Repo-maintenance skills live in `.agents/` and are gitignored for exactly this reason — gitignore keeps them out of the published package; it does not stop local discovery.
+- Grouping in the picker: skills listed in `plugin.json`'s `skills` array show under **Phassle Skills**; every other discovered skill falls under **General**. There is no "Other" group — a staged skill is publicly visible and installable, just ungrouped.
+- Frontmatter `description` is the entire shop window. It is what the picker prints and what a model matches on. Write it as *what it does + when to trigger*.
+- Verify discovery locally before pushing, against the working tree:
+
+```bash
+npx skills@latest add . --list       # what a skills.sh user would be offered
+```
+
+Committing a staged skill is therefore a soft release. Gate real WIP by keeping it uncommitted or out of the repo.
+
+## Tooling — LSP
+
+Install a language server per language so agents resolve symbols directly (go-to-definition, find-references) instead of grepping:
+
+- Bash → `bash-language-server` (`npm i -g bash-language-server`)
+- Python → `basedpyright` or `pyright`
+- HTML/CSS/JSON → `vscode-langservers-extracted`
+- Markdown → `marksman`
+
+Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`), never by `file:line` — line numbers rot on the next edit.
+
 ## Index — read only what's relevant
 
-- `README.md` — user-facing quickstart + skill reference by category.
-- `.claude-plugin/marketplace.json` — marketplace manifest, `marketplace: "phassle"`.
-- `.claude-plugin/plugin.json` — released skill set (`skills` array) + `version`.
-- `skills/<category>/<name>/SKILL.md` — one skill folder per skill; frontmatter = `name` + `description` (+ `disable-model-invocation: true` for slash-only skills). Categories: `productivity`, `engineering` (released), `other` (not ready yet — see skills/other/README.md).
-- `docs/architectural_patterns.md` — recurring structural patterns across skills (read before adding a new skill).
-- `docs/tokenomics-rationale.md` — living research underlay: the verified why + official-doc sources behind every tokenomics config tip (read/update when editing tokenomics tips, stats, or pricing).
+- `README.md` — user-facing quickstart + skill reference, grouped by category and by who can invoke.
+- `docs/architectural_patterns.md` — recurring structural patterns across skills. Read before adding a skill.
+- `docs/tokenomics-report.png` — screenshot used in README.
+- `.claude-plugin/plugin.json` — released skill set (`skills`) + `version`. Release gate.
+- `.claude-plugin/marketplace.json` — marketplace manifest, `name: "phassle"`.
+- `skills/<category>/<name>/SKILL.md` — one folder per skill. Frontmatter: `name`, `description`, plus `disable-model-invocation: true` for slash-only skills.
+- `skills/productivity/tokenomics/references/DATA-SHAPE.md` — JSON contract the report template consumes.
+- `skills/productivity/tokenomics/references/RATIONALE.md` — sourced why behind every config tip; embedded verbatim in the report. Update when tips, stats, or pricing change.
+- `skills/productivity/tokenomics/EVALS.md` — eval cases for the tokenomics workflow.
+- `skills/other/README.md` — what the staging category means and how a skill leaves it.
+- `skills/other/dynamic-qa/SPEC.md` — buildable spec for an unbuilt two-skill QA bundle.
+- `.agents/skills/<name>/SKILL.md` — procedural know-how for maintaining *this* repo. Gitignored: local tooling, never published (see skills.sh format).
 
-## Critical workflow 1: add and test a new skill (unreleased)
+### Categories
 
-1. Create `skills/other/<name>/SKILL.md` — unready skills live in `other/`. YAML frontmatter (`name`, `description`; add `disable-model-invocation: true` for slash-only skills that shouldn't sit in context) — see skills/productivity/tokenomics/SKILL.md:1-5 for the shape.
-2. Drop supporting files (scripts, templates, reference docs) next to it — keep SKILL.md thin, link out (docs/architectural_patterns.md pattern 3).
-3. Install locally: `npx skills@latest add phassle/skills`, pick the new skill — it shows under the **Other** group (not yet in plugin.json).
-4. Invoke it in a real agent session and iterate. Not in `plugin.json` = not shipped to plugin users.
+`productivity`, `engineering` — released, listed in `plugin.json`. `other` — the single staging category; everything unready lives here, currently the five `dynamic-*` bundles. No other staging dir; do not reintroduce one.
 
-## Critical workflow 2: release a skill (promote to plugin)
+### Maintenance skills
 
-1. Move the folder from `skills/other/` to its category — `skills/productivity/<name>/` or `skills/engineering/<name>/`.
-2. Add `"./skills/<category>/<name>"` to the `skills` array (.claude-plugin/plugin.json:18-20) and bump `version` (plugin.json:3).
-3. Add a one-line entry to README.md's Reference section under its category (README.md:69-76); create the category heading only if this is its first released skill.
-4. Validate: `claude plugin validate .` then `npx skills@latest add phassle/skills --list`.
-5. Commit + push. Plugin users get it on next update; skills.sh users see it as newly "released" vs "Other".
+- `.agents/skills/new-skill/SKILL.md` — scaffold a skill folder and iterate on it locally.
+- `.agents/skills/release-skill/SKILL.md` — promote a staged skill into the plugin bundle.
+- `.agents/skills/mirror-dynamic-skills/SKILL.md` — keep `skills/other/dynamic-*` in sync with installed copies under `~/.claude/skills/` and `~/.codex/skills/`.
 
-## Critical workflow 3: ship a report-generating skill (tokenomics pattern)
+## Workflow 1: add + test a skill (unreleased)
 
-1. Deterministic collection first, no model calls — e.g. scripts/collect-usage.sh.
-2. SKILL.md orchestrates in numbered steps: run script → classify results → fill a documented data contract (e.g. DATA-SHAPE.md) → publish via the Artifact tool.
-3. Never let the skill mutate user config directly — it generates a copy-paste apply-prompt the user runs themselves (skills/productivity/tokenomics/SKILL.md:9, :77).
+1. Create `skills/other/<name>/SKILL.md`. Frontmatter `name` + `description`; add `disable-model-invocation: true` when the skill must not sit in context. Copy the shape from `tokenomics`.
+2. Keep `SKILL.md` thin — orchestration in numbered steps. Push detail into `references/`, deterministic collection into `scripts/` (patterns 3, 4).
+3. `npx skills@latest add . --list` — confirm it is discovered, under **General**. Then `npx skills@latest add .` and pick it.
+4. Invoke in a real agent session, iterate. Absent from `skills` in `plugin.json` = not shipped to *plugin* users — but committing it does expose it to skills.sh users. Keep genuine WIP uncommitted.
+
+## Workflow 2: release a skill
+
+1. Move folder to its category: `skills/productivity/<name>/` or `skills/engineering/<name>/`.
+2. Append `"./skills/<category>/<name>"` to `skills` in `plugin.json`; bump `version`.
+3. Add a one-line entry under the matching heading in README.md's **Reference** section. Create the category heading only if this is its first released skill.
+4. `claude plugin validate .`, then `npx skills@latest add phassle/skills --list` — confirm the skill lists as released, not Other.
+5. Commit + push. Plugin users get it on next update.
+
+## Workflow 3: ship a report-generating skill
+
+1. Deterministic collection first, zero model calls — `collect-usage.sh` shape.
+2. `SKILL.md` numbered steps: run collector → classify results → fill the documented JSON contract (`DATA-SHAPE.md`) → publish.
+3. Publish by copying `template.html` and replacing only the `/*__DATA__*/` placeholder. Don't restyle — branding is baked in.
+4. Fall back when the Artifact tool is absent: write `tokenomics-report.html` locally, tell the user to open it (pattern 6).
+5. Never mutate user config. Emit a copy-paste apply-prompt the user runs themselves (pattern 5) — see `buildPrompt` and the per-harness prompt functions.
 
 ## Unresolved questions
 
-- No CI/lint config exists (no `.github/`) — is `claude plugin validate .` the only pre-push gate, or is one expected to be added?
-- `skills/engineering/` and `skills/other/` have no skills yet — confirm when the first lands, since it triggers the "create the category heading" step.
+- The five `dynamic-*` bundles in `skills/other/` are still untracked. Committing them publishes them to skills.sh users (under **General**) ahead of any `plugin.json` entry — commit now, or hold until each is release-ready?
+- Installed copies of `dynamic-implement`, `dynamic-run-dashboard`, `dynamic-skills-calibrate` are live in agent sessions and can drift from this repo. Nothing enforces the mirror. Automate it?
+- No `.github/` — is `claude plugin validate .` the intended only pre-push gate?
+- `skills/engineering/` still empty; first entry triggers the "create the category heading" step in workflow 2.
