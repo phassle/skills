@@ -34,13 +34,6 @@ left alone. A proxy that is cheap to check is not evidence for the thing that wa
 A run that batches all tracker updates to the end is opaque for its entire duration, which is most of
 its life. The ledger is the run's memory, but the tracker is where everyone else looks.
 
-**Claim a unit on the tracker before dispatching its implementer, and read the tracker's own frontier
-rule to learn how.** Where the configured tracker defines a claim — commonly an assignee, treated as
-the session's first write — an unclaimed ticket is by definition takeable, so a concurrent run will
-see this run's in-flight unit as available and start it a second time. The run ledger does not prevent
-this: it is private to this orchestrator, and the other run never reads it. Claim on dispatch, and
-release or leave the claim according to that tracker's convention when the unit closes.
-
 **Close the child issue at integration-branch merge, and use the tracker's native closed state to do
 it.** A decomposition skill computes the ready frontier as *any ticket whose blockers are all done*, so
 "done" has to be readable by a process that has none of this run's context. A comment saying the work
@@ -60,72 +53,49 @@ and leave its body and state alone.
 
 ## Reconciling with a target that moved
 
-A long run's integration target advances underneath it — five times in one run. Reconcile whenever it does,
-not once at the end, so the remaining units build on the current tree.
+A long run's integration target advances underneath it — five times in one run. Reconcile whenever it
+does, not once at the end, so the remaining units build on the current tree. Fetch again immediately
+before push or PR; any further advancement invalidates the fixed point and requires reconciliation plus
+affected review. Detect conflicts with a real merge in this exclusive worktree or a disposable one,
+never marker-grep heuristics over `git merge-tree` output.
 
 **Read the remote-tracking ref, never the local branch of the same name.** A local `develop` in a
-long-lived checkout is routinely tens of commits behind; merging by branch name reconciles against a stale
-target, merges cleanly, passes every gate and looks entirely successful. `git fetch --all --prune` first,
-then name `origin/<target>` explicitly, and re-verify its SHA immediately before the merge — it may have
-moved again while the fetch's findings were being worked.
+long-lived checkout is routinely tens of commits behind; merging by branch name reconciles against a
+stale target, merges cleanly, passes every gate and looks entirely successful. `git fetch --all --prune`
+first, then name `origin/<target>` explicitly, and re-verify its SHA immediately before the merge — it
+may have moved again while the fetch's findings were being worked.
 
-**A clean merge settles textual conflict and nothing else.** Work these explicitly and report a finding
-for each, because a merge that compiles and passes every gate is exactly what this step exists to catch:
-
-- **A newly in-scope document.** Where a docs invariant discovers files by directory or suffix rather than
-  from an allowlist, a Markdown file the target just added is now inside those invariants. Confirm the
-  suite genuinely scans it rather than skipping it.
-- **Independently allocated identifiers** — ADR numbers, exit codes, schema constants — chosen on both
-  sides without knowledge of each other.
-- **An index that merges cleanly and is then wrong.** Confirm a reference this run added still exists
-  exactly once: zero restores a discoverability gap, two can fail a duplicate-reference invariant.
-- **Prose that now contradicts.** Documentation the target added may describe the same surface this run
-  documented. Report a contradiction as a finding; never edit either side to make them agree.
-
-**An append-only knowledge file is where a clean merge does real damage.** Runs append to shared stores —
-a model-calibration file is the standard case — and two runs finishing near each other will both have
-rewritten one. Every "resolve by taking a side" outcome silently destroys another run's learning, and the
-result compiles and passes. Resolve it as a **content check, not a diff review**: enumerate every entry key
-on both sides, prove the merged file contains their union key by key, and report that enumeration. If a key
-from either side is missing, the resolution was wrong. Where the two sides edited the same entry, keep both
-substantive contributions rather than the later timestamp. "No conflict markers" and "nothing lost" are
-unrelated properties, and only one of them is checked for you.
-
-After the batch:
-
-1. Run formatting/type/static checks and the full suite, including feature-gated or acceptance suites required by the issues.
-2. Run final two-axis `code-review` through the host's native skill invocation against the pinned base. Use the empty three-agent review-log bundle from `observability.md`, then import it only after the reviewer exits. Fix and re-review actionable findings.
-3. Confirm the integration worktree is clean and every accepted worker commit is reachable.
-4. Publish/open or update the feature/release/hotfix PR exactly as documented by repository policy. If its target is `develop` or `main`, stop at the mandatory human merge gate.
-5. Update issues with factual commit/PR, test, and review evidence. Close only after policy-defined integration succeeds.
-6. After verified human-authorized integration, complete the run-owned cleanup procedure below.
-
-**Run the repository's documented gate list yourself, and do not let CI stand in for it.** CI covers
-whatever someone wired up, which is often a subset - and a green PR check reads as "the gates pass" to
-every later reader. In one repository CI ran only an acceptance job, so `cargo fmt --check` and
-`cargo clippy -D warnings` were red on the integration target across several merged PRs without a single
-red tick anywhere. Read the gate list out of the repository's own instructions, run all of it at the exact
-head you intend to publish, and when CI covers less than that list, say so in the PR rather than quietly
-inheriting its narrower definition of green.
-
-Before the final review, fetch the remote integration target and reconcile advancement in this exclusive worktree. Pin the resulting base/head and rerun affected gates. Fetch again immediately before push/PR; any further advancement invalidates the fixed point and requires reconciliation plus affected review. Detect conflicts with a real merge or a disposable worktree, never marker-grep heuristics over `git merge-tree` output.
-
-**Reconciling advancement is not only about conflicts, and the review loop cannot help you here.** Every
-reviewer verified against the run's own base, so nothing that landed on the target during the run
+**A clean merge settles textual conflict and nothing else, and the review loop cannot help you here.**
+Every reviewer verified against the run's own base, so nothing that landed on the target during the run
 appears in any diff anyone reviewed — this class of defect is invisible by construction. Read what
 arrived (`git log --oneline <base>..<target>`) and treat a non-empty result as work. The dangerous cases
-are the ones **git resolves cleanly and wrongly**, because a clean merge reads as no problem at all:
+are the ones **git resolves cleanly and wrongly**, because a clean merge reads as no problem at all.
+Work each explicitly and report a finding for each:
 
-- **Identifier collisions.** Both branches independently allocate the next free ADR number, migration
-  index, error code, or fixture id. The filenames differ, so git merges both without a conflict and the
-  repository ends up with two artifacts claiming one identifier. Renumber the run's side — the target's
-  landed on the shared branch first — and grep for references before and after.
-- **An index that merges cleanly and is then wrong.** When one side appends to a list the other side
-  never touched, the three-way merge keeps those additions and silently omits whatever the run added.
-  An index is not owned by the units that created the things it indexes, so no unit's acceptance
-  criteria cover it: check that every artifact the run introduced is reachable from it.
-- **Prose that contradicts.** Both sides edited one guide in non-overlapping regions, so the merge
-  succeeds while the merged text asserts two different things.
+- **Independently allocated identifiers** — ADR numbers, migration indices, exit codes, schema
+  constants, fixture ids — chosen on both sides without knowledge of each other. The filenames differ,
+  so git merges both without a conflict and the repository ends up with two artifacts claiming one
+  identifier. Renumber the run's side, since the target's landed on the shared branch first, and grep
+  for references before and after.
+- **An index that merges cleanly and is then wrong.** Where one side appends to a list the other never
+  touched, the three-way merge keeps those additions and silently omits the run's. An index is not owned
+  by the units that created the things it indexes, so no unit's acceptance criteria cover it: confirm
+  every artifact the run introduced is reachable from it, exactly once — zero restores a discoverability
+  gap, two can fail a duplicate-reference invariant.
+- **Prose that now contradicts.** Both sides edited one guide in non-overlapping regions, so the merge
+  succeeds while the merged text asserts two different things. Report the contradiction as a finding;
+  never edit either side to make them agree.
+- **A newly in-scope document.** Where a docs invariant discovers files by directory or suffix rather
+  than from an allowlist, a Markdown file the target just added now sits inside those invariants.
+  Confirm the suite genuinely scans it rather than skipping it.
+- **An append-only knowledge file**, where a clean merge does real damage. Runs append to shared stores —
+  a model-calibration file is the standard case — and two runs finishing near each other will both have
+  rewritten one. Every "resolve by taking a side" outcome silently destroys another run's learning, and
+  the result compiles and passes. Resolve it as a **content check, not a diff review**: enumerate every
+  entry key on both sides, prove the merged file contains their union key by key, and report that
+  enumeration. Where both sides edited one entry, keep both substantive contributions rather than the
+  later timestamp. "No conflict markers" and "nothing lost" are unrelated properties, and only one of
+  them is checked for you.
 
 **A ticket spun off mid-run inherits the same problem in reverse.** When a finding is real but out of
 scope, the follow-up ticket must state the base it applies to — and every symbol it names must exist
@@ -133,14 +103,33 @@ scope, the follow-up ticket must state the base it applies to — and every symb
 its implementer looking for functions that will not arrive until this PR merges. This run did exactly
 that: the follow-up named three functions, only two of which existed on the target, while instructing
 "fix them together or none". Either pin the ticket to the merged target and say it is blocked until this
-PR lands, or write it against symbols the target already has. Check with one command before filing, not
-after someone starts it.
+PR lands, or write it against symbols the target already has. Check with one command before filing.
 
-Report these at the human merge gate with the same weight as a failing check. A merge that compiles,
-passes every gate, and quietly ships two documents numbered ADR-0011 is precisely what the gate exists
-to catch.
+**Run the repository's documented gate list yourself, and do not let CI stand in for it.** CI covers
+whatever someone wired up, which is often a subset — and a green PR check reads as "the gates pass" to
+every later reader. In one repository CI ran only an acceptance job, so `cargo fmt --check` and
+`cargo clippy -D warnings` were red on the integration target across several merged PRs without a single
+red tick anywhere. Read the gate list out of the repository's own instructions, run all of it at the
+exact head you intend to publish, and where CI covers less than that list, say so in the PR rather than
+quietly inheriting its narrower definition of green.
 
-Never merge a PR—or perform an equivalent direct/local merge—into `develop` or `main` from broad or earlier authorization. Present the human with the specific PR/branch, target, current head SHA, checks, separate review results, machine-review identity, and unresolved risks. Record `waiting-user`. Only a new human instruction after that presentation, identifying the current PR/branch, authorizes the merger to act. If the human authorizes agent execution, re-fetch immediately; any material head, target, check, review, or risk change requires renewed human approval. A GitHub/Claude/Codex/Copilot agent review never counts as human approval. Internal worker-branch merges into the feature/integration branch remain autonomous.
+Report all of this at the human merge gate with the same weight as a failing check. A merge that
+compiles, passes every gate, and quietly ships two documents numbered ADR-0011 is precisely what the
+gate exists to catch.
+
+## After the batch
+
+Reconcile the target one final time in this exclusive worktree, pin the resulting base and head, and
+rerun affected gates. Then:
+
+1. Run formatting/type/static checks and the full suite, including feature-gated or acceptance suites required by the issues.
+2. Run the final two-axis `code-review` through the host's native skill invocation against the pinned base. Use the empty three-agent review-log bundle from `observability.md`, importing it only after the reviewer exits. Fix and re-review actionable findings.
+3. Confirm the integration worktree is clean and every accepted worker commit is reachable.
+4. Publish, open or update the feature/release/hotfix PR exactly as repository policy documents. Where its target is `develop` or `main`, stop at the mandatory human merge gate.
+5. Update issues with factual commit/PR, test, and review evidence. Close only after policy-defined integration succeeds.
+6. After verified human-authorized integration, complete the cleanup below.
+
+Never merge a PR — or perform an equivalent direct or local merge — into `develop` or `main` from broad or earlier authorization. Present the human with the specific PR/branch, target, current head SHA, checks, separate review results, machine-review identity, and unresolved risks, and record `waiting-user`. Only a new human instruction after that presentation, identifying the current PR/branch, authorizes the merger to act. Where the human authorizes agent execution, re-fetch immediately; any material head, target, check, review, or risk change requires renewed approval. A GitHub, Claude, Codex or Copilot review never counts as human approval. Internal worker-branch merges into the feature or integration branch remain autonomous.
 
 ## Post-merge cleanup
 

@@ -34,6 +34,8 @@ A blind claim is a write, not a check: it overwrites the very evidence that woul
 
 Claim the root issue before planning, and each unit at its own dispatch. The two claims answer different questions: the first unit claim appears only after planning finishes — often many minutes in — and marks one child rather than the feature, so for that whole window the run is invisible to everyone but this coordinator, because the ledger is private.
 
+Read the tracker's own frontier rule to learn what it treats as a claim, commonly an assignee. An unclaimed in-flight ticket reads as takeable to any concurrent run, and the ledger cannot prevent that because the other run never reads it. Release or leave a unit claim per that tracker's convention when the unit closes.
+
 ## The local lock
 
 One lock path per repository-and-issue, with **no** run token:

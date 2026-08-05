@@ -12,7 +12,7 @@ After resolving the issue/spec, repository, Git policy, and integration target, 
 
 Do not set a goal token budget unless the user explicitly requested one. Record root/child issue ids and any native goal identifier/status in the ledger. Never create a second competing goal for the same run; resume the existing root issue.
 
-Claim the root issue on the tracker as the run's first write, before planning and before any Git or tracker mutation. Use whatever the tracker treats as a claim AND a claim comment carrying harness, session id, run token and start time, because a same-account assignee cannot tell another run's claim from this run's own. Read existing claim comments before writing yours and stop if a live one belongs to a different session; release yours at terminal state. Record the claim and its release condition in the ledger. This is the shared-backlog counterpart to claiming each unit at dispatch: the unit claim marks one child once planning has already finished, while the root claim tells every other run and human that the feature itself is in flight from the moment it is.
+Claim the root issue on the tracker as the run's first write, before planning and before any Git or tracker mutation, following `concurrency.md`. Record the claim and its release condition in the ledger.
 
 Use this portable goal shape:
 

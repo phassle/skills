@@ -71,6 +71,7 @@ After selecting each agent route, mint its immutable `agent_identity` as `Codex 
 Read each completely before its phase:
 
 - [planner-contract.md](references/planner-contract.md) before planning.
+- [dispatch.md](references/dispatch.md) before launching any agent, of any role.
 - [implementer-contract.md](references/implementer-contract.md) before delegating work.
 - [merger-contract.md](references/merger-contract.md) before integration.
 - [review-contract.md](references/review-contract.md) before accepting any worker or the integration branch.
@@ -159,6 +160,8 @@ The token makes concurrent runs safe and removes any excuse to adopt a ref this 
 Base every worker in a wave on the integration branch's same pinned commit. Two writing agents never share a branch or worktree. Keep the main checkout untouched where an integration worktree can serve.
 
 After creating a worktree, start a new command in that directory before any checkout, merge, cherry-pick, rebase, commit, push, or test; never chain those from the creator worktree. Before composing an integration or PR branch, inspect the graph, the existing integration branch, current `develop`, and any existing PR, so an older merge or another agent's work is never silently replaced.
+
+Launch every agent through the rules in [dispatch.md](references/dispatch.md) — redirect every stream, resolve prompt paths to absolute before any `cd`, pre-warm a new worktree's build, and confirm a launch by the agent's own first log event rather than the wrapper's exit status. Each of those failures is silent and costs a whole attempt.
 
 Create the run ledger from [recovery.md](references/recovery.md) outside the repository, recording base SHA, policy sources, plan, branches, worktrees, unit status, tests, reviews, and integration evidence after every transition. Create the per-agent activity directories from [observability.md](references/observability.md) before dispatch: each agent gets only its own log destination and its exact harness/model/effort step, requires the same of every child it spawns, and a handoff without the terminal event or the model/effort pair is rejected.
 
