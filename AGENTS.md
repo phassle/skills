@@ -11,7 +11,7 @@ Repo of Agent Skills for AI coding agents. Maintained by Per Hassle (Monterro). 
 - Markdown skill bundles — `SKILL.md` + optional `references/`, `scripts/`, `agents/`.
 - Bash — `collect-usage.sh` (tokenomics collector).
 - Python — `agent_log.py` (dynamic-implement activity logger).
-- Self-contained HTML+JS — `template.html` (tokenomics report; functions `render`, `buildPrompt`, `claudePrompt`, `codexPrompt`, `copilotPrompt`, `getScope`, `mdToHtml`).
+- Self-contained HTML+JS — `template.html`, one per report skill, same Monterro design system: tokenomics (functions `render`, `buildPrompt`, `claudePrompt`, `codexPrompt`, `copilotPrompt`, `getScope`, `mdToHtml`) and dynamic-run-dashboard (`renderBoard`, `mchips`, `cell`).
 - JSON manifests — `plugin.json`, `marketplace.json`.
 
 Two distribution paths:
@@ -94,6 +94,7 @@ Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`
 - `skills/productivity/tokenomics/references/DATA-SHAPE.md` — JSON contract the report template consumes.
 - `skills/productivity/tokenomics/references/RATIONALE.md` — sourced why behind every config tip; embedded verbatim in the report. Update when tips, stats, or pricing change.
 - `skills/productivity/tokenomics/EVALS.md` — eval cases for the tokenomics workflow.
+- `skills/other/dynamic-run-dashboard/references/DATA-SHAPE.md` — JSON contract the run-dashboard template consumes.
 - `skills/other/README.md` — what the staging category means and how a skill leaves it.
 - `skills/other/dynamic-qa/SPEC.md` — buildable spec for an unbuilt two-skill QA bundle.
 - `.agents/skills/<name>/SKILL.md` — procedural know-how for maintaining *this* repo. Gitignored: local tooling, never published (see skills.sh format).

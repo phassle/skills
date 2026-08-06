@@ -53,3 +53,7 @@ Before the first ref exists, mint five base-36 chars from real system entropy (`
 ## 13. Auditable-by-default logging
 
 Each dispatched agent gets its own activity directory and log destination, and must emit a terminal event (`completed` or `blocked`); a handoff without one is rejected. `agent_log.py` is the deterministic writer. Live status is inspected before an agent is described as active, waiting, failed, or complete — remembered state is untrustworthy under concurrency.
+
+## 14. One design system, one filled template per report skill
+
+Every skill that publishes a page ships its own `template.html` carrying the same Monterro token block — colours, Arial, orange accent rules, light/dark pair, embedded logo — and its own `references/DATA-SHAPE.md`. The skill copies the file and replaces the single `/*__DATA__*/` placeholder; styling is never authored per run. `tokenomics` and `dynamic-run-dashboard` differ only in components (audit table and apply-prompts vs unit board and routing table), so two reports from two skills read as one product. The cost is a duplicated token block per template — deliberate: each template stays a single self-contained file that publishes anywhere, with no shared asset to resolve at render time.
