@@ -63,6 +63,11 @@ Replace `/*__DATA__*/ null` in `template.html` with one JSON object:
       { "title": "Hooks (global settings.json)", "rows": [["PreToolUse", "herdr-agent-state.sh working"]] },
       { "title": "Marketplaces", "rows": [["claude-code-plugins", "github anthropics/claude-code"]] }
     ]
+  },
+
+  "rationale": {                      // "Why & sources" tab — the verified underlay
+    "note": "…",                      // optional intro line above the rendered doc (HTML ok)
+    "md": "# Tokenomics — rationale…" // RAW Markdown of references/RATIONALE.md, verbatim
   }
 }
 ```
@@ -72,3 +77,4 @@ Notes:
 - First cell of every row renders in monospace; rows are plain string arrays (any column count matching `cols`).
 - `kind: "mcp"` rows generate a "remove from ~/.claude.json mcpServers" step in the apply-prompt.
 - Keep ids exact — the user pastes the generated prompt back and Claude follows it literally.
+- The `md` field of the `rationale` object — `DATA.rationale.md`, not a key literally named `rationale.md` — is the **raw** Markdown of `references/RATIONALE.md`, passed through unchanged — the template renders it (headings, tables, links). Don't hand-convert to HTML and don't edit it; the file is the single source of truth.

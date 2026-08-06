@@ -1,0 +1,6 @@
+interface:
+  display_name: "Dynamic Skills Setup"
+  short_description: "Probe harnesses, goals, and model ladders"
+  default_prompt: "Use $dynamic-skills-setup to verify harnesses and configure goals, model ladders, and clean review."
+policy:
+  allow_implicit_invocation: false

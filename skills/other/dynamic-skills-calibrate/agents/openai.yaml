@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dynamic Skills Calibrate"
+  short_description: "Learn cheaper routes from accepted issue outcomes"
+  default_prompt: "Use $dynamic-skills-calibrate to rebuild routing recommendations from the latest calibratable feature issue."

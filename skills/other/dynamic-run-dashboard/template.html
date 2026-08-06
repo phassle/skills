@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dynamic Implement — run dashboard</title>
+<style>
+  /* Monterro design system — colors_and_type.css tokens, inlined so this file stands alone */
+  @font-face { font-family: 'Arial'; font-style: normal; font-weight: 300 400; src: local('Arial'), local('ArialMT'), local('Helvetica Neue'), local('Helvetica'); }
+  @font-face { font-family: 'Arial'; font-style: normal; font-weight: 500 700; src: local('Arial Bold'), local('Arial-BoldMT'), local('Helvetica Neue Bold'), local('Helvetica Bold'); }
+
+  :root {
+    --navy: #010031;
+    --orange: #FC6C54;
+    --orange-dark: #fe5a3e;
+    --yellow: #FFEC9B;
+    --sand: #FFDFD1;
+    --aqua: #6470F6;
+    --status-green: #64ce91;
+    --status-orange: #fdd761;
+    --status-red: #fd6461;
+
+    --bg: #FAFAF4;
+    --surface: #ffffff;
+    --surface-2: #f4f3ec;
+    --ink: #0C0D0E;
+    --ink-head: #010031;
+    --ink-2: #4a4b5c;
+    --ink-3: #80819a;
+    --line: #e6e3da;
+    --accent: #FC6C54;
+    --sel-bg: #fff7f0;
+    --code-bg: #010031;
+    --code-ink: #FAFAF4;
+    --code-line: #2a2856;
+    --shadow-sm: 0 1px 2px rgba(1, 0, 49, 0.06);
+    --shadow-md: 0 6px 18px rgba(1, 0, 49, 0.08);
+    --grad-warm: linear-gradient(90deg, #ff6c52 0%, #ffb893 55%, #ffec9b 100%);
+
+    --r-sm: 8px;
+    --r-md: 14px;
+    --r-pill: 999px;
+    --dur: 320ms;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --font: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #010031;
+      --surface: #0a0945;
+      --surface-2: #131144;
+      --ink: #FAFAF4;
+      --ink-head: #FAFAF4;
+      --ink-2: #c1c0cc;
+      --ink-3: #80819a;
+      --line: #2a2856;
+      --sel-bg: #1b1950;
+      --code-bg: #0C0D0E;
+      --code-ink: #FAFAF4;
+      --code-line: #2e2f31;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #010031; --surface: #0a0945; --surface-2: #131144;
+    --ink: #FAFAF4; --ink-head: #FAFAF4; --ink-2: #c1c0cc; --ink-3: #80819a;
+    --line: #2a2856; --sel-bg: #1b1950;
+    --code-bg: #0C0D0E; --code-ink: #FAFAF4; --code-line: #2e2f31;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3); --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.35);
+  }
+  :root[data-theme="light"] {
+    --bg: #FAFAF4; --surface: #ffffff; --surface-2: #f4f3ec;
+    --ink: #0C0D0E; --ink-head: #010031; --ink-2: #4a4b5c; --ink-3: #80819a;
+    --line: #e6e3da; --sel-bg: #fff7f0;
+    --code-bg: #010031; --code-ink: #FAFAF4; --code-line: #2a2856;
+    --shadow-sm: 0 1px 2px rgba(1, 0, 49, 0.06); --shadow-md: 0 6px 18px rgba(1, 0, 49, 0.08);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.55;
+    margin: 0;
+    padding: 0 24px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; }
+
+  header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; padding-top: 44px; }
+  .logo { height: 26px; width: auto; flex: none; margin-top: 6px; }
+  .logo-white { display: none; }
+  @media (prefers-color-scheme: dark) { .logo-navy { display: none; } .logo-white { display: block; } }
+  :root[data-theme="dark"] .logo-navy { display: none; }
+  :root[data-theme="dark"] .logo-white { display: block; }
+  :root[data-theme="light"] .logo-navy { display: block; }
+  :root[data-theme="light"] .logo-white { display: none; }
+
+  h1 {
+    font-size: 40px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--ink-head);
+    margin: 0 0 12px;
+    text-wrap: balance;
+  }
+  .accent-line { border: 0; border-top: 2px solid var(--orange); margin: 0 0 20px; width: 100%; animation: rule-grow 900ms var(--ease) both; }
+  @keyframes rule-grow { from { transform: scaleX(0); transform-origin: left; } to { transform: scaleX(1); transform-origin: left; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  .rise { animation: rise 540ms var(--ease) both; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; } }
+
+  .purpose { font-size: 18px; color: var(--ink-head); margin: 0 0 8px; max-width: 72ch; text-wrap: pretty; }
+  .sub { color: var(--ink-2); margin: 0 0 8px; max-width: 76ch; font-size: 14px; }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink-head);
+    margin: 44px 0 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--orange);
+    text-wrap: balance;
+  }
+  code, .mono { font-family: var(--mono); font-size: .9em; }
+  .num { font-variant-numeric: tabular-nums; }
+  .gap { color: var(--ink-3); }
+  /* A gap that carries a reason is marked, so it is discoverable without hovering every dash. */
+  .gap.why { text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
+
+  /* masthead — where the run is */
+  .masthead { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px 20px; box-shadow: var(--shadow-sm); }
+  .masthead .label { font-size: 12px; color: var(--ink-3); }
+  .masthead .val { font-size: 14px; font-weight: 600; color: var(--ink-head); word-break: break-word; }
+
+  /* stat tiles */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 12px; }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px 20px; box-shadow: var(--shadow-sm); }
+  .tile .label { font-size: 12px; color: var(--ink-3); margin-bottom: 6px; }
+  .tile .value { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink-head); }
+  .tile .hint { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+  .tile.spend .value { color: var(--orange); }
+
+  /* progress bar */
+  .barbox { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 18px 20px; margin-top: 12px; box-shadow: var(--shadow-sm); }
+  .bar { height: 12px; border-radius: var(--r-pill); background: var(--surface-2); overflow: hidden; }
+  .bar .fill { height: 100%; background: var(--grad-warm); transition: width var(--dur) var(--ease); }
+  .barmeta { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--ink-2); margin-top: 10px; }
+
+  /* filters */
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 16px 0 12px; }
+  .chip { border: 1.5px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: var(--r-pill); padding: 6px 16px; font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; transition: background 180ms var(--ease), color 180ms var(--ease), border-color 180ms var(--ease); }
+  .chip:hover { border-color: var(--ink-head); color: var(--ink-head); }
+  .chip[aria-pressed="true"] { background: var(--ink-head); color: var(--bg); border-color: var(--ink-head); }
+  .chip:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--aqua); outline-offset: 2px; }
+  #search { margin-left: auto; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: var(--r-sm); padding: 7px 14px; font-family: var(--font); font-size: 13.5px; min-width: 190px; }
+
+  /* unit board — state on the left rule, model family in the chips */
+  .wave { margin-top: 20px; }
+  .wavehead { display: flex; align-items: baseline; gap: 10px; margin: 0 0 8px; }
+  .wavenum { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--bg); background: var(--ink-head); border-radius: var(--r-pill); padding: 2px 10px; flex: none; }
+  .wavetitle { font-size: 14px; font-weight: 600; color: var(--ink-head); }
+  .wavenote { font-size: 12.5px; color: var(--ink-3); }
+  .board { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
+  .unit { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: var(--r-md); padding: 14px 16px; box-shadow: var(--shadow-sm); }
+  .unit.ok { border-left-color: var(--status-green); }
+  .unit.live { border-left-color: var(--aqua); }
+  .unit.waiting { border-left-color: var(--status-orange); }
+  .unit.blocked { border-left-color: var(--status-red); }
+  .unithead { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .unitid { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+  .unittitle { font-size: 14px; font-weight: 600; color: var(--ink-head); margin: 2px 0 8px; }
+  .unitmeta { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 12.5px; color: var(--ink-2); }
+  .unitmeta dt { color: var(--ink-3); }
+  .unitmeta dd { margin: 0; }
+  .unitnote { font-size: 12.5px; color: var(--ink-2); margin-top: 8px; border-top: 1px solid var(--line); padding-top: 8px; }
+
+  /* state pill — semantic axis, kept off the model axis */
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
+  .pill::before { content: ""; width: 9px; height: 9px; border-radius: 50%; flex: none; background: var(--ink-3); }
+  .pill.ok::before { background: var(--status-green); }
+  .pill.live::before { background: var(--aqua); }
+  .pill.waiting::before { background: var(--status-orange); }
+  .pill.blocked::before { background: var(--status-red); }
+
+  /* model chips — implementer side one hue, reviewer side another */
+  .mchip { display: inline-flex; align-items: center; gap: 5px; font-family: var(--mono); font-size: 11.5px; font-weight: 600; border-radius: var(--r-pill); padding: 1px 9px; white-space: nowrap; border: 1px solid transparent; }
+  .mchip.impl { background: var(--sand); color: #010031; }
+  .mchip.rev { background: #e2e4ff; color: #010031; }
+  .mchip.plain { background: var(--surface-2); color: var(--ink-2); border-color: var(--line); }
+  .mchip .eff { font-weight: 400; opacity: .75; }
+  .mchip + .mchip { margin-left: 6px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--ink-3); margin: 10px 0 0; align-items: center; }
+
+  /* tables */
+  .tablebox { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); overflow-x: auto; box-shadow: var(--shadow-sm); margin-top: 12px; }
+  table { border-collapse: collapse; width: 100%; min-width: 640px; }
+  th { text-align: left; font-size: 12px; font-weight: 600; color: var(--ink-3); padding: 12px 16px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th.r, td.r { text-align: right; }
+  td { padding: 10px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td .name { font-weight: 600; color: var(--ink-head); }
+  td .desc { font-size: 12.5px; color: var(--ink-2); max-width: 52ch; }
+
+  /* lessons */
+  .lessons { display: grid; gap: 12px; margin-top: 12px; }
+  .lesson { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px 18px; box-shadow: var(--shadow-sm); }
+  .lesson .t { font-weight: 600; font-size: 14px; color: var(--ink-head); }
+  /* Navy on yellow in every theme: the chip keeps its own background, so it must not
+     inherit a theme-dependent ink or it goes off-white on yellow under a forced theme. */
+  .lesson .kind { font-size: 11px; font-weight: 600; border-radius: var(--r-pill); padding: 1px 9px; margin-left: 8px; vertical-align: 1px; color: #010031; background: var(--yellow); }
+  .lesson dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 8px 0 0; font-size: 13px; color: var(--ink-2); }
+  .lesson dt { color: var(--ink-3); white-space: nowrap; }
+  .lesson dd { margin: 0; }
+
+  /* collapsibles + notes */
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); margin: 12px 0 10px; box-shadow: var(--shadow-sm); }
+  summary { padding: 14px 18px; font-weight: 600; font-size: 14px; color: var(--ink-head); cursor: pointer; }
+  details .inner { padding: 0 18px 16px; overflow-x: auto; }
+  details table { min-width: 0; font-size: 13.5px; }
+  .note { font-size: 13px; color: var(--ink-2); max-width: 76ch; }
+  .note code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+  footer { margin-top: 44px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--ink-3); }
+  footer p { margin: 0 0 4px; max-width: 76ch; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="rise">
+    <div>
+      <h1 id="title">Dynamic Implement — run dashboard</h1>
+    </div>
+    <img class="logo logo-navy" alt="Monterro" src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTM0Ljc1IDE2MC40MyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaWQ9IkxheWVyXzEiIG92ZXJmbG93PSJoaWRkZW4iPgo8ZGVmcz48L2RlZnM+PHBhdGggZD0iTTgwLjIgMEMzNS45OCAwIDAgMzUuOTggMCA4MC4yMSAwIDEyNC40NCAzNS45OCAxNjAuNDIgODAuMiAxNjAuNDIgMTI0LjQyIDE2MC40MiAxNjAuNCAxMjQuNDQgMTYwLjQgODAuMjEgMTYwLjQgMzUuOTggMTI0LjQyIDAgODAuMiAwWk0xNTQuMDMgODAuMjFDMTU0LjAzIDEyMC45MyAxMjAuOTEgMTU0LjA1IDgwLjIgMTU0LjA1IDM5LjQ5IDE1NC4wNSA2LjM3IDEyMC45MyA2LjM3IDgwLjIxIDYuMzcgMzkuNDkgMzkuNDkgNi4zNyA4MC4yIDYuMzcgMTIwLjkxIDYuMzcgMTU0LjAzIDM5LjUgMTU0LjAzIDgwLjIxWiIgY2xhc3M9Ik1zZnRPZmNUaG1fVGV4dDJfRmlsbF92MiIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJidXR0IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbWl0ZXJsaW1pdD0iNCIgZmlsbD0iIzAxMDAzMCIgZmlsbC1vcGFjaXR5PSIxIj48L3BhdGg+PHBhdGggZD0iTTY0LjAyIDk5LjAzIDU3LjkyIDk5LjAzIDU3LjkyIDYyLjg3IDY3LjQ0IDYyLjg3IDc4LjM1IDg1LjU4IDg5LjI2IDYyLjg3IDk4LjcyIDYyLjg3IDk4LjcyIDk5LjAzIDkyLjYyIDk5LjAzIDkyLjYyIDcwLjc5IDgwIDk1Ljg4IDc2LjU5IDk1Ljg4IDY0LjAyIDcwLjc5IDY0LjAyIDk5LjAzWiIgY2xhc3M9Ik1zZnRPZmNUaG1fVGV4dDJfRmlsbF92MiIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJidXR0IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbWl0ZXJsaW1pdD0iNCIgZmlsbD0iIzAxMDAzMCIgZmlsbC1vcGFjaXR5PSIxIj48L3BhdGg+PHBhdGggZD0iTTExMC4xNSA5OS4yM0MxMDguNTMgOTkuMjMgMTA3LjE0IDk4LjY1IDEwNi4wMSA5Ny40OSAxMDQuODkgOTYuMzQgMTA0LjMzIDk0Ljk1IDEwNC4zMyA5My4zNCAxMDQuMzMgOTEuNzMgMTA0LjkgOTAuMzQgMTA2LjAyIDg5LjIxIDEwNy4xNSA4OC4wOCAxMDguNTQgODcuNTEgMTEwLjE1IDg3LjUxIDExMS43NiA4Ny41MSAxMTMuMTUgODguMDggMTE0LjMgODkuMTkgMTE1LjQ1IDkwLjMyIDExNi4wNCA5MS43MiAxMTYuMDQgOTMuMzMgMTE2LjA0IDk0Ljk0IDExNS40NiA5Ni4zNCAxMTQuMzIgOTcuNDkgMTEzLjE3IDk4LjY0IDExMS43NyA5OS4yMiAxMTAuMTYgOTkuMjJaTTExMC4xNSA5MC42OUMxMDkuMzkgOTAuNjkgMTA4Ljc4IDkwLjkzIDEwOC4yNiA5MS40NiAxMDcuNzQgOTEuOTggMTA3LjQ5IDkyLjU5IDEwNy40OSA5My4zNSAxMDcuNDkgOTQuMTEgMTA3Ljc0IDk0Ljc0IDEwOC4yNyA5NS4yOCAxMDguNzkgOTUuODEgMTA5LjM5IDk2LjA2IDExMC4xNSA5Ni4wNiAxMTAuOTEgOTYuMDYgMTExLjUzIDk1LjgxIDExMi4wNyA5NS4yNiAxMTIuNjEgOTQuNzIgMTEyLjg2IDk0LjExIDExMi44NiA5My4zNCAxMTIuODYgOTIuNTcgMTEyLjYxIDkxLjk5IDExMi4wNyA5MS40NiAxMTEuNTMgOTAuOTMgMTEwLjkxIDkwLjY4IDExMC4xNCA5MC42OFoiIGNsYXNzPSJNc2Z0T2ZjVGhtX1RleHQyX0ZpbGxfdjIiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWNhcD0iYnV0dCIgc3Ryb2tlLWxpbmVqb2luPSJtaXRlciIgc3Ryb2tlLW1pdGVybGltaXQ9IjQiIGZpbGw9IiMwMTAwMzAiIGZpbGwtb3BhY2l0eT0iMSI+PC9wYXRoPjxwYXRoIGQ9Ik0yMTAuOTkgOTkuMjkgMjA0Ljg3IDk5LjI5IDIwNC44NyA2My4wNyAyMTQuNDEgNjMuMDcgMjI1LjM0IDg1LjgyIDIzNi4yNyA2My4wNyAyNDUuNzUgNjMuMDcgMjQ1Ljc1IDk5LjI5IDIzOS42NCA5OS4yOSAyMzkuNjQgNzEgMjI3IDk2LjEzIDIyMy41OCA5Ni4xMyAyMTAuOTkgNzEgMjEwLjk5IDk5LjI5WiIgY2xhc3M9Ik1zZnRPZmNUaG1fVGV4dDJfRmlsbF92MiIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJidXR0IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbWl0ZXJsaW1pdD0iNCIgZmlsbD0iIzAxMDAzMCIgZmlsbC1vcGFjaXR5PSIxIj48L3BhdGg+PHBhdGggZD0iTTMyOS4wOCA2My4wNyAzMzUuMiA2My4wNyAzMzUuMiA5OS4yOSAzMjguNTcgOTkuMjkgMzA4LjA2IDcyLjg2IDMwOC4wNiA5OS4yOSAzMDEuOTQgOTkuMjkgMzAxLjk0IDYzLjA3IDMwOC4wNiA2My4wNyAzMjkuMDkgOTAuMTIgMzI5LjA5IDYzLjA3WiIgY2xhc3M9Ik1zZnRPZmNUaG1fVGV4dDJfRmlsbF92MiIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJidXR0IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbWl0ZXJsaW1pdD0iNCIgZmlsbD0iIzAxMDAzMCIgZmlsbC1vcGFjaXR5PSIxIj48L3BhdGg+PHBhdGggZD0iTTM2MC44NyA2OC42NyAzNjAuODcgOTkuMjkgMzU0Ljc2IDk5LjI5IDM1NC43NiA2OC42NyAzNDMuNzggNjguNjcgMzQzLjc4IDYzLjA3IDM3MS44NiA2My4wNyAzNzEuODYgNjguNjcgMzYwLjg4IDY4LjY3WiIgY2xhc3M9Ik1zZnRPZmNUaG1fVGV4dDJfRmlsbF92MiIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJidXR0IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbWl0ZXJsaW1pdD0iNCIgZmlsbD0iIzAxMDAzMCIgZmlsbC1vcGFjaXR5PSIxIj48L3BhdGg+PHBhdGggZD0iTTQwNy4wMyA2My4wNyA0MDcuMDMgNjguODIgMzg3LjcxIDY4LjgyIDM4Ny43MSA3OC40IDQwMy4zNyA3OC40IDQwMy4zNyA4My44NCAzODcuNzEgODMuODQgMzg3LjcxIDkzLjUzIDQwNy42NSA5My41MyA0MDcuNjUgOTkuMjggMzgxLjU5IDk5LjI4IDM4MS41OSA2My4wNiA0MDcuMDMgNjMuMDZaIiBjbGFzcz0iTXNmdE9mY1RobV9UZXh0Ml9GaWxsX3YyIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiIHN0cm9rZS1taXRlcmxpbWl0PSI0IiBmaWxsPSIjMDEwMDMwIiBmaWxsLW9wYWNpdHk9IjEiPjwvcGF0aD48cGF0aCBkPSJNNDQ3LjQ5IDc0LjgzQzQ0Ny40OSA4MC44MSA0NDQuODggODQuNTcgNDM5LjY3IDg2LjEzTDQ0OS4xNSA5OS4yOSA0NDEuMzggOTkuMjkgNDMyLjczIDg3LjExIDQyNC43IDg3LjExIDQyNC43IDk5LjI5IDQxOC41OCA5OS4yOSA0MTguNTggNjMuMDcgNDMyLjA1IDYzLjA3QzQzNy41OCA2My4wNyA0NDEuNTMgNjQgNDQzLjkxIDY1Ljg3IDQ0Ni4zIDY3Ljc0IDQ0Ny40OCA3MC43MiA0NDcuNDggNzQuODNaTTQzOS4zNSA3OS45NkM0NDAuNiA3OC44OSA0NDEuMjIgNzcuMTcgNDQxLjIyIDc0LjggNDQxLjIyIDcyLjQzIDQ0MC41OCA3MC44MSA0MzkuMyA2OS45MyA0MzguMDIgNjkuMDUgNDM1Ljc1IDY4LjYxIDQzMi40NiA2OC42MUw0MjQuNjkgNjguNjEgNDI0LjY5IDgxLjU2IDQzMi4zIDgxLjU2QzQzNS43NSA4MS41NiA0MzguMSA4MS4wMyA0MzkuMzQgNzkuOTVaIiBjbGFzcz0iTXNmdE9mY1RobV9UZXh0Ml9GaWxsX3YyIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiIHN0cm9rZS1taXRlcmxpbWl0PSI0IiBmaWxsPSIjMDEwMDMwIiBmaWxsLW9wYWNpdHk9IjEiPjwvcGF0aD48cGF0aCBkPSJNNDg4LjMxIDc0LjgzQzQ4OC4zMSA4MC44MSA0ODUuNyA4NC41NyA0ODAuNDkgODYuMTNMNDg5Ljk3IDk5LjI5IDQ4Mi4yIDk5LjI5IDQ3My41NSA4Ny4xMSA0NjUuNTIgODcuMTEgNDY1LjUyIDk5LjI5IDQ1OS40IDk5LjI5IDQ1OS40IDYzLjA3IDQ3Mi44NyA2My4wN0M0NzguNCA2My4wNyA0ODIuMzUgNjQgNDg0LjczIDY1Ljg3IDQ4Ny4xMiA2Ny43NCA0ODguMyA3MC43MiA0ODguMyA3NC44M1pNNDgwLjE4IDc5Ljk2QzQ4MS40MyA3OC44OSA0ODIuMDUgNzcuMTcgNDgyLjA1IDc0LjggNDgyLjA1IDcyLjQzIDQ4MS40MSA3MC44MSA0ODAuMTMgNjkuOTMgNDc4Ljg1IDY5LjA1IDQ3Ni41OCA2OC42MSA0NzMuMjkgNjguNjFMNDY1LjUyIDY4LjYxIDQ2NS41MiA4MS41NiA0NzMuMTMgODEuNTZDNDc2LjU4IDgxLjU2IDQ3OC45MyA4MS4wMyA0ODAuMTcgNzkuOTVaIiBjbGFzcz0iTXNmdE9mY1RobV9UZXh0Ml9GaWxsX3YyIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiIHN0cm9rZS1taXRlcmxpbWl0PSI0IiBmaWxsPSIjMDEwMDMwIiBmaWxsLW9wYWNpdHk9IjEiPjwvcGF0aD48cGF0aCBkPSJNMjczLjUzIDY2Ljk5QzI4MS4xIDY2Ljk5IDI4Ny4yNiA3My4xNSAyODcuMjYgODAuNzMgMjg3LjI2IDg4LjMxIDI4MS4xIDk0LjQ3IDI3My41MyA5NC40NyAyNjUuOTYgOTQuNDcgMjU5LjggODguMzEgMjU5LjggODAuNzMgMjU5LjggNzMuMTUgMjY1Ljk2IDY2Ljk5IDI3My41MyA2Ni45OU0yNzMuNTMgNjEuMjdDMjYyLjc5IDYxLjI3IDI1NC4wOCA2OS45OCAyNTQuMDggODAuNzMgMjU0LjA4IDkxLjQ4IDI2Mi43OSAxMDAuMTkgMjczLjUzIDEwMC4xOSAyODQuMjcgMTAwLjE5IDI5Mi45OCA5MS40OCAyOTIuOTggODAuNzMgMjkyLjk4IDY5Ljk4IDI4NC4yNyA2MS4yNyAyNzMuNTMgNjEuMjdMMjczLjUzIDYxLjI3WiIgY2xhc3M9Ik1zZnRPZmNUaG1fVGV4dDJfRmlsbF92MiIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJidXR0IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbWl0ZXJsaW1pdD0iNCIgZmlsbD0iIzAxMDAzMCIgZmlsbC1vcGFjaXR5PSIxIj48L3BhdGg+PHBhdGggZD0iTTUxNS4zIDY2Ljk5QzUyMi44NyA2Ni45OSA1MjkuMDMgNzMuMTUgNTI5LjAzIDgwLjczIDUyOS4wMyA4OC4zMSA1MjIuODcgOTQuNDcgNTE1LjMgOTQuNDcgNTA3LjczIDk0LjQ3IDUwMS41NyA4OC4zMSA1MDEuNTcgODAuNzMgNTAxLjU3IDczLjE1IDUwNy43MyA2Ni45OSA1MTUuMyA2Ni45OU01MTUuMyA2MS4yN0M1MDQuNTYgNjEuMjcgNDk1Ljg1IDY5Ljk4IDQ5NS44NSA4MC43MyA0OTUuODUgOTEuNDggNTA0LjU2IDEwMC4xOSA1MTUuMyAxMDAuMTkgNTI2LjA0IDEwMC4xOSA1MzQuNzUgOTEuNDggNTM0Ljc1IDgwLjczIDUzNC43NSA2OS45OCA1MjYuMDQgNjEuMjcgNTE1LjMgNjEuMjdMNTE1LjMgNjEuMjdaIiBjbGFzcz0iTXNmdE9mY1RobV9UZXh0Ml9GaWxsX3YyIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1saW5lam9pbj0ibWl0ZXIiIHN0cm9rZS1taXRlcmxpbWl0PSI0IiBmaWxsPSIjMDEwMDMwIiBmaWxsLW9wYWNpdHk9IjEiPjwvcGF0aD48L3N2Zz4=">
+    <img class="logo logo-white" alt="Monterro" src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTM0Ljc1IDE2MC40MyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaWQ9IkxheWVyXzEiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjwvZGVmcz48cGF0aCBkPSJNODAuMiAwQzM1Ljk4IDAgMCAzNS45OCAwIDgwLjIxIDAgMTI0LjQ0IDM1Ljk4IDE2MC40MiA4MC4yIDE2MC40MiAxMjQuNDIgMTYwLjQyIDE2MC40IDEyNC40NCAxNjAuNCA4MC4yMSAxNjAuNCAzNS45OCAxMjQuNDIgMCA4MC4yIDBaTTE1NC4wMyA4MC4yMUMxNTQuMDMgMTIwLjkzIDEyMC45MSAxNTQuMDUgODAuMiAxNTQuMDUgMzkuNDkgMTU0LjA1IDYuMzcgMTIwLjkzIDYuMzcgODAuMjEgNi4zNyAzOS40OSAzOS40OSA2LjM3IDgwLjIgNi4zNyAxMjAuOTEgNi4zNyAxNTQuMDMgMzkuNSAxNTQuMDMgODAuMjFaIiBmaWxsPSIjRkFGQUY0Ij48L3BhdGg+PHBhdGggZD0iTTY0LjAyIDk5LjAzIDU3LjkyIDk5LjAzIDU3LjkyIDYyLjg3IDY3LjQ0IDYyLjg3IDc4LjM1IDg1LjU4IDg5LjI2IDYyLjg3IDk4LjcyIDYyLjg3IDk4LjcyIDk5LjAzIDkyLjYyIDk5LjAzIDkyLjYyIDcwLjc5IDgwIDk1Ljg4IDc2LjU5IDk1Ljg4IDY0LjAyIDcwLjc5IDY0LjAyIDk5LjAzWiIgZmlsbD0iI0ZBRkFGNCI+PC9wYXRoPjxwYXRoIGQ9Ik0xMTAuMTUgOTkuMjNDMTA4LjUzIDk5LjIzIDEwNy4xNCA5OC42NSAxMDYuMDEgOTcuNDkgMTA0Ljg5IDk2LjM0IDEwNC4zMyA5NC45NSAxMDQuMzMgOTMuMzQgMTA0LjMzIDkxLjczIDEwNC45IDkwLjM0IDEwNi4wMiA4OS4yMSAxMDcuMTUgODguMDggMTA4LjU0IDg3LjUxIDExMC4xNSA4Ny41MSAxMTEuNzYgODcuNTEgMTEzLjE1IDg4LjA4IDExNC4zIDg5LjE5IDExNS40NSA5MC4zMiAxMTYuMDQgOTEuNzIgMTE2LjA0IDkzLjMzIDExNi4wNCA5NC45NCAxMTUuNDYgOTYuMzQgMTE0LjMyIDk3LjQ5IDExMy4xNyA5OC42NCAxMTEuNzcgOTkuMjIgMTEwLjE2IDk5LjIyWk0xMTAuMTUgOTAuNjlDMTA5LjM5IDkwLjY5IDEwOC43OCA5MC45MyAxMDguMjYgOTEuNDYgMTA3Ljc0IDkxLjk4IDEwNy40OSA5Mi41OSAxMDcuNDkgOTMuMzUgMTA3LjQ5IDk0LjExIDEwNy43NCA5NC43NCAxMDguMjcgOTUuMjggMTA4Ljc5IDk1LjgxIDEwOS4zOSA5Ni4wNiAxMTAuMTUgOTYuMDYgMTEwLjkxIDk2LjA2IDExMS41MyA5NS44MSAxMTIuMDcgOTUuMjYgMTEyLjYxIDk0LjcyIDExMi44NiA5NC4xMSAxMTIuODYgOTMuMzQgMTEyLjg2IDkyLjU3IDExMi42MSA5MS45OSAxMTIuMDcgOTEuNDYgMTExLjUzIDkwLjkzIDExMC45MSA5MC42OCAxMTAuMTQgOTAuNjhaIiBmaWxsPSIjRkFGQUY0Ij48L3BhdGg+PHBhdGggZD0iTTIxMC45OSA5OS4yOSAyMDQuODcgOTkuMjkgMjA0Ljg3IDYzLjA3IDIxNC40MSA2My4wNyAyMjUuMzQgODUuODIgMjM2LjI3IDYzLjA3IDI0NS43NSA2My4wNyAyNDUuNzUgOTkuMjkgMjM5LjY0IDk5LjI5IDIzOS42NCA3MSAyMjcgOTYuMTMgMjIzLjU4IDk2LjEzIDIxMC45OSA3MSAyMTAuOTkgOTkuMjlaIiBmaWxsPSIjRkFGQUY0Ij48L3BhdGg+PHBhdGggZD0iTTMyOS4wOCA2My4wNyAzMzUuMiA2My4wNyAzMzUuMiA5OS4yOSAzMjguNTcgOTkuMjkgMzA4LjA2IDcyLjg2IDMwOC4wNiA5OS4yOSAzMDEuOTQgOTkuMjkgMzAxLjk0IDYzLjA3IDMwOC4wNiA2My4wNyAzMjkuMDkgOTAuMTIgMzI5LjA5IDYzLjA3WiIgZmlsbD0iI0ZBRkFGNCI+PC9wYXRoPjxwYXRoIGQ9Ik0zNjAuODcgNjguNjcgMzYwLjg3IDk5LjI5IDM1NC43NiA5OS4yOSAzNTQuNzYgNjguNjcgMzQzLjc4IDY4LjY3IDM0My43OCA2My4wNyAzNzEuODYgNjMuMDcgMzcxLjg2IDY4LjY3IDM2MC44OCA2OC42N1oiIGZpbGw9IiNGQUZBRjQiPjwvcGF0aD48cGF0aCBkPSJNNDA3LjAzIDYzLjA3IDQwNy4wMyA2OC44MiAzODcuNzEgNjguODIgMzg3LjcxIDc4LjQgNDAzLjM3IDc4LjQgNDAzLjM3IDgzLjg0IDM4Ny43MSA4My44NCAzODcuNzEgOTMuNTMgNDA3LjY1IDkzLjUzIDQwNy42NSA5OS4yOCAzODEuNTkgOTkuMjggMzgxLjU5IDYzLjA2IDQwNy4wMyA2My4wNloiIGZpbGw9IiNGQUZBRjQiPjwvcGF0aD48cGF0aCBkPSJNNDQ3LjQ5IDc0LjgzQzQ0Ny40OSA4MC44MSA0NDQuODggODQuNTcgNDM5LjY3IDg2LjEzTDQ0OS4xNSA5OS4yOSA0NDEuMzggOTkuMjkgNDMyLjczIDg3LjExIDQyNC43IDg3LjExIDQyNC43IDk5LjI5IDQxOC41OCA5OS4yOSA0MTguNTggNjMuMDcgNDMyLjA1IDYzLjA3QzQzNy41OCA2My4wNyA0NDEuNTMgNjQgNDQzLjkxIDY1Ljg3IDQ0Ni4zIDY3Ljc0IDQ0Ny40OCA3MC43MiA0NDcuNDggNzQuODNaTTQzOS4zNSA3OS45NkM0NDAuNiA3OC44OSA0NDEuMjIgNzcuMTcgNDQxLjIyIDc0LjggNDQxLjIyIDcyLjQzIDQ0MC41OCA3MC44MSA0MzkuMyA2OS45MyA0MzguMDIgNjkuMDUgNDM1Ljc1IDY4LjYxIDQzMi40NiA2OC42MUw0MjQuNjkgNjguNjEgNDI0LjY5IDgxLjU2IDQzMi4zIDgxLjU2QzQzNS43NSA4MS41NiA0MzguMSA4MS4wMyA0MzkuMzQgNzkuOTVaIiBmaWxsPSIjRkFGQUY0Ij48L3BhdGg+PHBhdGggZD0iTTQ4OC4zMSA3NC44M0M0ODguMzEgODAuODEgNDg1LjcgODQuNTcgNDgwLjQ5IDg2LjEzTDQ4OS45NyA5OS4yOSA0ODIuMiA5OS4yOSA0NzMuNTUgODcuMTEgNDY1LjUyIDg3LjExIDQ2NS41MiA5OS4yOSA0NTkuNCA5OS4yOSA0NTkuNCA2My4wNyA0NzIuODcgNjMuMDdDNDc4LjQgNjMuMDcgNDgyLjM1IDY0IDQ4NC43MyA2NS44NyA0ODcuMTIgNjcuNzQgNDg4LjMgNzAuNzIgNDg4LjMgNzQuODNaTTQ4MC4xOCA3OS45NkM0ODEuNDMgNzguODkgNDgyLjA1IDc3LjE3IDQ4Mi4wNSA3NC44IDQ4Mi4wNSA3Mi40MyA0ODEuNDEgNzAuODEgNDgwLjEzIDY5LjkzIDQ3OC44NSA2OS4wNSA0NzYuNTggNjguNjEgNDczLjI5IDY4LjYxTDQ2NS41MiA2OC42MSA0NjUuNTIgODEuNTYgNDczLjEzIDgxLjU2QzQ3Ni41OCA4MS41NiA0NzguOTMgODEuMDMgNDgwLjE3IDc5Ljk1WiIgZmlsbD0iI0ZBRkFGNCI+PC9wYXRoPjxwYXRoIGQ9Ik0yNzMuNTMgNjYuOTlDMjgxLjEgNjYuOTkgMjg3LjI2IDczLjE1IDI4Ny4yNiA4MC43MyAyODcuMjYgODguMzEgMjgxLjEgOTQuNDcgMjczLjUzIDk0LjQ3IDI2NS45NiA5NC40NyAyNTkuOCA4OC4zMSAyNTkuOCA4MC43MyAyNTkuOCA3My4xNSAyNjUuOTYgNjYuOTkgMjczLjUzIDY2Ljk5TTI3My41MyA2MS4yN0MyNjIuNzkgNjEuMjcgMjU0LjA4IDY5Ljk4IDI1NC4wOCA4MC43MyAyNTQuMDggOTEuNDggMjYyLjc5IDEwMC4xOSAyNzMuNTMgMTAwLjE5IDI4NC4yNyAxMDAuMTkgMjkyLjk4IDkxLjQ4IDI5Mi45OCA4MC43MyAyOTIuOTggNjkuOTggMjg0LjI3IDYxLjI3IDI3My41MyA2MS4yN0wyNzMuNTMgNjEuMjdaIiBmaWxsPSIjRkFGQUY0Ij48L3BhdGg+PHBhdGggZD0iTTUxNS4zIDY2Ljk5QzUyMi44NyA2Ni45OSA1MjkuMDMgNzMuMTUgNTI5LjAzIDgwLjczIDUyOS4wMyA4OC4zMSA1MjIuODcgOTQuNDcgNTE1LjMgOTQuNDcgNTA3LjczIDk0LjQ3IDUwMS41NyA4OC4zMSA1MDEuNTcgODAuNzMgNTAxLjU3IDczLjE1IDUwNy43MyA2Ni45OSA1MTUuMyA2Ni45OU01MTUuMyA2MS4yN0M1MDQuNTYgNjEuMjcgNDk1Ljg1IDY5Ljk4IDQ5NS44NSA4MC43MyA0OTUuODUgOTEuNDggNTA0LjU2IDEwMC4xOSA1MTUuMyAxMDAuMTkgNTI2LjA0IDEwMC4xOSA1MzQuNzUgOTEuNDggNTM0Ljc1IDgwLjczIDUzNC43NSA2OS45OCA1MjYuMDQgNjEuMjcgNTE1LjMgNjEuMjdMNTE1LjMgNjEuMjdaIiBmaWxsPSIjRkFGQUY0Ij48L3BhdGg+PC9zdmc+">
+  </header>
+  <hr class="accent-line">
+  <p class="purpose rise" id="purpose"></p>
+  <p class="sub rise" id="sub"></p>
+
+  <h2>Where is the run?</h2>
+  <div class="masthead rise" id="masthead"></div>
+  <div class="tiles rise" id="tiles"></div>
+  <div class="barbox">
+    <div class="bar"><div class="fill" id="barFill" style="width:0%"></div></div>
+    <div class="barmeta"><span id="barLeft"></span><span id="barRight"></span></div>
+  </div>
+
+  <h2>What is being built?</h2>
+  <p class="note" id="boardNote"></p>
+  <div class="filters" role="group" aria-label="Filter units">
+    <button class="chip" aria-pressed="true" data-f="all">All</button>
+    <button class="chip" aria-pressed="false" data-f="ok">Integrated</button>
+    <button class="chip" aria-pressed="false" data-f="live">In flight</button>
+    <button class="chip" aria-pressed="false" data-f="waiting">Queued</button>
+    <button class="chip" aria-pressed="false" data-f="blocked">Blocked</button>
+    <input id="search" type="search" placeholder="Search units" aria-label="Search units">
+  </div>
+  <div id="board"></div>
+  <div class="legend" id="legend"></div>
+
+  <h2>How is work routed and reviewed?</h2>
+  <p class="note" id="routingNote"></p>
+  <div class="tablebox">
+    <table>
+      <thead><tr><th>Role</th><th>Route</th><th>Escalation</th><th>Why this route</th></tr></thead>
+      <tbody id="roles"></tbody>
+    </table>
+  </div>
+  <div id="pipeline"></div>
+  <div id="usage"></div>
+
+  <h2>What did the run learn?</h2>
+  <p class="note" id="lessonsNote"></p>
+  <div class="lessons" id="lessons"></div>
+
+  <footer id="footer"></footer>
+</div>
+
+<script>
+// __DATA__ is replaced by the dynamic-run-dashboard skill with real run state.
+const DATA = /*__DATA__*/ null;
+
+// Nullish escapes to nothing, never to the strings "null" or "undefined": every field in the
+// contract is optional, so an omitted label or id has to stay missing rather than render itself.
+const esc = s => s == null ? "" : String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+// A missing figure stays visibly missing — never estimated. An em dash alone says nothing to
+// a screen reader, so the reason travels in aria-label; title only adds it for mouse hover.
+const gap = why => why
+  ? `<span class="gap why" title="${esc(why)}" aria-label="Not available: ${esc(why)}">—</span>`
+  : `<span class="gap" aria-label="not available">—</span>`;
+const cell = v => v === null || v === undefined || v === ""
+  ? gap(null)
+  : (typeof v === "object" ? gap(v.why || "no reason recorded") : esc(v));
+const STATES = { ok: "Integrated", live: "In flight", waiting: "Queued", blocked: "Blocked" };
+
+if (DATA.title) document.getElementById("title").textContent = DATA.title;
+document.getElementById("purpose").innerHTML = DATA.purpose || "";
+document.getElementById("sub").innerHTML = DATA.subtitle || "";
+document.getElementById("boardNote").innerHTML = DATA.boardNote || "";
+document.getElementById("routingNote").innerHTML = (DATA.routing && DATA.routing.note) || "";
+document.getElementById("lessonsNote").innerHTML = (DATA.lessons && DATA.lessons.note) || "";
+
+const mastEl = document.getElementById("masthead");
+for (const m of DATA.masthead || []) {
+  mastEl.insertAdjacentHTML("beforeend",
+    `<div><div class="label">${esc(m.label)}</div><div class="val ${m.mono ? "mono" : ""}">${cell(m.value)}</div></div>`);
+}
+
+const tilesEl = document.getElementById("tiles");
+for (const t of DATA.tiles || []) {
+  tilesEl.insertAdjacentHTML("beforeend",
+    `<div class="tile ${t.kind === "spend" ? "spend" : ""}"><div class="label">${esc(t.label)}</div>` +
+    `<div class="value num">${cell(t.value)}</div><div class="hint">${esc(t.hint || "")}</div></div>`);
+}
+
+const prog = DATA.progress || {};
+const pct = prog.total ? Math.round((prog.done || 0) / prog.total * 100) : 0;
+// Clamp once: a bar pinned at 100% beside a label reading 111% makes the reader distrust both.
+const shown = Math.max(0, Math.min(100, pct));
+document.getElementById("barFill").style.width = shown + "%";
+document.getElementById("barLeft").textContent = prog.total
+  ? `${prog.done || 0} of ${prog.total} units integrated (${shown}%)`
+  : "";
+document.getElementById("barRight").textContent = prog.label || "";
+
+function mchips(list, cls) {
+  if (!list || !list.length) return gap(null);
+  return list.map(a =>
+    // The flex gap separates these visually; the space keeps them separate when copied or read aloud.
+    `<span class="mchip ${cls}">${esc(a.model)}${a.effort ? ` <span class="eff">${esc(a.effort)}</span>` : ""}` +
+    `${a.role ? ` · ${esc(a.role)}` : ""}</span>`).join("");
+}
+
+let filter = "all", query = "";
+const boardEl = document.getElementById("board");
+
+function renderBoard() {
+  boardEl.innerHTML = "";
+  for (const w of DATA.waves || []) {
+    const units = (w.units || []).filter(u =>
+      (filter === "all" || u.state === filter) &&
+      // Drop absent fields rather than searching the text "undefined" for them.
+      (query === "" || [u.id, u.title, u.note].filter(Boolean).join(" ").toLowerCase().includes(query)));
+    if (!units.length) continue;
+    const cards = units.map(u => `
+      <article class="unit ${esc(u.state || "")}">
+        <div class="unithead">
+          <span class="unitid">${esc(u.id)}</span>
+          <span class="pill ${esc(u.state || "")}">${esc(STATES[u.state] || u.state || "")}</span>
+        </div>
+        <div class="unittitle">${esc(u.title)}</div>
+        <dl class="unitmeta">
+          <dt>Built by</dt><dd>${mchips(u.impl, "impl")}</dd>
+          <dt>Reviewed by</dt><dd>${mchips(u.review, "rev")}</dd>
+          <dt>Commit</dt><dd class="mono">${cell(u.commit)}</dd>
+          <dt>Diffstat</dt><dd class="mono num">${cell(u.diffstat)}</dd>
+          <dt>Review passes</dt><dd class="num">${cell(u.passes)}</dd>
+          <dt>Findings</dt><dd>${cell(u.findings)}</dd>
+        </dl>
+        ${u.note ? `<div class="unitnote">${u.note}</div>` : ""}
+      </article>`).join("");
+    boardEl.insertAdjacentHTML("beforeend", `
+      <section class="wave">
+        <div class="wavehead">
+          <span class="wavenum">Wave ${esc(w.wave)}</span>
+          <span class="wavetitle">${esc(w.title || "")}</span>
+          <span class="wavenote">${esc(w.note || "")}</span>
+        </div>
+        <div class="board">${cards}</div>
+      </section>`);
+  }
+  if (!boardEl.innerHTML) boardEl.innerHTML = `<p class="note">No units match this filter.</p>`;
+}
+
+document.getElementById("legend").innerHTML =
+  `<span class="mchip impl">implementer</span><span class="mchip rev">reviewer</span>` +
+  Object.entries(STATES).map(([k, v]) => `<span class="pill ${k}">${v}</span>`).join("");
+
+const rolesEl = document.getElementById("roles");
+for (const r of (DATA.routing && DATA.routing.roles) || []) {
+  rolesEl.insertAdjacentHTML("beforeend",
+    `<tr><td><div class="name">${esc(r.role)}</div></td>` +
+    `<td>${mchips(r.route, r.side === "review" ? "rev" : r.side === "implement" ? "impl" : "plain")}</td>` +
+    `<td class="mono" style="font-size:12px;color:var(--ink-3)">${cell(r.escalation)}</td>` +
+    `<td><div class="desc">${r.why ? r.why : gap(null)}</div></td></tr>`);
+}
+
+const pipe = DATA.pipeline;
+if (pipe && pipe.steps && pipe.steps.length) {
+  const rows = pipe.steps.map(s =>
+    `<tr><td><div class="name">${esc(s.stage)}</div></td><td>${mchips(s.who, s.side === "review" ? "rev" : "impl")}</td>` +
+    `<td><div class="desc">${s.sees ? s.sees : gap(null)}</div></td></tr>`).join("");
+  document.getElementById("pipeline").insertAdjacentHTML("beforeend",
+    `<details open><summary>${esc(pipe.title || "Per-unit pipeline")}</summary><div class="inner">` +
+    `${pipe.note ? `<p class="note" style="margin-top:0">${pipe.note}</p>` : ""}` +
+    `<table><thead><tr><th>Stage</th><th>Who</th><th>What it may see</th></tr></thead><tbody>${rows}</tbody></table>` +
+    `</div></details>`);
+}
+
+// Model usage — one row per model+effort actually dispatched, from out/*.json.
+const usage = DATA.usage;
+if (usage && usage.rows && usage.rows.length) {
+  const rows = usage.rows.map(r =>
+    `<tr><td>${mchips([{ model: r.model, effort: r.effort }], r.side === "review" ? "rev" : r.side === "implement" ? "impl" : "plain")}</td>` +
+    `<td class="desc">${r.roles ? esc(r.roles) : gap(null)}</td>` +
+    `<td class="r num">${cell(r.agents)}</td><td class="r num">${cell(r.turns)}</td>` +
+    `<td class="r num">${cell(r.duration)}</td><td class="r num">${cell(r.cost)}</td></tr>`).join("");
+  const tot = usage.total;
+  const foot = tot
+    ? `<tr><td><strong>Total</strong></td><td class="desc">${esc(tot.note || "")}</td>` +
+      `<td class="r num"><strong>${cell(tot.agents)}</strong></td><td class="r num"><strong>${cell(tot.turns)}</strong></td>` +
+      `<td class="r num"><strong>${cell(tot.duration)}</strong></td><td class="r num"><strong>${cell(tot.cost)}</strong></td></tr>`
+    : "";
+  document.getElementById("usage").insertAdjacentHTML("beforeend",
+    `<details><summary>${esc(usage.title || "Model usage — who ran, how often, at what cost")}</summary><div class="inner">` +
+    `${usage.note ? `<p class="note" style="margin-top:0">${usage.note}</p>` : ""}` +
+    `<table><thead><tr><th>Model · effort</th><th>Roles</th><th class="r">Agents</th><th class="r">Turns</th>` +
+    `<th class="r">Duration</th><th class="r">Measured cost</th></tr></thead><tbody>${rows}${foot}</tbody></table>` +
+    `</div></details>`);
+}
+
+const lessonsEl = document.getElementById("lessons");
+for (const l of (DATA.lessons && DATA.lessons.items) || []) {
+  lessonsEl.insertAdjacentHTML("beforeend",
+    `<article class="lesson"><span class="t">${esc(l.title)}</span>` +
+    `${l.kind ? `<span class="kind">${esc(l.kind)}</span>` : ""}` +
+    `<dl><dt>Failure</dt><dd>${l.failure || gap(null)}</dd>` +
+    `<dt>Change</dt><dd>${l.change || gap(null)}</dd>` +
+    `${l.landed ? `<dt>Landed in</dt><dd class="mono">${esc(l.landed)}</dd>` : ""}</dl></article>`);
+}
+if (!lessonsEl.innerHTML) lessonsEl.innerHTML = `<p class="note">Nothing recorded yet — the run has produced no routing change or safeguard so far.</p>`;
+
+document.getElementById("footer").innerHTML =
+  (DATA.footer || []).map(p => `<p>${p}</p>`).join("");
+
+document.querySelectorAll(".chip").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", "false"));
+  b.setAttribute("aria-pressed", "true");
+  filter = b.dataset.f;
+  renderBoard();
+}));
+document.getElementById("search").addEventListener("input", e => { query = e.target.value.toLowerCase(); renderBoard(); });
+
+renderBoard();
+</script>
+</body>
+</html>
