@@ -73,3 +73,13 @@ General workflow tools, not tied to one codebase.
 **User-invoked**
 
 - **[tokenomics](./skills/productivity/tokenomics/SKILL.md)** — Audit what your AI coding setup loads into context vs what you actually use, from your own transcripts. Publishes an interactive report with removal candidates, per-harness config tips (Claude Code, Codex CLI, GitHub Copilot), and one apply-prompt per harness.
+
+### In development
+
+These are installable through skills.sh — they appear under **General** in the picker — but they are **not** in the plugin bundle and their contracts still change between commits. Install them if you want to follow along; don't build on them yet.
+
+- **[dynamic-implement](./skills/other/dynamic-implement/SKILL.md)** — Takes one spec-level issue end to end: plans it into units, builds each under TDD in its own worktree, reviews every unit in a clean context on a different model family, integrates, and updates the tracker. No single context window holds the whole build.
+- **[dynamic-skills-setup](./skills/other/dynamic-skills-setup/SKILL.md)** — Probes which harnesses, models and effort levels are actually callable on this machine (Codex, Claude Code, Copilot, OpenCode, Pi) and writes a verified capability profile. An installed binary is not a callable model, so nothing is taken on trust.
+- **[dynamic-skills-calibrate](./skills/other/dynamic-skills-calibrate/SKILL.md)** — Rebuilds the repo's model-and-effort routing profile from what past runs actually produced, so routing gets cheaper or stronger based on outcomes rather than assumptions.
+- **[dynamic-run-dashboard](./skills/other/dynamic-run-dashboard/SKILL.md)** — Publishes one page for a run in flight: what is being built, which model built and reviewed each unit, what each model cost in agents, turns and time, and what the run learned. Same design system as the tokenomics report, no shared files between them.
+- **dynamic-qa** — a [specification](./skills/other/dynamic-qa/SPEC.md) only. Nothing to invoke yet.
