@@ -2,7 +2,7 @@
 name: dynamic-skills-calibrate
 description: "Rebuild a repository-owned Dynamic Implement model-and-effort knowledge profile from feature-reviewed or integrated tracker-comment or run-ledger telemetry. Use before a feature PR, periodically after integration, or when model/effort routing is too weak, slow, or costly."
 metadata:
-  version: 0.2.0
+  version: 0.3.0
 ---
 
 Routing a unit to the smallest model that might do it is not thrift. A weak step that burns extra turns, capability retries, fix passes and the re-reviews those fixes force can cost several times a stronger step that lands the unit in one pass. What calibration learns is the **cheapest-to-acceptance** step: the exact model and effort that gets comparable work accepted for the least total spend, counting every attempt it took.
@@ -21,7 +21,13 @@ The issue tracker supplies the immutable child/dependency graph. Raw evidence co
 <repo>/.agents/dynamic-implement/model-calibration.json
 ```
 
-Follow the repository's Git strategy for that change: inside the active feature branch before its PR when calibration is part of that feature, otherwise on a dedicated policy-compliant docs/config branch. Protected integration and release branches take no direct commits.
+It also re-states, but never authors, the findings written beside it:
+
+```text
+<repo>/.agents/dynamic-implement/findings.json
+```
+
+Follow the repository's Git strategy for those changes: inside the active feature branch before its PR when calibration is part of that feature, otherwise on a dedicated policy-compliant docs/config branch. Protected integration and release branches take no direct commits.
 
 Machine-specific executable paths, authentication state, and live route availability belong to the local capability profile from `dynamic-skills-setup`. Secrets, credentials, prompts, source, chain-of-thought and reviewer prose belong in neither store. A disposable local cache may mirror the team file for speed, but is never authoritative.
 
@@ -77,6 +83,28 @@ Findings land in `externalPrior` and may reorder candidates, under these limits:
 - **A trial, not the floor.** Where a route has no local data, a prior can promote it into the candidate order on external evidence alone; it still earns the floor through the normal measured thresholds.
 - **Rewrite only what moved.** Re-fetching an unchanged figure and restamping `retrievedAt` hides when the number really last moved.
 
+## Revalidate the findings
+
+A safeguard is a workaround for a failure on a specific route, so a route change can turn it into scar tissue. Load `<repo>/.agents/dynamic-implement/findings.json` — written by that skill's retrospective, shape in its [findings-file](../dynamic-implement/references/findings-file.md) — and re-state only `state`, `stateReason`, `revalidation` and `retirement`. Never touch `symptom`, `safeguard` or `routes`; you did not observe them.
+
+- Mark an `active` finding `revalidation-due` when its route is retired or absent from the current verified ladder, or the recommended floor moved past it. Record the trigger and the timestamp. Flagging is not a decision.
+- Retire only on evidence: one deliberate probe with the safeguard disabled, on a reversible low-risk unit, that came back clean; **or** five comparable eligible units that completed cleanly without it. Both grounds carry their evidence issues.
+- A symptom recorded on three or more distinct routes is not model-dependent. Return it to `active` with that reason and never retire it automatically.
+- Where no verified ladder exists to evaluate a route against, leave the finding `active` and report that setup is required. An unevaluated safeguard stays in force.
+
+Flag fast, retire slowly — the same asymmetry the floor uses, for the same reason: reintroducing a fixed failure costs more than carrying a safeguard nobody needs.
+
+## Keep the run's context from swelling
+
+Input tokens dominate a multi-agent run, so context economy and cost-to-acceptance are one measurement seen from two sides: a route that needs three passes pays three times for the same context. Score it per role, not per run — bloat shows up as one role growing between runs, never as a total that merely looks large.
+
+Write `contextBudget` per group:
+
+- **Prefer harness-reported input tokens.** Where a route reports none, measure the delegated prompt in bytes — the coordinator writes it, so that is always available — and mark the basis `prompt-bytes`. Never estimate, and never compare bytes against tokens.
+- **Compare each role against its own previous median.** A role that grew materially without a matching change in unit size is a finding: name the role and the phase, because the cause is almost always something pasted into a packet the contract said to point at.
+- **Give the coordinator its own row.** It accumulates across waves by design, so it needs a baseline of its own rather than a share of a per-agent figure.
+- **The recommendation is a ceiling, not a cap.** Dynamic Implement reports a breach and continues; nothing silently truncates a role's packet, because a packet trimmed below its contract fails the unit instead of the budget.
+
 ## Report
 
-Return a concise report of changed recommendations, retained defaults, excluded records, confidence, boundary-probe state, the exact repository file, the validation result, and the branch and commit carrying the team knowledge. The next planner receives compact matching aggregates only, never raw history.
+Return a concise report of changed recommendations, retained defaults, excluded records, confidence, boundary-probe state, findings flagged or retired with the ground for each, any role whose context grew and the phase responsible, the exact repository files, the validation result, and the branch and commit carrying the team knowledge. The next planner receives compact matching aggregates only, never raw history.
