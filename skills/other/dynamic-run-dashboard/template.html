@@ -151,7 +151,7 @@
   .chip { border: 1.5px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: var(--r-pill); padding: 6px 16px; font-family: var(--font); font-size: 13px; font-weight: 600; cursor: pointer; transition: background 180ms var(--ease), color 180ms var(--ease), border-color 180ms var(--ease); }
   .chip:hover { border-color: var(--ink-head); color: var(--ink-head); }
   .chip[aria-pressed="true"] { background: var(--ink-head); color: var(--bg); border-color: var(--ink-head); }
-  .chip:focus-visible, input:focus-visible { outline: 2px solid var(--aqua); outline-offset: 2px; }
+  .chip:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--aqua); outline-offset: 2px; }
   #search { margin-left: auto; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: var(--r-sm); padding: 7px 14px; font-family: var(--font); font-size: 13.5px; min-width: 190px; }
 
   /* unit board — state on the left rule, model family in the chips */
@@ -283,7 +283,6 @@ const cell = v => v === null || v === undefined || v === ""
   ? `<span class="gap">—</span>`
   : (typeof v === "object" ? `<span class="gap" title="${esc(v.why || "not available")}">—</span>` : esc(v));
 const STATES = { ok: "Integrated", live: "In flight", waiting: "Queued", blocked: "Blocked" };
-const UNITS = (DATA.waves || []).flatMap(w => (w.units || []).map(u => ({ ...u, wave: w })));
 
 if (DATA.title) document.getElementById("title").textContent = DATA.title;
 document.getElementById("purpose").innerHTML = DATA.purpose || "";

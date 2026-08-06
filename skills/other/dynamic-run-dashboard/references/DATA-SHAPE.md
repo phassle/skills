@@ -2,7 +2,13 @@
 
 The JSON object that replaces `/*__DATA__*/ null` in `template.html`. One placeholder, no other edit to the file.
 
-Every field is optional; an absent field renders as an empty band, never as a guess. Strings in `subtitle`, `boardNote`, `note`, `why`, `sees`, `note` on a unit, `failure`, `change` and `footer` are inserted as **HTML** (inline `<code>`, `<strong>`, links allowed) — write them yourself, never from untrusted output. Everything else is escaped.
+Every field is optional; an absent field renders as an empty band, never as a guess.
+
+**These fields are inserted as raw HTML** (inline `<code>`, `<strong>`, links allowed) — write them yourself, never from tool output, an agent transcript, a commit message or an issue body:
+
+`purpose` · `subtitle` · `boardNote` · `routing.note` · `pipeline.note` · `usage.note` · `lessons.note` · each unit's `note` · `routing.roles[].why` · `pipeline.steps[].sees` · `lessons.items[].failure` · `lessons.items[].change` · every string in `footer`
+
+Everything else is escaped, including all ids, models, efforts, commits, diffstats, counts and labels. When prose has to carry text a worker produced, escape it yourself first.
 
 ## Missing figures
 
