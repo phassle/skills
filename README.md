@@ -66,13 +66,13 @@ Run it once, clean up, then re-run monthly — `/usage` in Claude Code shows spe
 
 **The problem.** A feature that spans eight files does not fail because the model is too weak. It fails because one conversation carries the plan, every file it touched, every test run, every review comment and every fix — and by the last unit the beginning has been compacted away. Review is worse: an agent that just wrote the code is the worst possible reviewer of it, because its reasoning is still in the window.
 
-**The fix** is the `dynamic-*` set. Each work unit gets a fresh worktree and a fresh agent with zero conversation history, hands back commits and artifacts instead of conversation, and is reviewed by a separate agent — preferably on a different model family — that never sees how the code was written. Four skills, each doing one job:
+**The fix** is the `dynamic-*` set: you point at a spec and its child tickets are worked off one at a time. Each work unit gets a fresh worktree and a fresh agent with zero conversation history, hands back commits and artifacts instead of conversation, and is reviewed by a separate agent — preferably on a different model family — that never sees how the code was written. Four skills, each doing one job:
 
 ```mermaid
 flowchart LR
   S["/dynamic-skills-setup<br/>probe what this machine<br/>can actually call"]
   P[("~/.agents/dynamic-skills/<br/>capabilities.json<br/>machine-local, 14-day lease")]
-  I["/dynamic-implement issue-123<br/>one issue, end to end"]
+  I["/dynamic-implement &lt;spec&gt;<br/>every child ticket,<br/>until the feature is integrated"]
   C["dynamic-skills-calibrate<br/>what did work<br/>actually cost?"]
   K[("repo: .agents/dynamic-implement/<br/>model-calibration.json<br/>team-owned, committed")]
   D["/dynamic-run-dashboard<br/>watch a run"]
@@ -93,7 +93,7 @@ Two stores, deliberately separate: what *this machine* can call is local and exp
 
 Run it by hand. It cannot be triggered by the model and `dynamic-implement` will never invoke it for you — it spends real credits on probes, so it asks for approval and stays a visible action you chose.
 
-**2. `/dynamic-implement <issue>` — once per issue.** This is the workhorse. It needs one issue that is actually specified: observable outcome, acceptance criteria, product decisions already made. Invoked without an issue it orients instead — reads the repo, tracker and any interrupted run, tells you what it would do next, and stops without touching anything.
+**2. `/dynamic-implement <spec>` — once per feature.** This is the workhorse. You point it at the parent spec, not at a ticket, and it works off every child ticket underneath until the feature is integrated. The spec and its children have to be actually specified: observable outcome, acceptance criteria, product decisions already made. Invoked without an issue it orients instead — reads the repo, tracker and any interrupted run, tells you what it would do next, and stops without touching anything.
 
 **3. `dynamic-skills-calibrate` — mostly not by you.** `dynamic-implement` runs it automatically before opening the PR, scoped to that feature. Run it by hand only periodically after integration, or when routing feels wrong — too weak, too slow, too expensive.
 
@@ -103,32 +103,59 @@ Run it by hand. It cannot be triggered by the model and `dynamic-implement` will
 
 #### What one run actually does
 
+You point at **one spec** — the parent issue. Every child ticket under it is then worked off, one unit each, until the whole feature is integrated:
+
 ```mermaid
 flowchart TD
-  A["explicit invocation<br/>typed by you, not intent-matched"] --> B{"capability profile<br/>verified and unexpired?"}
+  A["you point at the spec<br/>/dynamic-implement 412"] --> B{"capability profile<br/>verified and unexpired?"}
   B -->|no| B2["stops before any change,<br/>prints the exact setup command"]
-  B -->|yes| C["read repo instructions, Git strategy,<br/>full issue graph, calibration file"]
-  C --> D["claim the issue on the tracker<br/>first write, before planning"]
-  D --> E["plan — read-only planner splits the issue<br/>into units and waves"]
-  E --> F["mint one run token<br/>every branch and worktree carries it"]
-  F --> G["per unit: fresh worktree + fresh agent,<br/>TDD, full suite, commit"]
-  G --> H["independent review — new session, zero history,<br/>different model family where verified"]
-  H -->|findings| G
-  H -->|clean| I["merge — one owner of the integration<br/>worktree, serially, in dependency order"]
-  I --> J["review the combined diff, write telemetry<br/>to each issue, run calibration"]
-  J --> K["open or update the PR,<br/>machine-review it"]
-  K --> L["the gate — a human decides<br/>merge into develop or main"]
-  L --> M["cleanup: only refs carrying this run's token"]
+  B -->|yes| C["read repo instructions, Git strategy,<br/>the spec and every child ticket, calibration"]
+  C --> D["claim the spec on the tracker<br/>first write, before planning"]
+  D --> E{"does the spec have<br/>child tickets?"}
+  E -->|no, and too big for one context| E2["stops and asks you to run to-tickets<br/>it never writes tickets itself"]
+  E -->|yes| F["plan — one child ticket becomes one unit,<br/>1:1, no merging, no skipping, no rewriting"]
+  F --> G["mint one run token<br/>every branch and worktree carries it"]
 
-  style L fill:#FFEC9B,stroke:#FC6C54,stroke-width:2px,color:#010031
+  subgraph wave["one wave — repeated until every child is done"]
+    H["per child ticket: fresh worktree + fresh agent,<br/>TDD, full suite, commit"]
+    I["independent review — new session, zero history,<br/>different model family where verified"]
+    H --> I
+    I -->|findings| H
+  end
+
+  G --> wave
+  wave -->|"every child in the wave accepted"| J["merge — one owner of the integration<br/>worktree, serially, in dependency order"]
+  J --> K{"any child ticket<br/>left in the spec?"}
+  K -->|yes| wave
+  K -->|no| L["review the combined diff, write telemetry<br/>per ticket, run calibration"]
+  L --> M["open or update the feature PR,<br/>machine-review it"]
+  M --> N["the gate — a human decides<br/>merge into develop or main"]
+  N --> O["cleanup: only refs carrying this run's token"]
+
+  style N fill:#FFEC9B,stroke:#FC6C54,stroke-width:2px,color:#010031
   style B2 fill:#FFDFD1,stroke:#FC6C54,color:#010031
+  style E2 fill:#FFDFD1,stroke:#FC6C54,color:#010031
 ```
+
+One spec in, one feature PR out — not one PR per ticket. The loop keeps going until every child is verifiably integrated, and the feature PR cannot become ready while one is unresolved.
 
 Everything up to the gate runs without asking you to manage it — a failing check, a dead agent, a model at capacity and a review finding are all things to recover from. The gate is the one hard stop: no initial instruction authorises a merge into `develop` or `main`, not "run autonomously", not "finish it". Authorisation is a new decision from you, made *after* the evidence is on the table. A machine review is evidence, never approval.
 
+#### One ticket? Use Matt Pocock's skills directly
+
+This set is for the automatic case: a spec whose children you want worked off without babysitting each one. It is the wrong tool for a single ticket — the planning, run token, worktree fan-out, tracker claims and integration branch are all overhead you don't need.
+
+| What you have | Use |
+| --- | --- |
+| One ticket, or a change you can hold in one head | Matt Pocock's `implement` (and `/tdd`, `/code-review`) directly, in your normal session |
+| A spec with child tickets, or one too big for a single context | `/dynamic-implement <spec>` |
+| A spec with no children yet | Matt Pocock's `to-tickets` first, then `/dynamic-implement <spec>` |
+
+`dynamic-implement` never replaces those skills — it invokes them. Each unit runs Matt's `implement` workflow unchanged, and every review is his `code-review` in a clean context. What this set adds is the orchestration around them: which ticket runs when, on which model, in which worktree, reviewed by whom, and merged in what order.
+
 #### So why not just run `/dynamic-implement` directly?
 
-You can — and after the one-time setup, that is exactly what you do. It is the only one of the four you run per issue. The other three exist because of what `implement` refuses to guess:
+You can — and after the one-time setup, that is exactly what you do. It is the only one of the four you run per feature. The other three exist because of what `implement` refuses to guess:
 
 | If you skip | What happens | Why it works that way |
 | --- | --- | --- |
