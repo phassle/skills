@@ -2,7 +2,7 @@
 name: dynamic-run-dashboard
 description: Publish or refresh the operations dashboard for a Dynamic Implement run — one page carrying what is being built, who builds and reviews each unit, and what the run has learned. Use when the user asks for a dashboard, one-pager, or status page for a run, or to refresh one after an integration milestone.
 metadata:
-  version: 0.2.0
+  version: 0.2.1
 ---
 
 A Dynamic Implement run outruns its transcript: a dependency graph, a per-unit review history, a routing policy that shifts mid-run, and a ledger nobody wants to read. This skill turns that into one page the user keeps open.
@@ -36,6 +36,7 @@ Each figure comes from a command run just now, inside the run directory `<run-st
 | Integration head, merge order, per-merge gate results | `ledger.md`, plus `git log --oneline <base>..HEAD` in the integration worktree |
 | Live test counts | run the gate yourself in the integration worktree — a worker's claim is not evidence |
 | Per-agent cost, turns, duration | `out/*.json` → `total_cost_usd`, `num_turns`, `duration_ms` |
+| Context per role, and the coordinator's own | per-agent input tokens in `out/*.json`, plus the ceiling and trend from the repository's `model-calibration.json` → `contextBudget`. Read that group's `basis` first and label the figure by it: `measured` is tokens, `prompt-bytes` is the coordinator's own measurement of the packet where the harness reports no tokens, and `none` means leave the cell blank. Never present bytes as tokens, and never mix the two in one column. A role over its ceiling belongs in the metric strip — a swelling packet is the cheapest failure to catch early |
 | Review outcomes per unit | `reports/*.md` — passes taken, findings upheld vs rejected |
 | Routing in force | the capability profile's `issueModelLadders[].roleDefaults` |
 | Agents in flight | recorded PIDs, plus the last line of each `activity/*/activity.log` |
@@ -47,7 +48,7 @@ Where a number is unavailable, leave the cell blank and say why. A visible gap i
 1. **Where is the run?** Masthead — repo, root issue, integration branch and head — then a metric strip: units integrated / in flight / queued, live test counts, reviews dispatched, spend.
 2. **What is being built?** The unit board, grouped by wave. Each card carries its own history: commit, diffstat, review passes taken, anything notable that happened to it. A unit that needed three passes and one that landed clean must not look alike.
 3. **How is work routed and reviewed?** One row per role — route, fixed or escalating, and *why* — plus the per-unit pipeline: who implements, who reviews, what each is allowed to see. Behind that, model usage: one row per model+effort actually dispatched, with agents, turns, duration and measured cost, so the policy above can be read against what the run really spent.
-4. **What did the run learn?** Routing changes made mid-run and safeguards written back into the skills, each paired with the failure that produced it. This is the band people reread.
+4. **What did the run learn?** Routing changes made mid-run and safeguards the retrospective wrote to the repository's `findings.json`, each paired with the failure that produced it and the route it happened on. This is the band people reread.
 
 Four bands is the design. The page's value is that it stays scannable. `template.html` ships exactly these four, in this order — you fill them, you do not re-order them.
 

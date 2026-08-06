@@ -16,7 +16,7 @@ Eligible telemetry whose stable group key names a harness the file does not yet 
 
 ## Shape
 
-```json
+```jsonc
 {
   "schemaVersion": 1,
   "updatedAt": "RFC-3339",
@@ -82,6 +82,21 @@ Eligible telemetry whose stable group key names a harness the file does not yet 
         "cheapestObservedStep": null,
         "confidence": "low|medium|high"
       },
+      "contextBudget": {
+        "basis": "measured|prompt-bytes|none",
+        "byRole": [
+          {
+            "role": "planner|implementer|reviewer|merger|coordinator",
+            "inputTokensMedian": null,
+            "promptBytesMedian": null,
+            "previousMedian": null,          // same unit as basis; never a token/byte mix
+            "trend": "flat|growing|shrinking",
+            "ceiling": null,
+            "breaches": 0,
+            "growthNote": "role and phase responsible, or null"
+          }
+        ]
+      },
       "externalReview": {
         "lastCheckedAt": "RFC-3339, or null if never checked",
         "examined": ["route ids and sources looked at this run"],
@@ -127,3 +142,5 @@ Eligible telemetry whose stable group key names a harness the file does not yet 
 Every boundary step stores exact model and effort. A `ladderIndex` is a convenience tied to `catalogFingerprint`, which identifies one harness's ladder: setup or Dynamic Implement remaps the portable route/model/effort against that harness's current ladder and ignores a stale index. An index never travels between harnesses.
 
 Unknown metrics are `null`. Estimates never enter the file.
+
+A `contextBudget` row measured in `prompt-bytes` is never compared against one measured in tokens — the basis travels with the group so a later run cannot mistake one for the other. `previousMedian` carries the same unit as the group's `basis`: when the basis changes because a harness started or stopped reporting tokens, reset `previousMedian` to `null` and let the trend rebuild rather than comparing across units. `ceiling` is advisory: Dynamic Implement reports a breach and continues, because a packet trimmed below its role contract fails the unit instead of the budget.

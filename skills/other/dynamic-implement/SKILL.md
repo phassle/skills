@@ -2,7 +2,7 @@
 name: dynamic-implement
 description: "Orient repository work when explicitly invoked without an issue, or implement one spec-level issue end to end with planning, TDD, clean-context review, integration, and tracker updates."
 metadata:
-  version: 0.2.0
+  version: 0.3.0
 ---
 
 One specified issue goes in; one evidence-backed ready pull request comes out. Orchestrate installed planning, TDD, review, tracker, and Git skills—never replace them.
@@ -69,6 +69,7 @@ Read each file completely before the named phase:
 | [implementer-contract.md](references/implementer-contract.md) | implementation or recovery handoff |
 | [review-contract.md](references/review-contract.md) | accepting a worker or integration branch |
 | [merger-contract.md](references/merger-contract.md) | integration, target reconcile, PR, or cleanup |
+| [findings-file.md](references/findings-file.md) | writing a retrospective safeguard |
 
 ## Entry modes
 
@@ -151,7 +152,7 @@ Re-fetch tracker and Git state and replan after each integration wave. Reconcile
 
 After verified human-authorized final integration, complete run-owned cleanup from the ledger without another pause. Prove reachability, remove only clean worktrees and safely merged branches carrying this run token, preserve uncertain state, prune metadata, and fast-forward only clean non-diverged long-lived targets. The run remains incomplete until every run-owned item is removed or the user chooses to retain it.
 
-If requested, finish the retrospective before handoff: classify corrections, add concise reusable safeguards to installed skills, and validate them.
+If requested, finish the retrospective before handoff. Classify each correction, then write it where it survives: a safeguard about this repository goes to `<repo>/.agents/dynamic-implement/findings.json` with the route that produced it, per [findings-file](references/findings-file.md); an installed skill directory is a workspace, and reinstalling it discards anything stored there. A safeguard that applies anywhere is recorded with `scope: "portable"` and proposed to the skill's source repository. Record the route always — a safeguard whose failing route is unknown can never be revalidated. Validate whatever you change.
 
 ## Stop conditions
 
