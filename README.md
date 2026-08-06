@@ -34,11 +34,15 @@ Every session loads plugins, skills, agents and MCP schemas before you type anyt
 
 ![The tokenomics report](./docs/tokenomics-report.png)
 
-## `dynamic-*` — point at a spec, get a PR
+## Build a whole feature on the cheapest model that can do it
 
-You point at a parent spec. Every child ticket under it gets its own worktree and its own fresh agent, is reviewed by a *different* agent that never saw the code being written, and is merged into one feature PR.
+Point at a spec. Every child ticket under it is built and reviewed automatically, and you get one feature PR — **and every ticket starts on the cheapest model, not the best one.**
 
-**It builds on a cheap model on purpose.** Tickets start on the smallest verified model step and only escalate when one actually fails. The big model is spent where it pays — planning the split, and reviewing the result. Runs on your existing subscription login; no API key needed.
+That is where the savings are. A ticket is dispatched at the lowest model step this machine has *verified*. It only moves up a step when an attempt actually fails, so you pay for the expensive model on the tickets that genuinely need it instead of on all of them. The big model is reserved for the two places an error is expensive — planning the split, and reviewing the result — because a bad decomposition costs a whole wave and a missed review ships a bug.
+
+Then it learns. Calibration measures **cost to acceptance**: every attempt a ticket consumed, including the retries and re-reviews a too-weak model forces. A step that is cheap per token but needs three passes is dearer than the strong step that lands it once — so the floor moves to whatever actually gets work accepted for the least total spend, per repo and per kind of change.
+
+Three more things that cut the bill: each ticket runs in a fresh context, so nothing drags the whole build's history along; each agent is handed paths, SHAs and diffs rather than transcripts; and it runs on your existing subscription login, so no API key and no per-token billing to watch.
 
 Two commands you actually run:
 
@@ -50,10 +54,10 @@ Two commands you actually run:
 ```mermaid
 flowchart LR
   S["/dynamic-skills-setup<br/>once per machine"]
-  P[("capabilities.json<br/>which models really work here")]
+  P[("capabilities.json<br/>which model steps this<br/>machine can really call")]
   I["/dynamic-implement &lt;spec&gt;<br/>once per feature"]
   C["dynamic-skills-calibrate<br/>runs itself before the PR"]
-  K[("model-calibration.json<br/>what work actually cost")]
+  K[("model-calibration.json<br/>cheapest step that got<br/>work accepted")]
   D["/dynamic-run-dashboard<br/>watch a run"]
 
   S -->|writes| P
@@ -80,8 +84,11 @@ flowchart TD
   E -->|yes| F["plan — one ticket, one unit<br/>1:1, nothing merged or skipped"]
 
   subgraph wave["repeated until every ticket is done"]
-    H["fresh worktree + fresh agent<br/>TDD, full suite, commit"]
+    H["fresh worktree + fresh agent<br/>starts at the cheapest verified step<br/>TDD, full suite, commit"]
+    H2["one step up the ladder<br/>only this ticket, only on failure"]
     I["independent review — zero history,<br/>different model family"]
+    H -->|"attempt failed"| H2
+    H2 --> I
     H --> I
     I -->|findings| H
   end
@@ -122,7 +129,7 @@ Everything up to the gate is autonomous — failing checks, dead agents, review 
 
 **In development** — installable via skills.sh, under **General** in the picker. Not in the plugin; contracts still move.
 
-- **[dynamic-implement](./skills/other/dynamic-implement/SKILL.md)** — one spec end to end: plan, per-ticket worktrees, clean-context review, integrate, PR.
+- **[dynamic-implement](./skills/other/dynamic-implement/SKILL.md)** — one spec end to end: plan, per-ticket worktrees on the cheapest verified model step, escalate only on failure, clean-context review, integrate, PR.
 - **[dynamic-skills-setup](./skills/other/dynamic-skills-setup/SKILL.md)** — probe which harnesses, models and effort levels are really callable here.
 - **[dynamic-skills-calibrate](./skills/other/dynamic-skills-calibrate/SKILL.md)** — learn the cheapest model step that gets work accepted.
 - **[dynamic-run-dashboard](./skills/other/dynamic-run-dashboard/SKILL.md)** — one page for a run in flight: units, models, cost, lessons.
