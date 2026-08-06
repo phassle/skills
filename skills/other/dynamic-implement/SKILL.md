@@ -2,7 +2,7 @@
 name: dynamic-implement
 description: "Orient repository work when explicitly invoked without an issue, or implement one spec-level issue end to end with planning, TDD, clean-context review, integration, and tracker updates."
 metadata:
-  version: 0.1.0
+  version: 0.2.0
 ---
 
 One specified issue goes in; one evidence-backed ready pull request comes out. Orchestrate installed planning, TDD, review, tracker, and Git skills—never replace them.

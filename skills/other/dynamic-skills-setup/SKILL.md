@@ -3,7 +3,7 @@ name: dynamic-skills-setup
 description: "Probe the coding harnesses available to Dynamic Implement and write a verified capability profile with exact model and effort steps across Codex, Claude Code, GitHub Copilot, OpenCode, and Pi. Use before the first run, after a 14-day lease expires, when a harness or model changes, or when a verified route fails."
 disable-model-invocation: true
 metadata:
-  version: 0.1.0
+  version: 0.2.0
 ---
 
 An installed binary is not a callable model. Setup replaces assumption with **proof**: every model-and-effort step in the profile earned its place by answering a live probe on this machine, and anything merely advertised is parked where nobody can route work to it.
