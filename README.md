@@ -64,9 +64,11 @@ flowchart LR
   I -.-> D
 ```
 
-`/dynamic-run-dashboard` gives you one page for the run — units per wave, who built and reviewed each one, what each model cost, and what the run learned:
+`/dynamic-run-dashboard` gives you one page for the run — every child ticket per wave, who built and reviewed each one, what each model cost, and what the run learned:
 
 ![The run dashboard](./docs/dynamic-run-dashboard.png)
+
+<sub>Rendered from [`example-run.json`](./skills/other/dynamic-run-dashboard/references/example-run.json) — simulated events, real verified routes.</sub>
 
 <details>
 <summary><b>What one run does</b> — spec in, child tickets worked off, one PR out</summary>

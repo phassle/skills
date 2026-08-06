@@ -22,6 +22,8 @@ Keep `why` short and self-contained — it is read aloud as the cell's whole con
 
 Never substitute an estimate. A visible gap is worth more than a number the reader can't trust.
 
+A complete, valid example lives beside this file in [`example-run.json`](example-run.json) — six children across three waves, one queued behind a native edge, gaps with and without reasons, and the usage table. It renders the screenshot in the repository README, so it is kept working.
+
 ## Shape
 
 ```jsonc
