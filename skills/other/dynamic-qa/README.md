@@ -24,7 +24,8 @@ an absent, stale, or unverified profile stops the run before any mutation with t
 exact manual setup command. See `SPEC.md ### Installation precondition: a verified Dynamic
 setup profile`.
 
-## Mirror
+## Source and installation
 
-This root is the source of truth. Mirror any edit here to `~/.codex/skills/dynamic-qa/`, the
-same way the other dynamic skills are mirrored, or the two copies drift.
+This directory is planning source only. Do not install or mirror it into a harness skill root: without `SKILL.md`, it is not a skill.
+
+When built, `qa-setup` and `qa-generate` become sibling directories under `skills/other/` and are installed independently. Keep genuine WIP without `SKILL.md` or uncommitted; any committed directory containing `SKILL.md` is immediately discoverable through skills.sh.

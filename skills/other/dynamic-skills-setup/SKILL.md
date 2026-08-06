@@ -1,6 +1,6 @@
 ---
 name: dynamic-skills-setup
-description: "Probe the coding harnesses available to Dynamic Implement and write a verified capability profile — exact model and effort steps across Codex, Claude Code, GitHub Copilot, OpenCode, and Pi."
+description: "Probe the coding harnesses available to Dynamic Implement and write a verified capability profile with exact model and effort steps across Codex, Claude Code, GitHub Copilot, OpenCode, and Pi. Use before the first run, after a 14-day lease expires, when a harness or model changes, or when a verified route fails."
 disable-model-invocation: true
 metadata:
   version: 0.1.0

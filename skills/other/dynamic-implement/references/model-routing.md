@@ -1,5 +1,15 @@
 # Per-issue model routing
 
+## Contents
+
+- Final integration runs at the planner's tier
+- Planner triage
+- Choose the start step from evals
+- Resolve the issue policy
+- Escalate deliberately
+- Learn from verified outcomes
+- Dynamic implementation telemetry
+
 Treat model selection as an issue policy. Logical tiers are portable; setup maps them to verified harness/model routes:
 
 ```text

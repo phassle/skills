@@ -2,6 +2,12 @@
 
 `<repo>/.agents/dynamic-implement/model-calibration.json` — tracked, team-owned, written only by this skill.
 
+## Contents
+
+- Writing it
+- Shape
+- Portability
+
 ## Writing it
 
 Read the latest file immediately before writing, merge by stable group key, validate the JSON, and replace it atomically. Preserve unrelated groups, and keep the last-known-good file on failure.

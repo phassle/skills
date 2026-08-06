@@ -94,18 +94,21 @@ regression.
 
 ## 4. Distribution and installation
 
-Ship two complete, independently loadable skill directories as one versioned
-bundle:
+Ship two complete, independently loadable sibling skill directories as one versioned
+bundle. In this repository they live under the single staging category, never nested
+inside this specification directory:
 
 ```text
-qa-setup/
+skills/other/qa-setup/
   SKILL.md
+  agents/openai.yaml
   references/
   assets/schemas/
   assets/providers/github-actions/
   scripts/
-qa-generate/
+skills/other/qa-generate/
   SKILL.md
+  agents/openai.yaml
   references/
   assets/schemas/
   scripts/
@@ -127,6 +130,28 @@ Both skills require explicit user or coordinator invocation. Natural-language
 intent alone cannot start setup, generation, repair, verification, or an external
 write. Dynamic Implement may invoke them explicitly for a ticket referencing a
 Flow ID, but their review and safety gates still apply.
+
+Each `SKILL.md` is orchestration-only and targets at most 120 lines. Put schemas,
+contracts, provider rules, examples, and sourced rationale in focused one-level
+references; put deterministic validation, canonicalization, collection, and rendering
+in tested scripts. A reference longer than 100 lines starts with a contents list.
+Every reference is linked directly from `SKILL.md` with an exact read condition.
+
+Descriptions carry purpose and invocation context even though model invocation is
+disabled. Use these initial contracts, then optimize them against explicit-entry and
+near-miss queries before release:
+
+```yaml
+description: "Design or resume QA-owned critical-flow contracts, safe execution profiles, measurement readiness, and provider-native CI proposals. Use when explicitly running qa-setup for a repository."
+```
+
+```yaml
+description: "Generate or adopt deterministic Bindings for approved QA flows, or diagnose one CI failure and propose a guarded Binding repair. Use when explicitly running qa-generate with a Flow ID or evidence bundle."
+```
+
+Both frontmatters retain `disable-model-invocation: true`; both Codex metadata files set
+`allow_implicit_invocation: false`, use a 25–64 character `short_description`, and give
+one concise default prompt naming `$qa-setup` or `$qa-generate`.
 
 ### Installation precondition: a verified Dynamic setup profile
 
@@ -750,6 +775,15 @@ integrated release includes:
 
 Release acceptance is automated where possible and includes:
 
+- both `SKILL.md` files stay within the orchestration budget, link every conditional
+  resource directly, and duplicate no schema, provider, or rationale text;
+- each skill starts with 2–3 realistic clean-context evals, including one malformed or
+  unsafe boundary case, then expands from observed failures; every run compares the
+  skill with the previous version, records duration and tokens when available, and
+  grades objective assertions from concrete evidence;
+- explicit-entry trigger evals include casual, formal, typo-bearing, and context-heavy
+  invocations plus near misses that must not start QA mutation; release requires stable
+  invocation behavior across repeated runs rather than one successful sample;
 - every schema accepts a canonical fixture and rejects unknown fields, duplicate YAML
   keys, aliases/tags, executable content, invalid IDs/revisions, and secret values;
 - identical parsed data canonicalizes to an identical digest; semantic edits change it;

@@ -1,5 +1,14 @@
 # Probe and profile contract
 
+## Contents
+
+- Safety and freshness
+- Profile schema
+- Role defaults
+- Merge semantics
+- Model-family evidence
+- Staleness and failure
+
 ## Safety and freshness
 
 A model/effort step is `verified` only after a successful live, minimal response using that exact selectable combination. Binary discovery, `--version`, help text, and a successful response at another effort prove neither authentication nor support for this step.

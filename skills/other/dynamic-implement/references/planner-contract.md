@@ -1,5 +1,11 @@
 # Planner contract
 
+## Contents
+
+- Structured result
+- Deciding what runs in parallel
+- Planner rules
+
 Run the planner in a fresh, read-only context. Let it inspect the issue, comments, repository, tests, domain docs, ADRs, Git policy, and tracker configuration. Do not give it a preferred decomposition.
 
 Give it a private agent-log directory and the event command from `observability.md`. Require `started`, a `decision` summarizing the chosen decomposition and dependency evidence, and a terminal `completed` or `blocked` event. The planner must not read another agent's log.
