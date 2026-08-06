@@ -61,3 +61,11 @@ Each dispatched agent gets its own activity directory and log destination, and m
 ## 14. One design system, one filled template per report skill
 
 Every skill that publishes a page ships its own `template.html` carrying the same Monterro token block — colours, Arial, orange accent rules, light/dark pair, embedded logo — and its own `references/DATA-SHAPE.md`. The skill copies the file and replaces the single `/*__DATA__*/` placeholder; styling is never authored per run. `tokenomics` and `dynamic-run-dashboard` differ only in components (audit table and apply-prompts vs unit board and routing table), so two reports from two skills read as one product. The cost is a duplicated token block per template — deliberate: each template stays a single self-contained file that publishes anywhere, with no shared asset to resolve at render time.
+
+## 15. Cheapest verified step first, escalate on evidence
+
+Work is dispatched at the lowest model/effort step `dynamic-skills-setup` has live-verified, never at the best available one, and moves up exactly one rung when an attempt actually fails — per ticket, not per run, so one hard ticket never re-prices the rest. The expensive model is reserved for the two roles where an error is expensive rather than merely wrong: planning, where a bad decomposition costs a whole wave, and independent review, where a miss ships a bug.
+
+`dynamic-skills-calibrate` then moves the floor on measurement, not intuition: `costToAcceptance` sums **every** attempt a unit consumed at a starting step — the first try, capability retries, fix passes, and the extra reviews those fixes forced. That is what makes "cheap" checkable, because a step cheap per token that needs three passes is dearer than the strong step that lands it once. Raise the floor fast (two comparable units), lower it slowly (five clean ones), and move at most one rung per calibration.
+
+The same asymmetry governs safeguards (pattern 9): flag on a route change, retire only on evidence. Both encode one rule — the cost of being wrong is not symmetric, so the thresholds must not be either.
