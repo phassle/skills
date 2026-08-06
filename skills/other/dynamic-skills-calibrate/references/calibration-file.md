@@ -2,6 +2,12 @@
 
 `<repo>/.agents/dynamic-implement/model-calibration.json` — tracked, team-owned, written only by this skill.
 
+## Contents
+
+- Writing it
+- Shape
+- Portability
+
 ## Writing it
 
 Read the latest file immediately before writing, merge by stable group key, validate the JSON, and replace it atomically. Preserve unrelated groups, and keep the last-known-good file on failure.
@@ -14,7 +20,7 @@ Eligible telemetry whose stable group key names a harness the file does not yet 
 {
   "schemaVersion": 1,
   "updatedAt": "RFC-3339",
-  "source": "GitHub issue model-telemetry:v1 sections",
+  "source": "run-ledger bundle or consented tracker-comment model-telemetry:v1 records",
   "groups": [
     {
       "key": "stable repository-owned group key",

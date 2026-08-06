@@ -33,7 +33,7 @@ Use three synchronized layers:
 2. run ledger: branches, worktrees, SHAs, attempts, models, raw verification/review evidence, blocker, and exact next action;
 3. native Goal/task UI: optional harness-local mirror for continuation and visibility.
 
-Do not create duplicate child issues merely to mirror a native task list. Use existing child issues when they represent the plan; create new tickets only through the approved planning/decomposition workflow. Record `goalMechanism: issue-tracker+native+ledger` or `goalMechanism: issue-tracker+ledger`.
+Do not create child issues or duplicate them in a native task list. Use the existing `ready-for-agent` graph. When decomposition is missing or invalid, request HITL and direct the human to the approved `to-tickets` workflow. Record `goalMechanism: issue-tracker+native+ledger` or `goalMechanism: issue-tracker+ledger`.
 
 ## Persist until the plan is executed
 
@@ -52,6 +52,8 @@ An agent or subagent returning early, null, timing out, or losing context is a r
 Do not yield a completion response or mark the goal complete until all are true:
 
 - the planner contract is valid and every approved unit is accounted for;
+- every descendant child carries `ready-for-agent`, appears exactly once in the coverage matrix, and retains its immutable ticket contract;
+- every open descendant maps 1:1 to one unit, and every closed descendant has verified integration evidence;
 - every unit is integrated into the policy-defined target in dependency order;
 - targeted, full, and required acceptance checks pass on the combined result;
 - the final independent Matt `code-review` and every acceptance-criteria row pass from a clean reviewer context;
@@ -60,6 +62,7 @@ Do not yield a completion response or mark the goal complete until all are true:
 - every run-created worktree and branch is removed after verified integration, or the user explicitly chose to retain it; dirty, unmerged, or uncertain run-owned state is preserved safely but keeps the goal incomplete;
 - applicable clean, non-diverged local long-lived targets are fast-forwarded to their remotes and all other branch divergence is reported without destructive synchronization;
 - no requested acceptance criterion or planned unit remains open.
+- no child ticket or HITL contract question remains unresolved.
 
 A merge into `develop` or `main` is always human-gated. A ready PR targeting either branch with green checks/reviews transitions the goal to `waiting-user`; it is neither complete nor blocked. Broad authorization given before the PR and evidence existed does not satisfy the gate. Completion requires either the human to merge it or a new post-evidence human instruction authorizing the agent to merge that specific current PR/branch. Internal worker merges into the feature/integration branch do not trigger this gate. If the user explicitly defined PR creation—not integration—as the terminal outcome, complete that narrower goal without merging.
 

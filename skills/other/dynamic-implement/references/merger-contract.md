@@ -1,5 +1,12 @@
 # Merger contract
 
+## Contents
+
+- Unit integration
+- Reconciling with a target that moved
+- After the batch
+- Post-merge cleanup
+
 Run exactly one merger with exclusive access to the integration worktree. Supply the pinned base, integration branch, documented Git policy, accepted worker branches, dependency order, issue/spec context, and verification commands.
 
 Give it a private agent-log directory, its exact independently configured harness/model/effort/ladder step, and the event command from `observability.md`. Require `started`, one event for every merge/check/fix batch, and terminal `completed` or `blocked`; every schema-v2 event records model and effort together, and a merge handoff without those events is incomplete.
@@ -126,8 +133,10 @@ rerun affected gates. Then:
 2. Run the final two-axis `code-review` through the host's native skill invocation against the pinned base. Use the empty three-agent review-log bundle from `observability.md`, importing it only after the reviewer exits. Fix and re-review actionable findings.
 3. Confirm the integration worktree is clean and every accepted worker commit is reachable.
 4. Publish, open or update the feature/release/hotfix PR exactly as repository policy documents. Where its target is `develop` or `main`, stop at the mandatory human merge gate.
-5. Update issues with factual commit/PR, test, and review evidence. Close only after policy-defined integration succeeds.
+5. Update issues with factual commit/PR, test, and review evidence. Close each child after its reviewed commit reaches the run's feature/integration branch; leave the root open until human-authorized final integration or repository automation closes it.
 6. After verified human-authorized integration, complete the cleanup below.
+
+Before declaring the feature PR ready, re-fetch the complete descendant graph and reconcile it against the planner coverage matrix. Every child must still carry `ready-for-agent`; every open child must have exactly one accepted commit reachable from the feature branch, and every closed child must have verified integration evidence. A missing, changed, duplicate, or unresolved ticket is HITL, not a reason to rewrite the tracker or waive the slice.
 
 Never merge a PR — or perform an equivalent direct or local merge — into `develop` or `main` from broad or earlier authorization. Present the human with the specific PR/branch, target, current head SHA, checks, separate review results, machine-review identity, and unresolved risks, and record `waiting-user`. Only a new human instruction after that presentation, identifying the current PR/branch, authorizes the merger to act. Where the human authorizes agent execution, re-fetch immediately; any material head, target, check, review, or risk change requires renewed approval. A GitHub, Claude, Codex or Copilot review never counts as human approval. Internal worker-branch merges into the feature or integration branch remain autonomous.
 
@@ -150,4 +159,4 @@ Cleanup is mandatory after the human-authorized merge is verified and does not r
 6. Prune stale worktree and remote metadata. Fast-forward a clean, non-diverged local `develop` or `main` to its remote when applicable; never reset, rebase, force-push, or synchronize unrelated branches to one commit.
 7. Re-inventory worktrees and refs, then record removed and preserved items in the ledger. Cleanup is complete only when every run-owned item is removed or the user explicitly chooses to retain it; a safety-preserved dirty, unmerged, or uncertain item keeps the run incomplete.
 
-Do not merge a worker merely because it produced commits. Do not close issues before human-authorized integration into `develop` or `main`. Do not merge or push directly into `develop` or `main` without the hard gate. Writes to other release/integration branches follow repository policy and scope without expanding this gate.
+Do not merge a worker merely because it produced commits. Do not close a child before reviewed integration into the run's feature/integration branch, and never close the root before human-authorized integration into `develop` or `main`. Do not merge or push directly into either branch without the hard gate. Writes to other release/integration branches follow repository policy and scope without expanding this gate.

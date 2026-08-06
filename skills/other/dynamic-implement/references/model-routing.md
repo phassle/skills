@@ -1,5 +1,15 @@
 # Per-issue model routing
 
+## Contents
+
+- Final integration runs at the planner's tier
+- Planner triage
+- Choose the start step from evals
+- Resolve the issue policy
+- Escalate deliberately
+- Learn from verified outcomes
+- Dynamic implementation telemetry
+
 Treat model selection as an issue policy. Logical tiers are portable; setup maps them to verified harness/model routes:
 
 ```text
@@ -70,7 +80,7 @@ Before assigning implementers, give the fresh planner a compact, repo-scoped cal
 - `medium`: several modules or criteria, a shared interface, meaningful integration/testing work, or one unfamiliar risk;
 - `large`: cross-cutting protocol/schema/migration/concurrency/safety behavior, several interacting seams, or high-cost failure analysis.
 
-Large is a capability/risk classification, not permission to create an oversized ticket. Split work that cannot fit one fresh implementation context, then triage each resulting vertical unit.
+Large is a capability/risk classification, not permission to reinterpret an oversized ticket. If a `ready-for-agent` child cannot fit one fresh implementation context, stop it for HITL and ask the human to repair the decomposition through `to-tickets`; never split it inside Dynamic Implement.
 
 The planner itself uses the profile's verified planning step so model selection is not circular. **Default the planner to the strongest verified tier `T3`, at that route's second verified effort rather than its lowest** (user directive, 2026-08-02) — the same asymmetry as final integration above, for the same reason: one output amplified across every unit it schedules, with no cheap downstream catch, from a session that runs for minutes once per wave. Plan defects are reasoning failures rather than knowledge failures — a missed dependency edge, a conflict predicted at file granularity when the real unit is a symbol, a unit sized for the wrong context window — and they surface late, after implementers have been dispatched against them. That is why the planner does not start at the ladder floor the way an implementer does.
 
@@ -160,7 +170,7 @@ At the final verified ladder step, perform the allowed clean retry. If the same 
 
 ## Learn from verified outcomes
 
-After all work units are accepted into the feature branch and its combined review passes, update a dedicated managed section in each child issue's body. Use these exact boundary markers and preserve every byte outside them:
+After all work units are accepted into the feature branch and its combined review passes, write one telemetry record per child to the run ledger. If `telemetryPolicy.trackerComments` is `allow` and its scope covers this repository, upsert that record in one dedicated child-ticket comment using these markers:
 
 ````text
 <!-- dynamic-implement:model-telemetry:v1:start -->
@@ -170,6 +180,8 @@ After all work units are accepted into the feature branch and its combined revie
 ```
 <!-- dynamic-implement:model-telemetry:v1:end -->
 ````
+
+This is setup consent for lifecycle evidence, not permission to alter the ticket contract. Never put telemetry in the title, body, acceptance criteria, dependency edges, or labels. When consent is absent, denied, or out of scope, write no comment and continue with ledger telemetry only.
 
 The JSON contains:
 
@@ -230,10 +242,10 @@ Use this stable shape so later calibration is deterministic:
 
 Represent unknown metrics as `null`; never estimate or fabricate them. Include `calibrationEligible` and an exclusion reason so infrastructure, credential, ambiguity, user-pause, and other non-model failures are not learned as capability failures.
 
-Fetch the latest body immediately before editing, insert or replace only the marked section, and re-fetch to verify it. On concurrent changes, merge against the newest body and retry without overwriting user text. If the tracker cannot update issue bodies, preserve telemetry in the run ledger and report the exact blocker; do not silently move it to a comment.
+Fetch comments immediately before writing. Update only the agent-owned comment containing the exact markers and matching repo+issue; otherwise create it. Re-fetch and verify the bounded JSON. Never edit user comments or use ticket-body fallback.
 
 Never store prompts, chain-of-thought, secrets, source code, or reviewer prose in telemetry.
 
-After all planned children are merged into the feature branch and the combined independent review/acceptance matrix passes, mark every child's telemetry `evidenceStage: feature-reviewed` with outcome `feature-ready`. Before the feature PR is opened, invoke the separate `dynamic-skills-calibrate` skill in a fresh agent scoped to the root issue. It reads the full descendant graph, learns the smallest successful route-and-effort combination for comparable work, applies multi-issue thresholds, and atomically updates the repository-owned `.agents/dynamic-implement/model-calibration.json` on the policy-compliant feature branch. This tracked file—not a personal cache or the skill itself—is the source of truth for the next run. Pin the current run to the calibration version it started with.
+After all planned children are merged into the feature branch and the combined independent review/acceptance matrix passes, mark every child's ledger telemetry `evidenceStage: feature-reviewed` with outcome `feature-ready`, then mirror consented comments. Before the feature PR is opened, invoke the separate `dynamic-skills-calibrate` skill in a fresh agent scoped to the root issue and explicit ledger bundle. It reconciles the full descendant graph, learns the smallest successful route-and-effort combination for comparable work, applies multi-issue thresholds, and atomically updates the repository-owned `.agents/dynamic-implement/model-calibration.json` on the policy-compliant feature branch. This tracked file—not a personal cache or the skill itself—is the source of truth for the next run. Pin the current run to the calibration version it started with.
 
-After policy-defined integration, update the same managed sections to `evidenceStage: integrated` and record final PR/merge evidence. A later calibration may supersede the provisional feature-ready observation, keyed by issue id so it is updated rather than double-counted. User overrides always win, and reviewer routing stays blind to triage and escalation history.
+After policy-defined integration, update the same ledger records to `evidenceStage: integrated`, record final PR/merge evidence, and mirror consented comments. A later calibration may supersede the provisional feature-ready observation, keyed by issue id so it is updated rather than double-counted. User overrides always win, and reviewer routing stays blind to triage and escalation history.

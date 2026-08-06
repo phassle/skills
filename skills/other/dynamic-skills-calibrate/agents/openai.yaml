@@ -1,6 +1,4 @@
 interface:
   display_name: "Dynamic Skills Calibrate"
-  short_description: "Learn model tiers from completed issue outcomes, defaulting to the latest completed feature"
-  default_prompt: "Use $dynamic-skills-calibrate to rebuild model-tier calibration from completed issue telemetry. By default, inspect recent completed feature issues, propose the latest calibratable one, explain that you are learning from prior outcomes, and let the user override with a specific feature issue."
-policy:
-  allow_implicit_invocation: false
+  short_description: "Learn cheaper routes from accepted issue outcomes"
+  default_prompt: "Use $dynamic-skills-calibrate to rebuild routing recommendations from the latest calibratable feature issue."

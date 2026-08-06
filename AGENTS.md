@@ -27,6 +27,10 @@ Every agent session loads plugins, model-invoked skills, agent definitions, and 
 
 Second theme (staged, unreleased): `dynamic-*` — multi-agent orchestration of one issue end to end without one context window holding the whole build.
 
+## Matt Pocock workflow
+
+Dynamic Implement must always use the installed, current Matt Pocock skills and preserve their flow: `to-tickets` produces approved `ready-for-agent` vertical-slice children; one fresh agent invokes `implement` per child; `implement` owns its required `tdd`, checks, `code-review`, fixes, and commit. Orchestration may add isolation, scheduling, independent acceptance review, integration, and PR gates. Never imitate, inline, reorder, split, or replace Matt's flow. Treat each ticket contract as immutable; if it or Matt's flow cannot be followed exactly, stop that slice for HITL. Telemetry may appear only in tracker comments after explicit setup consent, never in ticket contract fields.
+
 ## HOW — commands
 
 ```bash

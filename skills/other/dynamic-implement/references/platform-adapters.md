@@ -1,5 +1,14 @@
 # Platform adapters
 
+## Contents
+
+- Explicit root entry
+- Skill invocation
+- Persistent goal
+- Subagents and isolation
+- Discovery and distribution paths
+- Issue and Git providers
+
 Keep the workflow semantic and discover capabilities at runtime. Do not hard-code one vendor's subagent tool names into worker prompts.
 
 ## Explicit root entry

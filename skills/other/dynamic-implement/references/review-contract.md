@@ -1,5 +1,14 @@
 # Independent review contract
 
+## Contents
+
+- Start from zero conversation context
+- Minimal review packet
+- Route selection
+- Findings and re-review
+- Review the assembled feature, not only its units
+- Machine review after the PR opens
+
 Review independence is an acceptance gate, not an optimization.
 
 ## Start from zero conversation context
