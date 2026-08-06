@@ -62,6 +62,82 @@ Nothing changes automatically. The report generates prompts; you read them, then
 
 Run it once, clean up, then re-run monthly — `/usage` in Claude Code shows spend per skill and plugin, and tokenomics turns that into decisions.
 
+### #2: The limit isn't the model, it's the context window
+
+**The problem.** A feature that spans eight files does not fail because the model is too weak. It fails because one conversation carries the plan, every file it touched, every test run, every review comment and every fix — and by the last unit the beginning has been compacted away. Review is worse: an agent that just wrote the code is the worst possible reviewer of it, because its reasoning is still in the window.
+
+**The fix** is the `dynamic-*` set. Each work unit gets a fresh worktree and a fresh agent with zero conversation history, hands back commits and artifacts instead of conversation, and is reviewed by a separate agent — preferably on a different model family — that never sees how the code was written. Four skills, each doing one job:
+
+```mermaid
+flowchart LR
+  S["/dynamic-skills-setup<br/>probe what this machine<br/>can actually call"]
+  P[("~/.agents/dynamic-skills/<br/>capabilities.json<br/>machine-local, 14-day lease")]
+  I["/dynamic-implement issue-123<br/>one issue, end to end"]
+  C["dynamic-skills-calibrate<br/>what did work<br/>actually cost?"]
+  K[("repo: .agents/dynamic-implement/<br/>model-calibration.json<br/>team-owned, committed")]
+  D["/dynamic-run-dashboard<br/>watch a run"]
+
+  S -->|writes| P
+  P -->|"verified routes"| I
+  I -->|"before the PR,<br/>on its own"| C
+  C -->|writes| K
+  K -->|"next run starts<br/>at a better step"| I
+  I -.->|"any time during a run"| D
+```
+
+Two stores, deliberately separate: what *this machine* can call is local and expires; what *the team learned* about cost is committed to the repo and travels.
+
+#### The order, and why
+
+**1. `/dynamic-skills-setup` — once per machine, then when it expires.** It probes each harness with a tiny live session and records only what answered: exact model ids, exact effort values, which routes can host an independent review. Anything merely advertised is parked where nothing can route work to it. Each harness's catalog is leased for 14 days, after which that harness alone is re-probed.
+
+Run it by hand. It cannot be triggered by the model and `dynamic-implement` will never invoke it for you — it spends real credits on probes, so it asks for approval and stays a visible action you chose.
+
+**2. `/dynamic-implement <issue>` — once per issue.** This is the workhorse. It needs one issue that is actually specified: observable outcome, acceptance criteria, product decisions already made. Invoked without an issue it orients instead — reads the repo, tracker and any interrupted run, tells you what it would do next, and stops without touching anything.
+
+**3. `dynamic-skills-calibrate` — mostly not by you.** `dynamic-implement` runs it automatically before opening the PR, scoped to that feature. Run it by hand only periodically after integration, or when routing feels wrong — too weak, too slow, too expensive.
+
+> **You cannot calibrate before your first run.** Calibration reads telemetry from *completed* issues, so on a fresh repo there is nothing to learn from. The first run uses the default boundary (`small → T1`, `medium → T2`, `large → T3`) and every run after it starts closer to the cheapest step that actually gets work accepted. Running calibrate first is not wrong, it is simply a no-op.
+
+**4. `/dynamic-run-dashboard` — whenever you want to see it.** One page at a stable path for a run in flight; re-run it to refresh.
+
+#### What one run actually does
+
+```mermaid
+flowchart TD
+  A["explicit invocation<br/>typed by you, not intent-matched"] --> B{"capability profile<br/>verified and unexpired?"}
+  B -->|no| B2["stops before any change,<br/>prints the exact setup command"]
+  B -->|yes| C["read repo instructions, Git strategy,<br/>full issue graph, calibration file"]
+  C --> D["claim the issue on the tracker<br/>first write, before planning"]
+  D --> E["plan — read-only planner splits the issue<br/>into units and waves"]
+  E --> F["mint one run token<br/>every branch and worktree carries it"]
+  F --> G["per unit: fresh worktree + fresh agent,<br/>TDD, full suite, commit"]
+  G --> H["independent review — new session, zero history,<br/>different model family where verified"]
+  H -->|findings| G
+  H -->|clean| I["merge — one owner of the integration<br/>worktree, serially, in dependency order"]
+  I --> J["review the combined diff, write telemetry<br/>to each issue, run calibration"]
+  J --> K["open or update the PR,<br/>machine-review it"]
+  K --> L["the gate — a human decides<br/>merge into develop or main"]
+  L --> M["cleanup: only refs carrying this run's token"]
+
+  style L fill:#FFEC9B,stroke:#FC6C54,stroke-width:2px,color:#010031
+  style B2 fill:#FFDFD1,stroke:#FC6C54,color:#010031
+```
+
+Everything up to the gate runs without asking you to manage it — a failing check, a dead agent, a model at capacity and a review finding are all things to recover from. The gate is the one hard stop: no initial instruction authorises a merge into `develop` or `main`, not "run autonomously", not "finish it". Authorisation is a new decision from you, made *after* the evidence is on the table. A machine review is evidence, never approval.
+
+#### So why not just run `/dynamic-implement` directly?
+
+You can — and after the one-time setup, that is exactly what you do. It is the only one of the four you run per issue. The other three exist because of what `implement` refuses to guess:
+
+| If you skip | What happens | Why it works that way |
+| --- | --- | --- |
+| **setup** | `implement` stops before its first write and prints the exact setup command for your harness | An installed CLI is not a callable model. Routing a unit to a model that turns out to be unavailable wastes a whole attempt, and finding out mid-run is expensive |
+| **calibrate** | Nothing breaks; every run starts at the default boundary | It only has something to say once runs have completed. It is the feedback loop, not a prerequisite |
+| **the dashboard** | Nothing breaks | It is a window into a run, never part of it |
+
+The deeper answer: the two support skills exist so `implement` can be **evidence-driven instead of optimistic**. Setup replaces "this model probably works" with a live probe. Calibration replaces "the small model is cheaper" with measured cost-to-acceptance — every attempt a route consumed, including the retries and re-reviews a too-weak model forces. A step that is cheap per token and needs three passes is dearer than the strong step that lands it in one.
+
 ## Reference
 
 Skills split on one axis — who can invoke them. **User-invoked** skills are reachable when you type them (e.g. `/tokenomics`); **model-invoked** skills can also be reached automatically by the agent when a task fits.
@@ -76,7 +152,7 @@ General workflow tools, not tied to one codebase.
 
 ### In development
 
-These are installable through skills.sh — they appear under **General** in the picker — but they are **not** in the plugin bundle and their contracts still change between commits. Install them if you want to follow along; don't build on them yet.
+How they fit together, and in what order to run them, is explained in [#2 above](#2-the-limit-isnt-the-model-its-the-context-window). These are installable through skills.sh — they appear under **General** in the picker — but they are **not** in the plugin bundle and their contracts still change between commits. Install them if you want to follow along; don't build on them yet.
 
 - **[dynamic-implement](./skills/other/dynamic-implement/SKILL.md)** — Takes one spec-level issue end to end: plans it into units, builds each under TDD in its own worktree, reviews every unit in a clean context on a different model family, integrates, and updates the tracker. No single context window holds the whole build.
 - **[dynamic-skills-setup](./skills/other/dynamic-skills-setup/SKILL.md)** — Probes which harnesses, models and effort levels are actually callable on this machine (Codex, Claude Code, Copilot, OpenCode, Pi) and writes a verified capability profile. An installed binary is not a callable model, so nothing is taken on trust.
