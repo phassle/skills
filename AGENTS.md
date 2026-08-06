@@ -49,7 +49,7 @@ This repo is published to [skills.sh](https://skills.sh/phassle/skills) as `phas
 
 - **Discovery walks every subdirectory** for `SKILL.md`. No allowlist, no manifest, no per-directory opt-out. Category dirs, staging dirs, dot-dirs — all scanned.
 - Exception: a `SKILL.md` at repo root makes that the *only* skill unless `--full-depth`. This repo has none, so the full scan applies.
-- Consequence: **anything committed containing a `SKILL.md` is an installable skill.** Repo-maintenance skills live in `.agents/` and are gitignored for exactly this reason — gitignore keeps them out of the published package; it does not stop local discovery.
+- Consequence: **anything committed containing a `SKILL.md` is an installable skill.** That is why this repo holds no upkeep skills of its own: a skill that only maintains this repo would be offered to every user who installs from it.
 - Grouping in the picker: skills listed in `plugin.json`'s `skills` array show under **Phassle Skills**; every other discovered skill falls under **General**. There is no "Other" group — a staged skill is publicly visible and installable, just ungrouped.
 - Frontmatter `description` is the entire shop window. It is what the picker prints and what a model matches on. Write it as *what it does + when to trigger*.
 - Verify discovery locally before pushing, against the working tree:
@@ -97,26 +97,22 @@ Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`
 - `skills/other/dynamic-run-dashboard/references/DATA-SHAPE.md` — JSON contract the run-dashboard template consumes.
 - `skills/other/README.md` — what the staging category means and how a skill leaves it.
 - `skills/other/dynamic-qa/SPEC.md` — buildable spec for an unbuilt two-skill QA bundle.
-- `.agents/skills/<name>/SKILL.md` — procedural know-how for maintaining *this* repo. Gitignored: local tooling, never published (see skills.sh format).
 
 ### Categories
 
 `productivity`, `engineering` — released, listed in `plugin.json`. `other` — the single staging category; everything unready lives here, currently the five `dynamic-*` bundles. No other staging dir; do not reintroduce one.
 
-### Maintenance skills
+### Installed-copy drift
 
-- `.agents/skills/new-skill/SKILL.md` — scaffold a skill folder and iterate on it locally.
-- `.agents/skills/release-skill/SKILL.md` — promote a staged skill into the plugin bundle.
-- `.agents/skills/mirror-dynamic-skills/SKILL.md` — keep `skills/other/dynamic-*` in sync with installed copies under `~/.claude/skills/` and `~/.codex/skills/`.
+There are no maintenance skills. This repo publishes skills for other people to use, so anything that only serves its own upkeep does not live here — the workflows below are the procedure, in prose, and that is deliberate.
 
-The `dynamic-*` bundles are edited **live** where they run — a run that hits a gap gets its safeguard written into the installed copy, so the installed copy is normally ahead of the repo. Nothing enforces the mirror. Run `mirror-dynamic-skills`:
+One thing still needs a habit rather than a skill. The `dynamic-*` bundles get edited **where they run**: a run that hits a gap writes the safeguard into the installed copy under `~/.claude/skills/`, so the installed copy is normally ahead of this repo. Before editing a `dynamic-*` file here, and before releasing one, compare:
 
-- **before touching a `dynamic-*` file in this repo** — otherwise the edit lands on a stale base and overwrites a safeguard a real run paid for;
-- **after a run that wrote a retrospective safeguard** into an installed skill, which is how most of these changes are born;
-- **before releasing** one of them (workflow 2), so the published bundle is the version that has actually been exercised;
-- **when the repo copy and installed copy disagree on a contract** — compare before assuming the repo is authoritative. It usually isn't.
+```bash
+diff -rq skills/other/dynamic-<name> ~/.claude/skills/dynamic-<name>
+```
 
-Check cheaply with `diff -rq skills/other/dynamic-<name> ~/.claude/skills/dynamic-<name>` before editing either side.
+A difference means the installed copy probably won — it usually carries a safeguard a real run paid for. Bring it across before editing, or the edit lands on a stale base and overwrites it.
 
 ## Workflow 1: add + test a skill (unreleased)
 
@@ -144,6 +140,6 @@ Check cheaply with `diff -rq skills/other/dynamic-<name> ~/.claude/skills/dynami
 ## Unresolved questions
 
 - The five `dynamic-*` bundles in `skills/other/` are still untracked. Committing them publishes them to skills.sh users (under **General**) ahead of any `plugin.json` entry — commit now, or hold until each is release-ready?
-- Installed copies of `dynamic-implement`, `dynamic-run-dashboard`, `dynamic-skills-calibrate` are live in agent sessions and drift from this repo by design (see Maintenance skills). The mirror is manual and easy to forget — automate it, or add a pre-edit check?
+- Installed copies of `dynamic-implement`, `dynamic-run-dashboard`, `dynamic-skills-calibrate` are live in agent sessions and drift from this repo by design (see Installed-copy drift). The `diff -rq` check is a habit, not a gate — worth enforcing somehow?
 - No `.github/` — is `claude plugin validate .` the intended only pre-push gate?
 - `skills/engineering/` still empty; first entry triggers the "create the category heading" step in workflow 2.
