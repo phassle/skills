@@ -64,6 +64,19 @@ Never substitute an estimate. A visible gap is worth more than a number the read
                 "sees": "Unit spec and the diff. Never the implementer's transcript." }]
   },
 
+  "usage": {                                             // optional; renders as a closed <details> in band 3
+    "title": "Model usage — who ran, how often, at what cost",
+    "note": "One row per model+effort actually dispatched, from <code>out/*.json</code>.",
+    "rows": [{
+      "model": "opus-5", "effort": "high", "side": "review",
+      "roles": "spec review, planning",                   // free text: which roles this route served
+      "agents": 7, "turns": 96, "duration": "41m",
+      "cost": "$3.04"                                     // or null / {"why": "…"} when unmeasurable
+    }],
+    "total": { "agents": 16, "turns": 214, "duration": "2h 08m", "cost": "$4.12",
+               "note": "API-billed agents only; 5 subscription agents unpriced." }
+  },
+
   // Band 4 — what did the run learn?
   "lessons": {
     "note": "Routing changes and safeguards made mid-run, each paired with the failure.",
@@ -92,3 +105,4 @@ Not enforced — yours to get right:
 - **`passes: 0` and `passes: null` mean different things.** Zero passes taken vs no review dispatched. Use `{"why": …}` for the second.
 - **Empty `impl` / `review` arrays** render `—`. Correct for a queued unit; a bug for an integrated one.
 - **`footer`** carries the snapshot date and the cost caveat. An unqualified total reads as complete.
+- **`usage.total` is a sum of what was measured, not of what ran.** When some agents bill against a subscription, their turns and duration still count but their cost does not — say so in `total.note` or the row's `cost` gap, or the total reads as the run's bill.

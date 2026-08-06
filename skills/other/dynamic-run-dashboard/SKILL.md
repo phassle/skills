@@ -46,7 +46,7 @@ Where a number is unavailable, leave the cell blank and say why. A visible gap i
 
 1. **Where is the run?** Masthead — repo, root issue, integration branch and head — then a metric strip: units integrated / in flight / queued, live test counts, reviews dispatched, spend.
 2. **What is being built?** The unit board, grouped by wave. Each card carries its own history: commit, diffstat, review passes taken, anything notable that happened to it. A unit that needed three passes and one that landed clean must not look alike.
-3. **How is work routed and reviewed?** One row per role — route, fixed or escalating, and *why* — plus the per-unit pipeline: who implements, who reviews, what each is allowed to see.
+3. **How is work routed and reviewed?** One row per role — route, fixed or escalating, and *why* — plus the per-unit pipeline: who implements, who reviews, what each is allowed to see. Behind that, model usage: one row per model+effort actually dispatched, with agents, turns, duration and measured cost, so the policy above can be read against what the run really spent.
 4. **What did the run learn?** Routing changes made mid-run and safeguards written back into the skills, each paired with the failure that produced it. This is the band people reread.
 
 Four bands is the design. The page's value is that it stays scannable. `template.html` ships exactly these four, in this order — you fill them, you do not re-order them.

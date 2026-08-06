@@ -264,6 +264,7 @@
     </table>
   </div>
   <div id="pipeline"></div>
+  <div id="usage"></div>
 
   <h2>What did the run learn?</h2>
   <p class="note" id="lessonsNote"></p>
@@ -381,6 +382,28 @@ if (pipe && pipe.steps && pipe.steps.length) {
     `<details open><summary>${esc(pipe.title || "Per-unit pipeline")}</summary><div class="inner">` +
     `${pipe.note ? `<p class="note" style="margin-top:0">${pipe.note}</p>` : ""}` +
     `<table><thead><tr><th>Stage</th><th>Who</th><th>What it may see</th></tr></thead><tbody>${rows}</tbody></table>` +
+    `</div></details>`);
+}
+
+// Model usage — one row per model+effort actually dispatched, from out/*.json.
+const usage = DATA.usage;
+if (usage && usage.rows && usage.rows.length) {
+  const rows = usage.rows.map(r =>
+    `<tr><td>${mchips([{ model: r.model, effort: r.effort }], r.side === "review" ? "rev" : r.side === "implement" ? "impl" : "plain")}</td>` +
+    `<td class="desc">${r.roles ? esc(r.roles) : "<span class='gap'>—</span>"}</td>` +
+    `<td class="r num">${cell(r.agents)}</td><td class="r num">${cell(r.turns)}</td>` +
+    `<td class="r num">${cell(r.duration)}</td><td class="r num">${cell(r.cost)}</td></tr>`).join("");
+  const tot = usage.total;
+  const foot = tot
+    ? `<tr><td><strong>Total</strong></td><td class="desc">${esc(tot.note || "")}</td>` +
+      `<td class="r num"><strong>${cell(tot.agents)}</strong></td><td class="r num"><strong>${cell(tot.turns)}</strong></td>` +
+      `<td class="r num"><strong>${cell(tot.duration)}</strong></td><td class="r num"><strong>${cell(tot.cost)}</strong></td></tr>`
+    : "";
+  document.getElementById("usage").insertAdjacentHTML("beforeend",
+    `<details><summary>${esc(usage.title || "Model usage — who ran, how often, at what cost")}</summary><div class="inner">` +
+    `${usage.note ? `<p class="note" style="margin-top:0">${usage.note}</p>` : ""}` +
+    `<table><thead><tr><th>Model · effort</th><th>Roles</th><th class="r">Agents</th><th class="r">Turns</th>` +
+    `<th class="r">Duration</th><th class="r">Measured cost</th></tr></thead><tbody>${rows}${foot}</tbody></table>` +
     `</div></details>`);
 }
 
