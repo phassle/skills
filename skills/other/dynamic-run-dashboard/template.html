@@ -126,6 +126,8 @@
   code, .mono { font-family: var(--mono); font-size: .9em; }
   .num { font-variant-numeric: tabular-nums; }
   .gap { color: var(--ink-3); }
+  /* A gap that carries a reason is marked, so it is discoverable without hovering every dash. */
+  .gap.why { text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
 
   /* masthead — where the run is */
   .masthead { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px 20px; box-shadow: var(--shadow-sm); }
@@ -205,8 +207,9 @@
   .lessons { display: grid; gap: 12px; margin-top: 12px; }
   .lesson { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px 18px; box-shadow: var(--shadow-sm); }
   .lesson .t { font-weight: 600; font-size: 14px; color: var(--ink-head); }
-  .lesson .kind { font-size: 11px; font-weight: 600; border-radius: var(--r-pill); padding: 1px 9px; margin-left: 8px; vertical-align: 1px; color: var(--ink-head); background: var(--yellow); }
-  @media (prefers-color-scheme: dark) { .lesson .kind { color: #010031; } }
+  /* Navy on yellow in every theme: the chip keeps its own background, so it must not
+     inherit a theme-dependent ink or it goes off-white on yellow under a forced theme. */
+  .lesson .kind { font-size: 11px; font-weight: 600; border-radius: var(--r-pill); padding: 1px 9px; margin-left: 8px; vertical-align: 1px; color: #010031; background: var(--yellow); }
   .lesson dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 8px 0 0; font-size: 13px; color: var(--ink-2); }
   .lesson dt { color: var(--ink-3); white-space: nowrap; }
   .lesson dd { margin: 0; }
@@ -278,10 +281,14 @@
 const DATA = /*__DATA__*/ null;
 
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-// A missing figure stays visibly missing, with its reason on hover — never estimated.
+// A missing figure stays visibly missing — never estimated. An em dash alone says nothing to
+// a screen reader, so the reason travels in aria-label; title only adds it for mouse hover.
+const gap = why => why
+  ? `<span class="gap why" title="${esc(why)}" aria-label="Not available: ${esc(why)}">—</span>`
+  : `<span class="gap" aria-label="not available">—</span>`;
 const cell = v => v === null || v === undefined || v === ""
-  ? `<span class="gap">—</span>`
-  : (typeof v === "object" ? `<span class="gap" title="${esc(v.why || "not available")}">—</span>` : esc(v));
+  ? gap(null)
+  : (typeof v === "object" ? gap(v.why || "no reason recorded") : esc(v));
 const STATES = { ok: "Integrated", live: "In flight", waiting: "Queued", blocked: "Blocked" };
 
 if (DATA.title) document.getElementById("title").textContent = DATA.title;
@@ -313,7 +320,7 @@ document.getElementById("barLeft").textContent = prog.total
 document.getElementById("barRight").textContent = prog.label || "";
 
 function mchips(list, cls) {
-  if (!list || !list.length) return `<span class="gap">—</span>`;
+  if (!list || !list.length) return gap(null);
   return list.map(a =>
     `<span class="mchip ${cls}">${esc(a.model)}${a.effort ? `<span class="eff">${esc(a.effort)}</span>` : ""}` +
     `${a.role ? ` · ${esc(a.role)}` : ""}</span>`).join("");
@@ -369,14 +376,14 @@ for (const r of (DATA.routing && DATA.routing.roles) || []) {
     `<tr><td><div class="name">${esc(r.role)}</div></td>` +
     `<td>${mchips(r.route, r.side === "review" ? "rev" : r.side === "implement" ? "impl" : "plain")}</td>` +
     `<td class="mono" style="font-size:12px;color:var(--ink-3)">${cell(r.escalation)}</td>` +
-    `<td><div class="desc">${r.why ? r.why : "<span class='gap'>—</span>"}</div></td></tr>`);
+    `<td><div class="desc">${r.why ? r.why : gap(null)}</div></td></tr>`);
 }
 
 const pipe = DATA.pipeline;
 if (pipe && pipe.steps && pipe.steps.length) {
   const rows = pipe.steps.map(s =>
     `<tr><td><div class="name">${esc(s.stage)}</div></td><td>${mchips(s.who, s.side === "review" ? "rev" : "impl")}</td>` +
-    `<td><div class="desc">${s.sees ? s.sees : "<span class='gap'>—</span>"}</div></td></tr>`).join("");
+    `<td><div class="desc">${s.sees ? s.sees : gap(null)}</div></td></tr>`).join("");
   document.getElementById("pipeline").insertAdjacentHTML("beforeend",
     `<details open><summary>${esc(pipe.title || "Per-unit pipeline")}</summary><div class="inner">` +
     `${pipe.note ? `<p class="note" style="margin-top:0">${pipe.note}</p>` : ""}` +
@@ -389,7 +396,7 @@ const usage = DATA.usage;
 if (usage && usage.rows && usage.rows.length) {
   const rows = usage.rows.map(r =>
     `<tr><td>${mchips([{ model: r.model, effort: r.effort }], r.side === "review" ? "rev" : r.side === "implement" ? "impl" : "plain")}</td>` +
-    `<td class="desc">${r.roles ? esc(r.roles) : "<span class='gap'>—</span>"}</td>` +
+    `<td class="desc">${r.roles ? esc(r.roles) : gap(null)}</td>` +
     `<td class="r num">${cell(r.agents)}</td><td class="r num">${cell(r.turns)}</td>` +
     `<td class="r num">${cell(r.duration)}</td><td class="r num">${cell(r.cost)}</td></tr>`).join("");
   const tot = usage.total;
@@ -411,8 +418,8 @@ for (const l of (DATA.lessons && DATA.lessons.items) || []) {
   lessonsEl.insertAdjacentHTML("beforeend",
     `<article class="lesson"><span class="t">${esc(l.title)}</span>` +
     `${l.kind ? `<span class="kind">${esc(l.kind)}</span>` : ""}` +
-    `<dl><dt>Failure</dt><dd>${l.failure || "<span class='gap'>—</span>"}</dd>` +
-    `<dt>Change</dt><dd>${l.change || "<span class='gap'>—</span>"}</dd>` +
+    `<dl><dt>Failure</dt><dd>${l.failure || gap(null)}</dd>` +
+    `<dt>Change</dt><dd>${l.change || gap(null)}</dd>` +
     `${l.landed ? `<dt>Landed in</dt><dd class="mono">${esc(l.landed)}</dd>` : ""}</dl></article>`);
 }
 if (!lessonsEl.innerHTML) lessonsEl.innerHTML = `<p class="note">Nothing recorded yet — the run has produced no routing change or safeguard so far.</p>`;

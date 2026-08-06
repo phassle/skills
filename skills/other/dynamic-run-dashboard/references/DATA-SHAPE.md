@@ -14,9 +14,11 @@ Everything else is escaped, including all ids, models, efforts, commits, diffsta
 
 Three ways to say "no number", in order of preference:
 
-- `null` → renders `—` in grey.
-- `{"why": "review not dispatched yet"}` → renders `—` with the reason on hover. Use when the reason is the interesting part.
+- `null` → renders `—` in grey, announced to a screen reader as "not available".
+- `{"why": "review not dispatched yet"}` → renders a dotted-underlined `—`, the reason on hover and in its `aria-label`. Use when the reason is the interesting part.
 - Omit the key → same as `null`.
+
+Keep `why` short and self-contained — it is read aloud as the cell's whole content, so "review not dispatched yet" works and "see note" does not.
 
 Never substitute an estimate. A visible gap is worth more than a number the reader can't trust.
 
