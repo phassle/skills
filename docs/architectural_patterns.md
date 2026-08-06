@@ -36,6 +36,8 @@ Never equate an installed binary with a callable model. `dynamic-skills-setup` l
 
 ## 9. Three knowledge stores, split by portability
 
+Throughout this pattern, `<repo>` and "tracked" mean the repository the skills are *operating on*, never this one — this repo gitignores `.agents/`, and a skill must not write findings about someone else's codebase into its own.
+
 Machine-local facts (executable paths, auth state, live route availability) live in `~/.agents/dynamic-skills/capabilities.json`, written by `dynamic-skills-setup`. Team-portable learned outcomes live in the tracked `.agents/dynamic-implement/model-calibration.json`, written by `dynamic-skills-calibrate`. Safeguards a run learned about a repository live beside it in the tracked `.agents/dynamic-implement/findings.json`, written by `dynamic-implement`'s retrospective and re-stated — never authored — by calibration.
 
 No skill writes findings into its own installed directory: a skill is an engine, not a store, and an installed directory is discarded by the next reinstall. That splits a retrospective by scope rather than by convenience — what is true of this repository goes to the repository, what is true of the orchestration everywhere becomes a proposal against the skill's source repo. Each finding carries the route that produced it, which is what later lets calibration tell a safeguard that still earns its place from one a newer model made obsolete.

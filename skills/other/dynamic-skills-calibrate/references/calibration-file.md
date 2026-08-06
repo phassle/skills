@@ -16,7 +16,7 @@ Eligible telemetry whose stable group key names a harness the file does not yet 
 
 ## Shape
 
-```json
+```jsonc
 {
   "schemaVersion": 1,
   "updatedAt": "RFC-3339",
@@ -89,7 +89,7 @@ Eligible telemetry whose stable group key names a harness the file does not yet 
             "role": "planner|implementer|reviewer|merger|coordinator",
             "inputTokensMedian": null,
             "promptBytesMedian": null,
-            "previousMedian": null,
+            "previousMedian": null,          // same unit as basis; never a token/byte mix
             "trend": "flat|growing|shrinking",
             "ceiling": null,
             "breaches": 0,
@@ -143,4 +143,4 @@ Every boundary step stores exact model and effort. A `ladderIndex` is a convenie
 
 Unknown metrics are `null`. Estimates never enter the file.
 
-A `contextBudget` row measured in `prompt-bytes` is never compared against one measured in tokens — the basis travels with the group so a later run cannot mistake one for the other. `ceiling` is advisory: Dynamic Implement reports a breach and continues, because a packet trimmed below its role contract fails the unit instead of the budget.
+A `contextBudget` row measured in `prompt-bytes` is never compared against one measured in tokens — the basis travels with the group so a later run cannot mistake one for the other. `previousMedian` carries the same unit as the group's `basis`: when the basis changes because a harness started or stopped reporting tokens, reset `previousMedian` to `null` and let the trend rebuild rather than comparing across units. `ceiling` is advisory: Dynamic Implement reports a breach and continues, because a packet trimmed below its role contract fails the unit instead of the budget.

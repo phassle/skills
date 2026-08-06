@@ -3,21 +3,70 @@
   "purpose": "Six immutable <code>ready-for-agent</code> children move through Matt Pocock implementation, independent acceptance review, integration, calibration, and the human merge gate.",
   "subtitle": "Simulated run events over routes verified on a real machine — example data for the contract in <code>DATA-SHAPE.md</code>, not a live run.",
   "masthead": [
-    { "label": "Repository", "value": "phassle/skills", "mono": true },
-    { "label": "Root issue", "value": "#42", "mono": true },
-    { "label": "Integration branch", "value": "feature/42-dynamic-orchestration-a7k2m", "mono": true },
-    { "label": "Integration head", "value": "e4c19b7", "mono": true },
-    { "label": "Target", "value": "develop", "mono": true },
-    { "label": "Run token", "value": "a7k2m", "mono": true }
+    {
+      "label": "Repository",
+      "value": "phassle/skills",
+      "mono": true
+    },
+    {
+      "label": "Root issue",
+      "value": "#42",
+      "mono": true
+    },
+    {
+      "label": "Integration branch",
+      "value": "feature/42-dynamic-orchestration-a7k2m",
+      "mono": true
+    },
+    {
+      "label": "Integration head",
+      "value": "e4c19b7",
+      "mono": true
+    },
+    {
+      "label": "Target",
+      "value": "develop",
+      "mono": true
+    },
+    {
+      "label": "Run token",
+      "value": "a7k2m",
+      "mono": true
+    }
   ],
   "tiles": [
-    { "label": "Children integrated", "value": "4 / 6", "hint": "waves 1–2 complete, 1:1 with tickets" },
-    { "label": "In flight", "value": "1", "hint": "whole-feature review; 1 queued behind a native edge" },
-    { "label": "Combined tests", "value": "128 / 128", "hint": "gate run just now at the integration head" },
-    { "label": "Reviews dispatched", "value": "9", "hint": "6 unit passes, 3 feature passes" },
-    { "label": "Measured spend", "value": "$3.84", "hint": "API-billed agents only; 7 subscription agents unpriced", "kind": "spend" }
+    {
+      "label": "Children integrated",
+      "value": "4 / 6",
+      "hint": "waves 1–2 complete, 1:1 with tickets"
+    },
+    {
+      "label": "In flight",
+      "value": "1",
+      "hint": "whole-feature review; 1 queued behind a native edge"
+    },
+    {
+      "label": "Combined tests",
+      "value": "128 / 128",
+      "hint": "gate run just now at the integration head"
+    },
+    {
+      "label": "Reviews dispatched",
+      "value": "9",
+      "hint": "6 unit passes, 3 feature passes"
+    },
+    {
+      "label": "Measured spend",
+      "value": "$3.84",
+      "hint": "API-billed agents only; 7 subscription agents unpriced",
+      "kind": "spend"
+    }
   ],
-  "progress": { "done": 4, "total": 6, "label": "reviewing wave 3 of 4" },
+  "progress": {
+    "done": 4,
+    "total": 6,
+    "label": "reviewing wave 3 of 3"
+  },
   "boardNote": "Every child ticket maps 1:1 to one unit, branch, worktree and fresh <code>implement</code> process. A child that needed three passes does not look like one that landed clean.",
   "waves": [
     {
@@ -29,8 +78,19 @@
           "id": "#43",
           "title": "Session table migration",
           "state": "ok",
-          "impl": [{ "model": "sonnet-5", "effort": "medium" }],
-          "review": [{ "model": "opus-5", "effort": "high", "role": "spec" }],
+          "impl": [
+            {
+              "model": "sonnet-5",
+              "effort": "medium"
+            }
+          ],
+          "review": [
+            {
+              "model": "opus-5",
+              "effort": "high",
+              "role": "spec"
+            }
+          ],
           "commit": "3f1ac02",
           "diffstat": "+142 −8",
           "passes": 1,
@@ -41,10 +101,23 @@
           "id": "#44",
           "title": "Token store adapter",
           "state": "ok",
-          "impl": [{ "model": "sonnet-5", "effort": "medium" }],
+          "impl": [
+            {
+              "model": "sonnet-5",
+              "effort": "medium"
+            }
+          ],
           "review": [
-            { "model": "opus-5", "effort": "high", "role": "spec" },
-            { "model": "opus-5", "effort": "xhigh", "role": "security" }
+            {
+              "model": "opus-5",
+              "effort": "high",
+              "role": "spec"
+            },
+            {
+              "model": "opus-5",
+              "effort": "xhigh",
+              "role": "security"
+            }
           ],
           "commit": "b7d9e41",
           "diffstat": "+301 −44",
@@ -63,8 +136,19 @@
           "id": "#45",
           "title": "Refresh middleware",
           "state": "ok",
-          "impl": [{ "model": "sonnet-5", "effort": "high" }],
-          "review": [{ "model": "opus-5", "effort": "high", "role": "spec" }],
+          "impl": [
+            {
+              "model": "sonnet-5",
+              "effort": "high"
+            }
+          ],
+          "review": [
+            {
+              "model": "opus-5",
+              "effort": "high",
+              "role": "spec"
+            }
+          ],
           "commit": "c02f8ad",
           "diffstat": "+188 −21",
           "passes": 2,
@@ -75,8 +159,19 @@
           "id": "#46",
           "title": "Logout handler",
           "state": "ok",
-          "impl": [{ "model": "sonnet-5", "effort": "medium" }],
-          "review": [{ "model": "opus-5", "effort": "high", "role": "spec" }],
+          "impl": [
+            {
+              "model": "sonnet-5",
+              "effort": "medium"
+            }
+          ],
+          "review": [
+            {
+              "model": "opus-5",
+              "effort": "high",
+              "role": "spec"
+            }
+          ],
           "commit": "9de4b13",
           "diffstat": "+96 −12",
           "passes": 2,
@@ -94,12 +189,19 @@
           "id": "#47",
           "title": "Handler contract tests",
           "state": "live",
-          "impl": [{ "model": "sonnet-5", "effort": "medium" }],
+          "impl": [
+            {
+              "model": "sonnet-5",
+              "effort": "medium"
+            }
+          ],
           "review": [],
           "commit": "1a77c30",
           "diffstat": "+204 −0",
           "passes": 0,
-          "findings": { "why": "whole-feature review is running over the combined diff" },
+          "findings": {
+            "why": "whole-feature review is running over the combined diff"
+          },
           "note": "Committed and awaiting the clean-context feature review."
         },
         {
@@ -123,28 +225,48 @@
       {
         "role": "Planner",
         "side": "implement",
-        "route": [{ "model": "opus-5", "effort": "high" }],
+        "route": [
+          {
+            "model": "opus-5",
+            "effort": "high"
+          }
+        ],
         "escalation": "fixed",
         "why": "A decomposition error costs a whole wave, so this is the cheapest place to spend the big model."
       },
       {
         "role": "Implementer",
         "side": "implement",
-        "route": [{ "model": "sonnet-5", "effort": "medium" }],
+        "route": [
+          {
+            "model": "sonnet-5",
+            "effort": "medium"
+          }
+        ],
         "escalation": "→ high on 2nd fail",
         "why": "Calibration measured medium as cheapest to acceptance for children this size; escalation catches the tail."
       },
       {
         "role": "Spec reviewer",
         "side": "review",
-        "route": [{ "model": "opus-5", "effort": "high" }],
+        "route": [
+          {
+            "model": "opus-5",
+            "effort": "high"
+          }
+        ],
         "escalation": "fixed",
         "why": "Cross-family review: the reviewer must not share the implementer's blind spots."
       },
       {
         "role": "Security reviewer",
         "side": "review",
-        "route": [{ "model": "opus-5", "effort": "xhigh" }],
+        "route": [
+          {
+            "model": "opus-5",
+            "effort": "xhigh"
+          }
+        ],
         "escalation": "fixed",
         "why": "Added mid-run after #44 shipped without a revoke path."
       }
@@ -157,19 +279,34 @@
       {
         "stage": "Implement",
         "side": "implement",
-        "who": [{ "model": "sonnet-5", "effort": "medium" }],
+        "who": [
+          {
+            "model": "sonnet-5",
+            "effort": "medium"
+          }
+        ],
         "sees": "The verbatim child ticket, agreed seams, pinned base SHA, its own branch and worktree — no sibling diffs."
       },
       {
         "stage": "Review",
         "side": "review",
-        "who": [{ "model": "opus-5", "effort": "high" }],
+        "who": [
+          {
+            "model": "opus-5",
+            "effort": "high"
+          }
+        ],
         "sees": "The ticket and the diff. Never the implementer's transcript, and a new session for every re-review."
       },
       {
         "stage": "Integrate",
         "side": "implement",
-        "who": [{ "model": "sonnet-5", "effort": "medium" }],
+        "who": [
+          {
+            "model": "sonnet-5",
+            "effort": "medium"
+          }
+        ],
         "sees": "The integration worktree it exclusively owns, and the gate output it runs itself."
       }
     ]
@@ -178,12 +315,58 @@
     "title": "Model usage — who ran, how often, at what cost",
     "note": "One row per model+effort actually dispatched, from <code>out/*.json</code>. Turns and duration cover every agent; cost covers only the API-billed ones.",
     "rows": [
-      { "model": "opus-5", "effort": "high", "side": "review", "roles": "planning, spec review", "agents": 7, "turns": 88, "duration": "38m", "cost": "$2.76" },
-      { "model": "opus-5", "effort": "xhigh", "side": "review", "roles": "security review", "agents": 2, "turns": 29, "duration": "17m", "cost": "$1.08" },
-      { "model": "sonnet-5", "effort": "medium", "side": "implement", "roles": "implement, integrate", "agents": 6, "turns": 71, "duration": "52m", "cost": { "why": "ran against a subscription — no per-run cost reported" } },
-      { "model": "sonnet-5", "effort": "high", "side": "implement", "roles": "implement (escalated)", "agents": 1, "turns": 18, "duration": "14m", "cost": { "why": "ran against a subscription — no per-run cost reported" } }
+      {
+        "model": "opus-5",
+        "effort": "high",
+        "side": "review",
+        "roles": "planning, spec review",
+        "agents": 7,
+        "turns": 88,
+        "duration": "38m",
+        "cost": "$2.76"
+      },
+      {
+        "model": "opus-5",
+        "effort": "xhigh",
+        "side": "review",
+        "roles": "security review",
+        "agents": 2,
+        "turns": 29,
+        "duration": "17m",
+        "cost": "$1.08"
+      },
+      {
+        "model": "sonnet-5",
+        "effort": "medium",
+        "side": "implement",
+        "roles": "implement, integrate",
+        "agents": 6,
+        "turns": 71,
+        "duration": "52m",
+        "cost": {
+          "why": "ran against a subscription — no per-run cost reported"
+        }
+      },
+      {
+        "model": "sonnet-5",
+        "effort": "high",
+        "side": "implement",
+        "roles": "implement (escalated)",
+        "agents": 1,
+        "turns": 18,
+        "duration": "14m",
+        "cost": {
+          "why": "ran against a subscription — no per-run cost reported"
+        }
+      }
     ],
-    "total": { "agents": 16, "turns": 206, "duration": "2h 01m", "cost": "$3.84", "note": "Cost is the API-billed agents only; 7 subscription agents ran unpriced." }
+    "total": {
+      "agents": 16,
+      "turns": 206,
+      "duration": "2h 01m",
+      "cost": "$3.84",
+      "note": "Cost is the API-billed agents only; 7 subscription agents ran unpriced."
+    }
   },
   "lessons": {
     "note": "Routing changes and safeguards made mid-run, each paired with the failure that produced it and the route it happened on.",

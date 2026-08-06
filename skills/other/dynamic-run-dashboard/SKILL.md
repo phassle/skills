@@ -36,7 +36,7 @@ Each figure comes from a command run just now, inside the run directory `<run-st
 | Integration head, merge order, per-merge gate results | `ledger.md`, plus `git log --oneline <base>..HEAD` in the integration worktree |
 | Live test counts | run the gate yourself in the integration worktree — a worker's claim is not evidence |
 | Per-agent cost, turns, duration | `out/*.json` → `total_cost_usd`, `num_turns`, `duration_ms` |
-| Context per role, and the coordinator's own | per-agent input tokens in `out/*.json`; the ceiling and trend from the repository's `model-calibration.json` → `contextBudget`. A role over its ceiling belongs in the metric strip, since a swelling packet is the cheapest failure to catch early |
+| Context per role, and the coordinator's own | per-agent input tokens in `out/*.json`, plus the ceiling and trend from the repository's `model-calibration.json` → `contextBudget`. Read that group's `basis` first and label the figure by it: `measured` is tokens, `prompt-bytes` is the coordinator's own measurement of the packet where the harness reports no tokens, and `none` means leave the cell blank. Never present bytes as tokens, and never mix the two in one column. A role over its ceiling belongs in the metric strip — a swelling packet is the cheapest failure to catch early |
 | Review outcomes per unit | `reports/*.md` — passes taken, findings upheld vs rejected |
 | Routing in force | the capability profile's `issueModelLadders[].roleDefaults` |
 | Agents in flight | recorded PIDs, plus the last line of each `activity/*/activity.log` |
