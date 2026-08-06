@@ -315,16 +315,19 @@ for (const t of DATA.tiles || []) {
 
 const prog = DATA.progress || {};
 const pct = prog.total ? Math.round((prog.done || 0) / prog.total * 100) : 0;
-document.getElementById("barFill").style.width = Math.min(100, pct) + "%";
+// Clamp once: a bar pinned at 100% beside a label reading 111% makes the reader distrust both.
+const shown = Math.max(0, Math.min(100, pct));
+document.getElementById("barFill").style.width = shown + "%";
 document.getElementById("barLeft").textContent = prog.total
-  ? `${prog.done || 0} of ${prog.total} units integrated (${pct}%)`
+  ? `${prog.done || 0} of ${prog.total} units integrated (${shown}%)`
   : "";
 document.getElementById("barRight").textContent = prog.label || "";
 
 function mchips(list, cls) {
   if (!list || !list.length) return gap(null);
   return list.map(a =>
-    `<span class="mchip ${cls}">${esc(a.model)}${a.effort ? `<span class="eff">${esc(a.effort)}</span>` : ""}` +
+    // The flex gap separates these visually; the space keeps them separate when copied or read aloud.
+    `<span class="mchip ${cls}">${esc(a.model)}${a.effort ? ` <span class="eff">${esc(a.effort)}</span>` : ""}` +
     `${a.role ? ` · ${esc(a.role)}` : ""}</span>`).join("");
 }
 
