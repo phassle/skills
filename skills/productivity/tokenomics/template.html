@@ -186,9 +186,10 @@
   .tip .t { font-weight: 600; font-size: 14px; color: var(--ink-head); }
   .tip .tags { display: inline-flex; gap: 6px; margin-left: 8px; vertical-align: 1px; }
   .tag { font-size: 11px; font-weight: 600; border-radius: var(--r-pill); padding: 1px 9px; white-space: nowrap; }
-  .tag.save { color: var(--ink-head); background: var(--yellow); }
+  /* Navy on yellow in every theme: the chip keeps its own background, so it must not
+     inherit a theme-dependent ink or it goes off-white on yellow under a forced theme. */
+  .tag.save { color: var(--navy); background: var(--yellow); }
   .tag.harness { color: var(--ink-2); border: 1px solid var(--line); }
-  @media (prefers-color-scheme: dark) { .tag.save { color: #010031; } }
   .tip .d { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; }
   .tip .d code { background: var(--surface-2); padding: 0 4px; border-radius: 4px; }
 
