@@ -6,9 +6,9 @@
 - Deciding what runs in parallel
 - Planner rules
 
-Run the planner in a fresh, read-only context. Let it inspect the issue, comments, repository, tests, domain docs, ADRs, Git policy, and tracker configuration. Do not give it a preferred decomposition.
+Run the planner in a fresh, read-only context. Let it inspect the issue, comments, repository, tests, domain docs, ADRs, Git policy, and tracker configuration. Child tickets already define the decomposition; do not give it a preferred scheduling result.
 
-Give it a private agent-log directory and the event command from `observability.md`. Require `started`, a `decision` summarizing the chosen decomposition and dependency evidence, and a terminal `completed` or `blocked` event. The planner must not read another agent's log.
+Give it a private agent-log directory and the event command from `observability.md`. Require `started`, a `decision` summarizing descendant coverage, scheduling, and dependency evidence, and a terminal `completed` or `blocked` event. The planner must not read another agent's log.
 
 Require one structured result with these fields:
 
@@ -24,6 +24,14 @@ Require one structured result with these fields:
   },
   "requires_user_input": [],
   "external_blockers": [],
+  "descendant_coverage": [
+    {
+      "issue": "#43",
+      "state": "open|closed",
+      "ready_for_agent": true,
+      "disposition": "unit:01|verified-integrated"
+    }
+  ],
   "test_seams": [
     {"name": "CLI", "boundary": "binary process", "evidence": "exit/status/files", "agreed": true}
   ],
@@ -65,6 +73,10 @@ Require one structured result with these fields:
 Planner rules:
 
 - Fetch the complete candidate graph; paginate or set an explicit high limit and verify descendants.
+- Copy ticket outcomes and acceptance criteria without rewriting them. The ticket contract is immutable.
+- Require `ready-for-agent` on every descendant child. Missing labels, ambiguous or contradictory requirements, infeasibility, missing decisions, and necessary scope departures require HITL; never repair the ticket or label.
+- When children exist, map every open descendant to exactly one unit and every unit to exactly one open descendant. Never combine, split, synthesize, or omit tickets. Record closed descendants as `verified-integrated` only with tracker and Git evidence.
+- Reject incomplete or duplicate `descendant_coverage`. No feature PR is ready while any descendant lacks an evidence-backed disposition.
 - Treat native blockers as authoritative.
 
 ## Deciding what runs in parallel
@@ -116,10 +128,10 @@ discovering it as a conflict.
 Say plainly that these predictions are the planner's forecast and may be overridden on evidence: if
 the orchestrator inspects the actual change and finds the named symbols untouched, it may promote a
 `stack` or `serial` pair to `parallel` and record that it did.
-- Prefer vertical, independently demonstrable units sized for one fresh context.
+- Treat each `ready-for-agent` child as the approved vertical slice sized by `to-tickets`; do not redecompose it.
 - Triage every unit as small, medium, or large using the rubric in `model-routing.md`. Classify reasoning/risk, not raw line count, and do not use a stronger model to avoid necessary decomposition.
 - Use the compact historical calibration supplied by the orchestrator, but keep the issue/spec and current repository as primary evidence. Never invent a model id; the orchestrator maps size to a verified route.
-- Do not invent product decisions, acceptance criteria, or test seams.
+- Do not invent, reinterpret, narrow, expand, or edit product decisions, acceptance criteria, scope, dependencies, or test seams.
 - Mark proposed seams `agreed: false`; implementation must pause for approval.
 - Use deterministic branch names so a rerun resumes existing work.
 - Return no executable wave when all work is blocked. Never choose a "least blocked" task.

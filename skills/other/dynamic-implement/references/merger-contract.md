@@ -136,6 +136,8 @@ rerun affected gates. Then:
 5. Update issues with factual commit/PR, test, and review evidence. Close each child after its reviewed commit reaches the run's feature/integration branch; leave the root open until human-authorized final integration or repository automation closes it.
 6. After verified human-authorized integration, complete the cleanup below.
 
+Before declaring the feature PR ready, re-fetch the complete descendant graph and reconcile it against the planner coverage matrix. Every child must still carry `ready-for-agent`; every open child must have exactly one accepted commit reachable from the feature branch, and every closed child must have verified integration evidence. A missing, changed, duplicate, or unresolved ticket is HITL, not a reason to rewrite the tracker or waive the slice.
+
 Never merge a PR — or perform an equivalent direct or local merge — into `develop` or `main` from broad or earlier authorization. Present the human with the specific PR/branch, target, current head SHA, checks, separate review results, machine-review identity, and unresolved risks, and record `waiting-user`. Only a new human instruction after that presentation, identifying the current PR/branch, authorizes the merger to act. Where the human authorizes agent execution, re-fetch immediately; any material head, target, check, review, or risk change requires renewed approval. A GitHub, Claude, Codex or Copilot review never counts as human approval. Internal worker-branch merges into the feature or integration branch remain autonomous.
 
 ## Post-merge cleanup

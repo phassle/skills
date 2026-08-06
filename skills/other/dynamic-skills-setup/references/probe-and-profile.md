@@ -39,7 +39,7 @@ Write valid JSON shaped as follows. Omit optional evidence that could reveal sec
 
 ```json
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "lastRunAt": "RFC-3339 timestamp of the most recent setup run",
   "lastRunScope": ["harness names this run reverified"],
   "ttlDays": 14,
@@ -108,6 +108,13 @@ Write valid JSON shaped as follows. Omit optional evidence that could reveal sec
       "independence": "clean-cross-model|clean-cross-harness|clean-same-model"
     }
   ],
+  "telemetryPolicy": {
+    "trackerComments": "allow|deny",
+    "scope": "repository|all-repositories",
+    "repository": "owner/name or stable local id when scope is repository",
+    "decidedAt": "RFC-3339 timestamp",
+    "purposeShown": "improve future Dynamic Implement model/effort routing"
+  },
   "issueModelLadders": [
     {
       "harness": "codex",
@@ -163,7 +170,7 @@ Write valid JSON shaped as follows. Omit optional evidence that could reveal sec
   ],
   "teamCalibration": {
     "pathPattern": "<repo>/.agents/dynamic-implement/model-calibration.json",
-    "sourceOfTruth": "tracked repository file built from issue body model-telemetry:v1 sections",
+    "sourceOfTruth": "tracked repository file built from consented tracker-comment telemetry or an explicit run-ledger bundle",
     "scope": "repository",
     "writeOwner": "dynamic-skills-calibrate"
   }
@@ -197,7 +204,8 @@ The profile accumulates across runs and across harnesses. Writing it is a read-m
 2. Replace only the `harnesses[]` and `issueModelLadders[]` entries for harnesses this run reverified. Update `coordinator`, `lastRunAt`, and `lastRunScope`.
 3. Copy every out-of-scope entry forward unchanged, including its `verifiedAt`, `verifiedFrom`, `catalog`, `fingerprint`, ladder, and candidates.
 4. Recompute `reviewRoutes` across the merged set, because a harness added this run may become a better reviewer for a harness verified earlier.
-5. Serialize, validate, then replace the file atomically through a temporary file in the same directory.
+5. Replace `telemetryPolicy` only from an explicit answer during this setup run. Preserve the existing policy when telemetry consent was not in scope; a missing policy migrates to `deny`.
+6. Serialize, validate, then replace the file atomically through a temporary file in the same directory.
 
 Refuse to write a document containing fewer verified harnesses than the one loaded unless the user explicitly asked to remove one. Silently losing another run's verified ladder is a data-loss bug, not a refresh.
 

@@ -34,6 +34,8 @@ Load the existing profile first. Report which harnesses it covers, when and from
 
 One harness can verify another: local CLIs share the machine's authentication, so the coordinator launches another harness's non-interactive process and live-verifies its ladder, recording itself in `verifiedFrom`. Only the coordinator identity and a harness's own native Goal facility need to run inside that harness — mark those unobserved rather than guessing.
 
+Before paid-probe approval, show any existing telemetry policy and ask whether Dynamic Implement may upsert one machine-readable telemetry comment on each child ticket after verified feature review and integration. Explain that it records model/effort attempts, checks, review counts, and integration evidence only to improve future routing; it never changes title, body, acceptance criteria, dependencies, or labels. Consent is optional, separate from probe approval, scoped to this repository unless the user explicitly chooses broader scope. Preserve an explicit existing choice when the user leaves it unchanged; a missing policy defaults to denied.
+
 ## Probe safely
 
 1. Identify the coordinator harness and model family where observable; record it as this run's `verifiedFrom`.
@@ -73,6 +75,7 @@ Report:
 - unavailable or unverified candidates, with the reason;
 - per-harness research timestamp, lease expiry, evidence sources, and any tier lacking a distinct route;
 - the complete ordered escalation ladder with exact native effort values, any deduplicated no-op tier, and the advertised steps excluded for want of live verification;
+- telemetry-comment consent, scope, and how to change it on a later setup run;
 - whether completed issue telemetry is now sufficient to run `dynamic-skills-calibrate`.
 
 Keep tokens, secrets, raw environment dumps, credential-bearing endpoints, and full prompt/response transcripts out of the profile and the report.

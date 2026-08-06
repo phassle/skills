@@ -1,6 +1,6 @@
 ---
 name: dynamic-skills-calibrate
-description: "Rebuild a repository-owned Dynamic Implement model-and-effort knowledge profile from feature-reviewed or integrated issue telemetry. Use before a feature PR, periodically after integration, or when model/effort routing is too weak, slow, or costly."
+description: "Rebuild a repository-owned Dynamic Implement model-and-effort knowledge profile from feature-reviewed or integrated tracker-comment or run-ledger telemetry. Use before a feature PR, periodically after integration, or when model/effort routing is too weak, slow, or costly."
 metadata:
   version: 0.1.0
 ---
@@ -15,7 +15,7 @@ Report in English, and preserve user-authored and repository text verbatim.
 
 Require the repository path and one root feature issue. If the user named one, take it. Otherwise inspect recently completed root feature issues, propose the latest that looks calibratable, and confirm before reading the full graph — explaining briefly that calibration reads how comparable completed work went, so the next run starts closer to the cheapest clean accepted route. The user may name a different feature issue instead.
 
-The issue tracker stays the raw shared evidence. The compact learned result goes to the team file — see [calibration-file.md](references/calibration-file.md) for its shape and write rules:
+The issue tracker supplies the immutable child/dependency graph. Raw evidence comes from an explicit run-ledger telemetry bundle, or from bounded tracker comments written under setup consent. Never read or write telemetry in ticket contract fields. The compact learned result goes to the team file — see [calibration-file.md](references/calibration-file.md) for its shape and write rules:
 
 ```text
 <repo>/.agents/dynamic-implement/model-calibration.json
@@ -33,12 +33,7 @@ Use a fresh read-only analysis agent where the host supports one, and give it va
 
 ## Collect and validate
 
-Fetch the root issue and its complete descendant/dependency graph with full pagination; before a pre-PR calibration, confirm every planned child is represented. Extract only the sections bounded by:
-
-```text
-<!-- dynamic-implement:model-telemetry:v1:start -->
-<!-- dynamic-implement:model-telemetry:v1:end -->
-```
+Fetch the root issue and its complete descendant/dependency graph with full pagination. Prefer the explicit run-ledger bundle supplied by the active run. Otherwise require consent covering this repository, then extract only child comments bounded by the exact `dynamic-implement:model-telemetry:v1` markers. Before a pre-PR calibration, require exactly one latest record for every planned child and no unknown child records. If neither source is available, report insufficient telemetry without changing tickets or configuration.
 
 Validate the JSON. Accept telemetry schema 2 carrying `feature-reviewed/feature-ready` or `integrated/integrated` outcomes. Legacy schema 1 counts as model-level evidence only — its unknown effort is never backfilled and never infers an effort boundary.
 

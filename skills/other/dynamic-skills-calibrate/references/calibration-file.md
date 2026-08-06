@@ -20,7 +20,7 @@ Eligible telemetry whose stable group key names a harness the file does not yet 
 {
   "schemaVersion": 1,
   "updatedAt": "RFC-3339",
-  "source": "GitHub issue model-telemetry:v1 sections",
+  "source": "run-ledger bundle or consented tracker-comment model-telemetry:v1 records",
   "groups": [
     {
       "key": "stable repository-owned group key",

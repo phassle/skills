@@ -7,7 +7,7 @@ metadata:
 
 One specified issue goes in; one evidence-backed ready pull request comes out. Orchestrate installed planning, TDD, review, tracker, and Git skills—never replace them.
 
-Use the **sandcastle loop**: one unit, branch, worktree, and fresh zero-history agent. Agents exchange commits and artifacts, never conversation. Run on the machine's verified harness CLIs and existing authentication; never require API-key billing or infer missing cost/token totals.
+Use the **sandcastle loop**: one child ticket, unit, branch, worktree, and fresh zero-history `implement` agent. Agents exchange commits and artifacts, never conversation. Run on the machine's verified harness CLIs and existing authentication; never require API-key billing or infer missing cost/token totals.
 
 Apply these invariants throughout:
 
@@ -86,8 +86,9 @@ Complete these before the first mutation:
 2. Honour verified ladder, auxiliary-role, declined-route, fixed model, and fixed effort policies. Pin this run's repository calibration version; new calibration applies only to later runs.
 3. Require installed Matt Pocock `implement`, `tdd`, `code-review`, and `setup-matt-pocock-skills`, plus `to-tickets` when decomposition needs it. Stop and request installation approval rather than imitating them.
 4. Read all repository, tracker, domain, ADR, and Git instructions. Fetch the full issue, comments, descendants, and native dependency graph with complete pagination.
-5. Confirm observable outcome, acceptance criteria, agreed test seams, resolved product decisions, and documented integration target. Ask when Git policy is missing; recommend gitflow without silently establishing it.
-6. Create one persistent root goal and external ledger under [goal-contract](references/goal-contract.md). Load team calibration when present.
+5. Require every descendant child ticket to carry the tracker-configured `ready-for-agent` label. Treat that label as proof that `to-tickets` produced an approved vertical slice, not as workflow state. If any child lacks it, stop before mutation, list the exact tickets, and ask the human to run or repair `to-tickets`; never add the label or rewrite the ticket yourself.
+6. Treat each ticket's title, body, acceptance criteria, scope, and native dependency edges as an immutable implementation contract. Confirm its observable outcome, agreed test seams, resolved product decisions, and documented integration target. If it cannot be followed as written, request HITL instead of interpreting, narrowing, expanding, or editing it. Lifecycle evidence, links, and closure may be added only without changing that contract.
+7. Create one persistent root goal and external ledger under [goal-contract](references/goal-contract.md). Load team calibration when present.
 
 Read the existing tracker claim, acquire the local lock, then claim the root as the run's first write using [concurrency](references/concurrency.md). Stop on an unreleased foreign claim. Claim units again at dispatch. Never close the root merely to signal progress.
 
@@ -95,7 +96,9 @@ Read the existing tracker claim, acquire the local lock, then claim the root as 
 
 Launch a fresh read-only planner with the issue, repository, and compact matching calibration only. Require [planner-contract](references/planner-contract.md). Reject malformed, contradictory, or incomplete output.
 
-Use complete existing child issues when they fit one fresh context; keep one unit when the root already fits; otherwise invoke `to-tickets` and its approval gate. Pause for new test seams, altered acceptance criteria, unresolved decisions, or new child-ticket creation.
+When the root has children, map every open `ready-for-agent` descendant 1:1 to one planner unit, worker branch, worktree, and fresh process. Never combine children, split one child into synthetic units, omit a child, or improve its contract. Account for closed children with verified integration evidence. If the root has no children and fits one fresh context, use the root as one unit; otherwise stop and ask the human to invoke `to-tickets`. `dynamic-implement` never creates tickets or edits ticket contract fields.
+
+Reject the plan and request HITL when any ticket is ambiguous, contradictory, infeasible against the current repository, missing an agreed seam or product decision, or would require work outside its written scope. State the exact conflict and smallest decision needed. Continue only independent slices whose contracts remain executable; the feature PR cannot become ready while any child is unresolved.
 
 Never schedule a native blocker. Treat predicted write overlap as scheduling evidence, not a tracker dependency. Default to parallel; use stack or serial only with symbol-level conflict evidence and explicit insertion anchors. Validate uncertain conflict forecasts with a real disposable merge, never marker-grep heuristics.
 
@@ -122,7 +125,7 @@ Create the integration worktree and one worktree per writer. Start a new command
 
 Execute the planner's live ready frontier at its specified width. Parallel units share a pinned base; stacked units start from the preceding unit head; serial units run alone. Pipeline independent implementation, review, verification, and merge preparation while respecting current slots and two review leaves. Record any width reduction and cause.
 
-Give each implementer only its unit contract, agreed seams, dependency artifacts, base SHA, branch/worktree, route, and private log path. Require installed `implement`, TDD, full suite, internal two-axis review, fixes, and a clean commit under [implementer-contract](references/implementer-contract.md).
+Give each implementer only its verbatim child-ticket contract, agreed seams, dependency artifacts, base SHA, branch/worktree, route, and private log path. Require the installed Matt Pocock `implement` workflow unchanged: its `/tdd`, regular checks, final full suite, `/code-review`, fixes, and clean commit under [implementer-contract](references/implementer-contract.md). A worker that cannot follow the ticket as written must return an evidence-backed HITL request, not change the ticket or substitute a different result.
 
 Then launch an independent zero-history acceptance reviewer, preferably on another verified model family, under [review-contract](references/review-contract.md). Wait for Standards and Spec, aggregate actionable findings into one fix pass, and use a new clean review session for every re-review.
 
@@ -136,7 +139,7 @@ Fetch and reconcile the remote target immediately before final review and again 
 
 Run a new zero-history whole-feature Standards/Spec review over the combined diff. Fix and re-review every actionable finding at the profile's final-integration route.
 
-Before the feature PR, update managed child telemetry to `feature-reviewed`, invoke `dynamic-skills-calibrate` in a fresh context over the full root graph, and atomically merge team calibration on the feature branch. Preserve a ready branch and report exact bookkeeping blockers unless the user opts out.
+Before the feature PR, write child telemetry as `feature-reviewed` to the run ledger. Upsert the same machine-readable tracker comment only when the capability profile contains explicit consent covering this repository. Then invoke `dynamic-skills-calibrate` in a fresh context over the full root graph and explicit ledger bundle, and atomically merge team calibration on the feature branch. Declined or absent comment consent never blocks delivery and never permits a ticket-body fallback. Preserve a ready branch and report exact bookkeeping blockers unless the user opts out.
 
 Open/update the policy-defined PR and validate it. Use structured API input or a safe body file for Markdown. Prefix agent-authored external tracker/PR text with recorded `agent_identity — ` unless the user chose another identity. Stop at the gate when targeting `develop` or `main`.
 
@@ -144,7 +147,7 @@ Open/update the policy-defined PR and validate it. Use structured API input or a
 
 Update tracker state only from current merge, test, review, and acceptance evidence. Child closure follows the lifecycle in [merger-contract](references/merger-contract.md); root closure follows the human-authorized final integration or repository automation.
 
-Re-fetch tracker and Git state and replan after each integration wave until all requested scope is integrated or a concrete external/user blocker remains. Audit every criterion before claiming readiness.
+Re-fetch tracker and Git state and replan after each integration wave. Reconcile every descendant against the 1:1 coverage matrix; admit newly added children only when they carry `ready-for-agent`. Continue until every child contract is verifiably integrated or a concrete HITL/external blocker remains. Audit every ticket criterion before claiming readiness or opening the feature PR.
 
 After verified human-authorized final integration, complete run-owned cleanup from the ledger without another pause. Prove reachability, remove only clean worktrees and safely merged branches carrying this run token, preserve uncertain state, prune metadata, and fast-forward only clean non-diverged long-lived targets. The run remains incomplete until every run-owned item is removed or the user chooses to retain it.
 

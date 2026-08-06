@@ -23,6 +23,8 @@ Give the implementer only one work unit and the authoritative context needed for
 - its private agent-log directory, run/agent identifiers, and the event command from `observability.md`.
 - its exact verified harness, model, native reasoning-effort value, zero-based ladder index, and attempt purpose (`delivery`, `boundary-probe`, or `recovery`).
 
+The child ticket is an immutable contract. Copy it verbatim into the dispatch packet. Never edit or reinterpret its title, body, acceptance criteria, scope, dependency edges, or `ready-for-agent` label. Tracker lifecycle comments, evidence links, and closure belong to the coordinator after reviewed integration; they do not authorize contract changes.
+
 For the first attempt, stop there. For an escalation or recovery replacement, add a compact artifact handoff containing only inspectable facts: current SHAs and dirty/clean state, failing commands/output paths, raw review reports, acceptance rows, prior attempt commits/diffs, cited coordinator scope decisions, and the exact prior harness/model/effort/ladder-index attempt facts. This is durable learning between attempts. Exclude the prior conversation, hidden reasoning, transcripts, unsupported summaries, and reviewer-targeting hints.
 
 Launching the agent — stream redirection, prompt-file resolution, build pre-warming, and the
@@ -57,6 +59,8 @@ Instruct it to:
 8. Commit the reviewed result on the assigned worker branch with an English, project-conformant message.
 9. Return evidence: commit SHA, changed-file summary, commands/results, review findings/fixes, and any remaining blocker.
 10. Log `started`, every meaningful command/check batch, each coherent file-change summary, every test/review result, and terminal `completed` or `blocked`. Every schema-v2 event records the assigned model and effort together; use the exact native value, or `unknown`/`unsupported` only as defined by setup. Log concise decisions and evidence, never private reasoning or transcripts. Before invoking Matt's `code-review`, create an empty standalone log bundle for its review coordinator and Standards/Spec child agents, append the logging instruction to their required prompts without changing Matt's reports, and import those logs only after that review process exits.
+
+If the ticket cannot be followed exactly because it is ambiguous, contradictory, infeasible on the pinned base, missing a required decision or seam, or demands an out-of-scope change, stop the slice. Return `blocked` with cited ticket text, repository evidence, the exact conflict, and the smallest human decision needed. Do not choose an interpretation, edit the ticket, or implement a substitute. The coordinator may continue unrelated ready slices but must hold feature-PR readiness for this HITL response.
 
 Forbid it from merging, pushing, opening/closing issues or PRs, changing the plan, or editing outside scope. A discovered dependency or spec ambiguity returns to the planner/orchestrator.
 
