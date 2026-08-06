@@ -25,7 +25,7 @@ Also installs into Codex, GitHub Copilot, other Agent-Skills-standard harnesses.
 
 Every agent session loads plugins, model-invoked skills, agent definitions, and MCP schemas into context before the user types anything. Most is never invoked; nothing surfaces the waste. Skills here find and cut it. Flagship: `tokenomics`.
 
-Second theme (staged, unreleased): `dynamic-*` — multi-agent orchestration of one issue end to end without one context window holding the whole build.
+Second theme (staged): `dynamic-*` — multi-agent orchestration of one spec end to end without one context window holding the whole build. Same thesis as `tokenomics`, applied to output instead of standing context: a ticket starts at the **cheapest verified model step** and escalates one rung only when an attempt fails, so the expensive model is paid for on the tickets that need it and otherwise reserved for planning and review, where an error costs a whole wave. Calibration then moves that floor by measured **cost to acceptance** — retries and forced re-reviews included, because a step cheap per token that needs three passes is dearer than the strong step that lands it once. Whenever editing these bundles, keep that framing: the ladder is the product, not an implementation detail.
 
 ## Matt Pocock workflow
 
@@ -86,7 +86,7 @@ Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`
 ## Index — read only what's relevant
 
 - `README.md` — user-facing quickstart + skill reference, grouped by category and by who can invoke.
-- `docs/architectural_patterns.md` — recurring structural patterns across skills. Read before adding a skill.
+- `docs/architectural_patterns.md` — recurring structural patterns across skills, including the cheapest-verified-step ladder (pattern 15) and the three knowledge stores (pattern 9). Read before adding a skill.
 - `docs/tokenomics-report.png` — screenshot used in README.
 - `.claude-plugin/plugin.json` — released skill set (`skills`) + `version`. Release gate.
 - `.claude-plugin/marketplace.json` — marketplace manifest, `name: "phassle"`.
@@ -139,7 +139,7 @@ A difference means the installed copy probably won — it usually carries a safe
 
 ## Unresolved questions
 
-- The five `dynamic-*` bundles in `skills/other/` are still untracked. Committing them publishes them to skills.sh users (under **General**) ahead of any `plugin.json` entry — commit now, or hold until each is release-ready?
+- The `dynamic-*` bundles are committed on `develop` but not yet on `main`, so skills.sh users have not seen them (it compares against the default branch). Merging to `main` publishes all four under **General** at 0.2.x/0.3.0 — release with the next tokenomics release, or hold `main` back until their contracts settle?
 - Installed copies of `dynamic-implement`, `dynamic-run-dashboard`, `dynamic-skills-calibrate` are live in agent sessions and drift from this repo by design (see Installed-copy drift). The `diff -rq` check is a habit, not a gate — worth enforcing somehow?
 - No `.github/` — is `claude plugin validate .` the intended only pre-push gate?
 - `skills/engineering/` still empty; first entry triggers the "create the category heading" step in workflow 2.
