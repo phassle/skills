@@ -57,7 +57,7 @@ Four bands is the design. The page's value is that it stays scannable. `template
 
 1. Copy `template.html` to the permalink `<run-state>/dashboard.html`.
 2. Replace the single placeholder `/*__DATA__*/ null` with the run's JSON — contract in [DATA-SHAPE.md](references/DATA-SHAPE.md). That is the only edit. **Don't restyle**, don't add sections, don't touch the `<title>`.
-3. Deliver it by the host path above, favicon `📊`.
+3. Deliver it by the host path above. Where that host sets a tab icon — an artifact canvas or publishing API — use `📊`; the template sets none, so a plain file gets whatever the browser shows for local HTML and needs no edit.
 
 The template already carries the conventions that make the page readable, so filling it correctly is mostly a matter of using the right keys: state on `state` (`ok` / `live` / `waiting` / `blocked`) drives the coloured left rule and the pill, `side` drives the model-chip hue, and mono plus tabular figures apply to every SHA, model id, effort and count on their own. Two rules the JSON can still break, and they matter more than any styling:
 
@@ -75,6 +75,6 @@ Don't load `artifact-design` for this page and don't hand-write CSS — the temp
 
 ## Refreshing
 
-Overwrite the permalink, keeping title and favicon identical — the user finds this page by its address and its tab icon.
+Overwrite the permalink, keeping the title — and, where the host sets one, the tab icon — identical. The user finds this page by its address and how its tab looks.
 
 Re-read the run state and rebuild the JSON from the fresh copy of `template.html`: update the metric strip, move units between waves and states, extend the lessons band. Leave history that is still true alone — a refresh is a data swap, never a redesign.

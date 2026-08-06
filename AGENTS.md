@@ -109,6 +109,15 @@ Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`
 - `.agents/skills/release-skill/SKILL.md` — promote a staged skill into the plugin bundle.
 - `.agents/skills/mirror-dynamic-skills/SKILL.md` — keep `skills/other/dynamic-*` in sync with installed copies under `~/.claude/skills/` and `~/.codex/skills/`.
 
+The `dynamic-*` bundles are edited **live** where they run — a run that hits a gap gets its safeguard written into the installed copy, so the installed copy is normally ahead of the repo. Nothing enforces the mirror. Run `mirror-dynamic-skills`:
+
+- **before touching a `dynamic-*` file in this repo** — otherwise the edit lands on a stale base and overwrites a safeguard a real run paid for;
+- **after a run that wrote a retrospective safeguard** into an installed skill, which is how most of these changes are born;
+- **before releasing** one of them (workflow 2), so the published bundle is the version that has actually been exercised;
+- **when the repo copy and installed copy disagree on a contract** — compare before assuming the repo is authoritative. It usually isn't.
+
+Check cheaply with `diff -rq skills/other/dynamic-<name> ~/.claude/skills/dynamic-<name>` before editing either side.
+
 ## Workflow 1: add + test a skill (unreleased)
 
 1. Create `skills/other/<name>/SKILL.md`. Frontmatter `name` + `description` + `metadata.version: 0.1.0`; add `disable-model-invocation: true` when the skill must not sit in context. Copy the shape from `tokenomics`.
@@ -135,6 +144,6 @@ Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`
 ## Unresolved questions
 
 - The five `dynamic-*` bundles in `skills/other/` are still untracked. Committing them publishes them to skills.sh users (under **General**) ahead of any `plugin.json` entry — commit now, or hold until each is release-ready?
-- Installed copies of `dynamic-implement`, `dynamic-run-dashboard`, `dynamic-skills-calibrate` are live in agent sessions and can drift from this repo. Nothing enforces the mirror. Automate it?
+- Installed copies of `dynamic-implement`, `dynamic-run-dashboard`, `dynamic-skills-calibrate` are live in agent sessions and drift from this repo by design (see Maintenance skills). The mirror is manual and easy to forget — automate it, or add a pre-edit check?
 - No `.github/` — is `claude plugin validate .` the intended only pre-push gate?
 - `skills/engineering/` still empty; first entry triggers the "create the category heading" step in workflow 2.

@@ -280,7 +280,9 @@
 // __DATA__ is replaced by the dynamic-run-dashboard skill with real run state.
 const DATA = /*__DATA__*/ null;
 
-const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+// Nullish escapes to nothing, never to the strings "null" or "undefined": every field in the
+// contract is optional, so an omitted label or id has to stay missing rather than render itself.
+const esc = s => s == null ? "" : String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 // A missing figure stays visibly missing — never estimated. An em dash alone says nothing to
 // a screen reader, so the reason travels in aria-label; title only adds it for mouse hover.
 const gap = why => why
@@ -334,7 +336,8 @@ function renderBoard() {
   for (const w of DATA.waves || []) {
     const units = (w.units || []).filter(u =>
       (filter === "all" || u.state === filter) &&
-      (query === "" || (u.id + " " + u.title + " " + (u.note || "")).toLowerCase().includes(query)));
+      // Drop absent fields rather than searching the text "undefined" for them.
+      (query === "" || [u.id, u.title, u.note].filter(Boolean).join(" ").toLowerCase().includes(query)));
     if (!units.length) continue;
     const cards = units.map(u => `
       <article class="unit ${esc(u.state || "")}">

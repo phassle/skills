@@ -38,6 +38,8 @@ Every session loads plugins, skills, agents and MCP schemas before you type anyt
 
 You point at a parent spec. Every child ticket under it gets its own worktree and its own fresh agent, is reviewed by a *different* agent that never saw the code being written, and is merged into one feature PR.
 
+**It builds on a cheap model on purpose.** Tickets start on the smallest verified model step and only escalate when one actually fails. The big model is spent where it pays — planning the split, and reviewing the result. Runs on your existing subscription login; no API key needed.
+
 Two commands you actually run:
 
 ```bash
