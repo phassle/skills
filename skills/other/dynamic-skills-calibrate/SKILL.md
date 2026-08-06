@@ -2,7 +2,7 @@
 name: dynamic-skills-calibrate
 description: "Rebuild a repository-owned Dynamic Implement model-and-effort knowledge profile from feature-reviewed or integrated tracker-comment or run-ledger telemetry. Use before a feature PR, periodically after integration, or when model/effort routing is too weak, slow, or costly."
 metadata:
-  version: 0.1.0
+  version: 0.2.0
 ---
 
 Routing a unit to the smallest model that might do it is not thrift. A weak step that burns extra turns, capability retries, fix passes and the re-reviews those fixes force can cost several times a stronger step that lands the unit in one pass. What calibration learns is the **cheapest-to-acceptance** step: the exact model and effort that gets comparable work accepted for the least total spend, counting every attempt it took.

@@ -2,7 +2,7 @@
 name: dynamic-run-dashboard
 description: Publish or refresh the operations dashboard for a Dynamic Implement run — one page carrying what is being built, who builds and reviews each unit, and what the run has learned. Use when the user asks for a dashboard, one-pager, or status page for a run, or to refresh one after an integration milestone.
 metadata:
-  version: 0.1.0
+  version: 0.2.0
 ---
 
 A Dynamic Implement run outruns its transcript: a dependency graph, a per-unit review history, a routing policy that shifts mid-run, and a ledger nobody wants to read. This skill turns that into one page the user keeps open.
@@ -46,10 +46,23 @@ Where a number is unavailable, leave the cell blank and say why. A visible gap i
 
 1. **Where is the run?** Masthead — repo, root issue, integration branch and head — then a metric strip: units integrated / in flight / queued, live test counts, reviews dispatched, spend.
 2. **What is being built?** The unit board, grouped by wave. Each card carries its own history: commit, diffstat, review passes taken, anything notable that happened to it. A unit that needed three passes and one that landed clean must not look alike.
-3. **How is work routed and reviewed?** One row per role — route, fixed or escalating, and *why* — plus the per-unit pipeline: who implements, who reviews, what each is allowed to see.
+3. **How is work routed and reviewed?** One row per role — route, fixed or escalating, and *why* — plus the per-unit pipeline: who implements, who reviews, what each is allowed to see. Behind that, model usage: one row per model+effort actually dispatched, with agents, turns, duration and measured cost, so the policy above can be read against what the run really spent.
 4. **What did the run learn?** Routing changes made mid-run and safeguards written back into the skills, each paired with the failure that produced it. This is the band people reread.
 
-Four bands is the design. The page's value is that it stays scannable.
+Four bands is the design. The page's value is that it stays scannable. `template.html` ships exactly these four, in this order — you fill them, you do not re-order them.
+
+## Build the page from the template
+
+`template.html` (next to this SKILL.md) is the page: **Monterro-branded** — off-white/navy, orange accent rules, Arial, embedded logo, one theme pair for light and dark — and **self-contained**, with every token, style and asset inlined. It resolves nothing at render time and reads no file from another skill, so this skill works when it is the only one installed.
+
+1. Copy `template.html` to the permalink `<run-state>/dashboard.html`.
+2. Replace the single placeholder `/*__DATA__*/ null` with the run's JSON — contract in [DATA-SHAPE.md](references/DATA-SHAPE.md). That is the only edit. **Don't restyle**, don't add sections, don't touch the `<title>`.
+3. Deliver it by the host path above. Where that host sets a tab icon — an artifact canvas or publishing API — use `📊`; the template sets none, so a plain file gets whatever the browser shows for local HTML and needs no edit.
+
+The template already carries the conventions that make the page readable, so filling it correctly is mostly a matter of using the right keys: state on `state` (`ok` / `live` / `waiting` / `blocked`) drives the coloured left rule and the pill, `side` drives the model-chip hue, and mono plus tabular figures apply to every SHA, model id, effort and count on their own. Two rules the JSON can still break, and they matter more than any styling:
+
+- **Model family is an axis, semantic state is another.** Implementer chips one hue, reviewer chips another, and never a state colour on a model chip — cross-family review must read at a glance, and a unit reviewed by the wrong family must stand out unread.
+- **A gap stays a gap.** `null` renders `—`; `{"why": "…"}` renders `—` with the reason on hover. Never fill a cell with an estimate to make the grid look complete.
 
 ## Say what the run really did
 
@@ -58,18 +71,10 @@ Four bands is the design. The page's value is that it stays scannable.
 - **Record rejected findings alongside upheld ones.** "Two of three Spec findings rejected as sibling scope" teaches more than a green tick.
 - **Keep the run's mistakes on the page.** A wrong diagnosis, a killed agent, an override of the planner that did or did not pay off — highest-signal content there is.
 
-## Design
-
-Load `artifact-design` before writing the page; this section fixes only what is specific to run dashboards.
-
-This is a **UI, not a document** — it gets scanned and operated, so information design beats prose. Summary before detail, and state encoded in form as well as number: a status pill, a coloured left rule on each card, so what needs attention reads at a glance.
-
-Two conventions carry meaning rather than decoration. **Colour the model families** and reuse those chips consistently — implementer side one hue, reviewer side another — so cross-model review reads at a glance and a unit reviewed by the wrong family stands out unread. **Keep semantic state colour on its own axis**: ok / live / waiting / blocked describes something different from who ran the work, and collapsing the two makes both unreadable.
-
-Mono for every SHA, ticket id, model id, effort and count — identifiers align in columns. `font-variant-numeric: tabular-nums` wherever digits stack. Wide tables get their own `overflow-x: auto` container so the page never scrolls sideways. Numbered markers only where content is genuinely ordinal: waves and ladder indices are, and nothing else is.
+Don't load `artifact-design` for this page and don't hand-write CSS — the template settles both, and a page that drifts from it stops looking like the run's dashboard.
 
 ## Refreshing
 
-Overwrite the permalink, keeping title and favicon identical — the user finds this page by its address and its tab icon.
+Overwrite the permalink, keeping the title — and, where the host sets one, the tab icon — identical. The user finds this page by its address and how its tab looks.
 
-Re-read the run state, update the metric strip, move units between board groups, extend the lessons band. Leave history that is still true alone: a diff-sized edit keeps the page trustworthy and cheap to produce.
+Re-read the run state and rebuild the JSON from the fresh copy of `template.html`: update the metric strip, move units between waves and states, extend the lessons band. Leave history that is still true alone — a refresh is a data swap, never a redesign.
