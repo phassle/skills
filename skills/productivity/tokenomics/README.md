@@ -25,6 +25,12 @@ Nothing is changed automatically — the report generates prompts you paste back
 
 Run `/tokenomics` in any project. The skill is user-invoked (slash only) — it doesn't sit in context until invoked, so it won't auto-fire; you invoke it by name. The analysis reads your own transcripts under `~/.claude/projects/` — results are personal per machine.
 
+## What it reads, and what it doesn't
+
+`scripts/collect-usage.sh` is read-only and makes no network calls — read it before you install, it's 60 lines. It reads transcripts under `~/.claude/projects/` for *counts* of skill, agent, MCP and slash-command use (never message bodies), `~/.claude/settings.json` and `~/.claude/plugins/installed_plugins.json` for your inventory, `~/.claude.json` for each MCP server's `type`/`url`/`command` only (never `env` or headers), and directory listings of `~/.claude/{skills,agents,commands,hooks}`. Everything it prints is a name, a count, or a line count.
+
+The report is local HTML, it stays on your machine unless you publish it, and the skill changes no settings — it hands you a prompt and you decide whether to run it.
+
 ## Contents
 
 ```
