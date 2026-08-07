@@ -1,6 +1,20 @@
 #!/usr/bin/env bash
 # tokenomics: collect Claude Code usage stats from all project transcripts.
 # Usage: collect-usage.sh [projects-dir]   (default: ~/.claude/projects)
+#
+# Read-only by design. This script never writes, deletes, or sends anything —
+# no network calls, no mutations, output goes to stdout only.
+#
+# Reads:
+#   ~/.claude/projects/**/*.jsonl              transcripts (counts of skill/agent/MCP/slash use)
+#   ~/.claude/settings.json                    enabledPlugins, marketplaces, hook event names, one env flag
+#   ~/.claude.json                             MCP servers — type/url/command only (never env or headers)
+#   ~/.claude/plugins/installed_plugins.json   installed plugin versions and scope
+#   ~/.claude/{skills,agents,commands,hooks}   directory listings only, no file contents
+#   ~/.claude/CLAUDE.md, ./CLAUDE.md, ./AGENTS.md   line counts only, no contents
+#
+# Everything it prints is a name, a count, or a line count. It reads no message
+# bodies, no secrets, and no credential files.
 set -euo pipefail
 DIR="${1:-$HOME/.claude/projects}"
 ORIG_PWD="$PWD"   # user's project dir, before we cd into the transcripts dir
