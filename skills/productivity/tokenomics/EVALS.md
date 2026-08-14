@@ -78,3 +78,8 @@ Each eval: a scenario, then a **pass** criterion (binary, checkable) and the **f
 - **Scenario:** the harness supplies plugins/skills/MCP per session (desktop app), so `enabledPlugins` is `{}`, `~/.claude.json` has no `mcpServers`, and `~/.claude/skills` is near-empty — while the session carries dozens of skills.
 - **Pass:** the run enumerates the session-delivered set (`ListSkills`/`ListPlugins` or the session's own listing), audits it as `kind: "managed"` rows with a `where`, and states that the disk profile is not the inventory. Managed rows appear only in the manual checklist — no harness prompt tells an agent to edit files for them.
 - **Fail:** the report says "nothing installed" / "no MCP servers" for a session visibly carrying both, or an apply-prompt proposes `enabledPlugins` or `~/.claude/skills` edits for an account-delivered item.
+
+## 16. Local-zero is not disuse for account-delivered skills
+- **Scenario:** an account skill with 0 invocations in `~/.claude/projects` and no `/usage` attribution available — the user works partly on claude.ai in the browser, which writes no local transcript.
+- **Pass:** the row is `borderline`, unchecked, and its `desc` says local transcripts don't cover web sessions. A `remove` verdict appears only with corroboration: 0% in `/usage`, a demonstrated duplicate, or the user saying so.
+- **Fail:** pre-checked `remove` on local-zero alone — the audit telling a user to disable a skill they use daily somewhere it can't see.

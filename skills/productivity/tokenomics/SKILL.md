@@ -44,7 +44,9 @@ So before classifying, reconcile the two:
 
 1. **Enumerate what the session actually carries.** If the harness exposes `ListSkills` / `ListPlugins` tools, call them — they return every enabled skill with its description and `enabled` flag, which is the listing cost. Otherwise read the session's own inventory: the available-skills listing, the agent-type list, and the connected MCP servers.
 2. **Compare with the collector's output.** If the disk inventory is materially smaller than the session's, say so in the report and audit the session-delivered set; never report the empty disk as the finding.
-3. **Usage counts still come from transcripts.** App-delivered skills appear there under their qualified names (`marketing:campaign-plan`, `mcp__<server>__<tool>`), so step 1's counts apply to them unchanged.
+3. **Usage counts come from transcripts, which see only local sessions.** App-delivered skills appear there under their qualified names (`marketing:campaign-plan`, `mcp__<server>__<tool>`), so step 1's counts apply — but `~/.claude/projects` records CLI and desktop-app sessions only. An account skill invoked on claude.ai in the browser leaves **no trace** in them.
+
+   So for `managed` rows, **zero local invocations is not evidence of disuse**, and the step-3 rule "0 uses ever → remove, pre-checked" does not apply. Cap them at `borderline` and say why in `desc`. Promote one to `remove` only with corroboration the user can see: 0% attribution in `/usage`, a duplicate of something already loaded, or the user telling you they don't use it. Observed case: a machine with 30 account skills showed 0 recorded invocations for every one of them — a result that says where the sessions ran, not which skills are used.
 
 These rows are `kind: "managed"` (see DATA-SHAPE.md) and carry `where` — the place the user turns the item off (claude.ai settings → Capabilities, an org/admin setting, `/plugin` in an interactive session). **They have no file to move**, so they never enter a harness apply-prompt; the report lists them as a manual checklist instead. Never emit config edits for something the harness supplies.
 
@@ -121,6 +123,7 @@ When the user pastes the Claude Code prompt back here, follow it exactly: honor 
 - Plugins are usually **global** (`~/.claude/settings.json`) — savings apply to every project; say so.
 - Zero MCP rows ≠ error: many setups have no MCP servers connected. Still report the finding.
 - Transcript greps cover invocations, not passive value (LSPs, hooks) — never mark those "remove" on count alone.
+- **Transcripts are local sessions only.** Account skills used on claude.ai in the browser show zero here; that's a blind spot, not a verdict (step 1b.3).
 - **A skill row names one skill directory.** Nested (`synced/`) and symlinked installs are normal; key rows on the collector's relative paths and never let a row name a parent. One wrong row here disables a user's whole synced library in a single click.
 - **An unused skill is not automatically an unused *token*.** Once the listing saturates, its description is already gone (rationale §1.8) — see step 2 before quoting any skill savings.
 - **Be honest about "savings".** Fewer context tokens ≠ automatically lower dollar cost — heavily-discounted cache reads dominate a session's bill, so mid-session compression that breaks the cache can even *raise* cost (rationale §0.2–0.3). The clean, defensible win this skill sells is removing **always-loaded** surfaces (unused plugins/skills/agents/MCP schemas that load every session) — that permanently shrinks the cached prefix without thrashing it. Frame the token counter as "standing context removed per session", not a guaranteed invoice reduction.
