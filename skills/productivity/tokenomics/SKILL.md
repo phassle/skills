@@ -3,7 +3,7 @@ name: tokenomics
 description: Audit what Claude Code loads into context every session vs what you actually use, then publish an interactive report with copy-paste apply-prompts. User-invoked — run /tokenomics.
 disable-model-invocation: true
 metadata:
-  version: 1.4.0
+  version: 1.4.1
 ---
 
 # Tokenomics — context audit
@@ -33,6 +33,8 @@ bash <this skill's directory>/scripts/collect-usage.sh
 (The skill may be installed at `~/.claude/skills/tokenomics/` or `.agents/skills/tokenomics/` — resolve the path relative to this SKILL.md.)
 
 Outputs: sessions per project, skill invocations, agent invocations, slash commands, MCP calls (all projects, all-time), current `enabledPlugins`, and user skills. Slash-command counts complement Skill-tool counts — sum both when judging usage (e.g. `/graphify` typed 5× + skill called 2× = 7 uses).
+
+If the collector prints **"Usage counts unavailable"**, there is no transcript directory: usage is *unknown*, not zero. Do not classify anything as `remove` on counts in that run — fall back to `/usage`, ask the user, and say on the page that removals are unscored. The same holds for any section printed as "not checked" (python3 missing): report it as unchecked, never as empty.
 
 The user-skills block lists **one line per `SKILL.md`** — `<description chars>  <path relative to ~/.claude/skills>  [disable-model-invocation]`, where the char count covers the whole description scalar including folded/block continuations, since all of it loads — found with `find -L -maxdepth 3`, because skills are not always one level deep or even real directories: claude.ai skill sync nests dozens under `synced/`, and skills.sh installs symlinks. Use those relative paths as the row keys; a top-level name like `synced` is a container, never a skill.
 

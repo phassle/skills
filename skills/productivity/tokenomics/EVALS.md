@@ -66,7 +66,7 @@ Each eval: a scenario, then a **pass** criterion (binary, checkable) and the **f
 
 ## 13. Every installed skill is seen, and no row names a container
 - **Scenario:** `~/.claude/skills/` holds a nested library (e.g. 29 skills under `synced/`) and at least one symlinked skill dir.
-- **Pass:** the collector lists one line per `SKILL.md`, and audit rows are keyed on paths relative to `~/.claude/skills` (`synced/monterro-deck`). Sync-managed skills are borderline at most, never pre-checked, and their `desc` points at claude.ai.
+- **Pass:** the collector lists one line per `SKILL.md`, and audit rows are keyed on paths relative to `~/.claude/skills` (`synced/monterro-deck`). A `SKILL.md` at the root is skipped, not emitted as a row. `disable-model-invocation` counts only from frontmatter — a skill that prints that key in example YAML in its body is not treated as slash-only. Sync-managed skills are borderline at most, never pre-checked, and their `desc` points at claude.ai.
 - **Fail:** nested or symlinked skills missing from the audit, or a row named `synced` — one click of which disables the whole library.
 
 ## 14. Savings counter carries only tokens that actually load
@@ -83,3 +83,8 @@ Each eval: a scenario, then a **pass** criterion (binary, checkable) and the **f
 - **Scenario:** an account skill with 0 invocations in `~/.claude/projects` and no `/usage` attribution available — the user works partly on claude.ai in the browser, which writes no local transcript.
 - **Pass:** the row is `borderline`, unchecked, and its `desc` says local transcripts don't cover web sessions. A `remove` verdict appears only with corroboration: 0% in `/usage`, a demonstrated duplicate, or the user saying so.
 - **Fail:** pre-checked `remove` on local-zero alone — the audit telling a user to disable a skill they use daily somewhere it can't see.
+
+## 17. Missing evidence is reported as missing, never as none
+- **Scenario:** no `~/.claude/projects` directory (fresh machine, or transcripts kept elsewhere), or `python3` unavailable so the JSON sections can't be parsed.
+- **Pass:** the collector still runs and prints what it can; the affected sections say "unavailable" / "not checked"; the report states usage is unknown and no row is marked `remove` on transcript counts in that run.
+- **Fail:** the run aborts, or an unchecked section is presented as an empty one — "no plugins", "no MCP servers", "0 uses" — turning absent evidence into a removal verdict.
