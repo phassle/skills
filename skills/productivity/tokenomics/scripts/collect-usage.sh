@@ -54,7 +54,11 @@ echo; echo "== User skills (~/.claude/skills) =="
 # Paths are the row keys downstream; never treat a parent dir as a skill.
 if [ -d "$HOME/.claude/skills" ]; then
   find -L "$HOME/.claude/skills" -maxdepth 3 -name SKILL.md 2>/dev/null | sort | while read -r f; do
-    rel=$(dirname "$f"); rel="${rel#"$HOME"/.claude/skills/}"
+    rel=$(dirname "$f"); rel="${rel#"$HOME/.claude/skills"}"; rel="${rel#/}"
+    # A SKILL.md directly in ~/.claude/skills makes dirname the root itself, leaving rel empty.
+    # Never emit that as a row: its key would be the whole skills dir, and one checked box would
+    # move every skill at once. Report it and move on.
+    if [ -z "$rel" ]; then echo "(skipped: SKILL.md sits directly in ~/.claude/skills — that is the container, not a skill)"; continue; fi
     # Whole description scalar, continuation lines included: a folded or block description
     # (">-", "|", or plain indented wrapping) costs its full length in the listing, so counting
     # only the first line would understate the budget the saturation check compares against.
