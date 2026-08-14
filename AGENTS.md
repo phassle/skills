@@ -88,6 +88,7 @@ Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`
 - `README.md` — user-facing quickstart + skill reference, grouped by category and by who can invoke.
 - `docs/architectural_patterns.md` — recurring structural patterns across skills, including the cheapest-verified-step ladder (pattern 15) and the three knowledge stores (pattern 9). Read before adding a skill.
 - `docs/tokenomics-report.png` — screenshot used in README.
+- `CLAUDE.md` → symlink to this file; `docs/tokenomics-rationale.md` → symlink to the skill's `RATIONALE.md`. Claude Code reads only `CLAUDE.md`, so the symlink is what makes this file load — never replace either with a copy.
 - `.claude-plugin/plugin.json` — released skill set (`skills`) + `version`. Release gate.
 - `.claude-plugin/marketplace.json` — marketplace manifest, `name: "phassle"`.
 - `skills/<category>/<name>/SKILL.md` — one folder per skill. Frontmatter: `name`, `description`, plus `disable-model-invocation: true` for slash-only skills.

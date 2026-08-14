@@ -21,7 +21,10 @@ Replace `/*__DATA__*/ null` in `template.html` with one JSON object:
     {
       "grp": "Plugins (global — enabledPlugins)",  // only on first row of a group
       "id": "azure@claude-plugins-official",       // exact id used in the generated prompt
-      "kind": "plugin",               // "plugin" | "skill" | "mcp" — decides prompt section
+      "kind": "plugin",               // "plugin" | "skill" | "mcp" | "managed" — decides prompt section
+      // "managed" = delivered by the harness/account, not by a file on disk (claude.ai skills,
+      // org plugins, app-supplied MCP). Requires "where": the exact place the user turns it off.
+      // Managed rows never enter a harness prompt — the page lists them as a manual checklist.
       "name": "azure",
       "src": "claude-plugins-official",
       "tok": 3540,                    // estimated tokens per session
@@ -74,7 +77,10 @@ Replace `/*__DATA__*/ null` in `template.html` with one JSON object:
 
 Notes:
 - **Tokens, not dollars.** All values (`tok`, `totalTokens`, tiles, `save` badges, `desc`) are token / qualitative — never prices, $/month, or hardcoded rates/multipliers (they go stale). `save` is a qualitative badge (e.g. "big on fan-outs"), not a figure.
+- **`tok` is what actually loads today, not what an item would cost.** When the skill listing is saturated, an unused skill's description is already dropped, so its row is `tok: 0` (or near it) with the real benefit stated in `desc` — freed listing budget for the skills that do get invoked. Summing would-be description costs into `totalTokens` overstates the headline badly. See SKILL.md step 2.
+- **`id` on a `kind: "skill"` row is the path relative to `~/.claude/skills`** (`synced/monterro-deck`) — the apply-prompt moves exactly that path. Never key a row on a directory that contains other skills.
 - First cell of every row renders in monospace; rows are plain string arrays (any column count matching `cols`).
 - `kind: "mcp"` rows generate a "remove from ~/.claude.json mcpServers" step in the apply-prompt.
+- `kind: "managed"` rows are excluded from every harness prompt by design and rendered under "Turn these off yourself" using `name` + `where` (e.g. `"where": "claude.ai → Settings → Capabilities → Skills"`). Emitting config edits for a surface the harness supplies sends an agent looking for files that don't exist.
 - Keep ids exact — the user pastes the generated prompt back and Claude follows it literally.
 - The `md` field of the `rationale` object — `DATA.rationale.md`, not a key literally named `rationale.md` — is the **raw** Markdown of `references/RATIONALE.md`, passed through unchanged — the template renders it (headings, tables, links). Don't hand-convert to HTML and don't edit it; the file is the single source of truth.

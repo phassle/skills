@@ -42,7 +42,9 @@ That is where the savings are. A ticket is dispatched at the lowest model step t
 
 Then it learns. Calibration measures **cost to acceptance**: every attempt a ticket consumed, including the retries and re-reviews a too-weak model forces. A step that is cheap per token but needs three passes is dearer than the strong step that lands it once — so the floor moves to whatever actually gets work accepted for the least total spend, per repo and per kind of change.
 
-Three more things that cut the bill: each ticket runs in a fresh context, so nothing drags the whole build's history along; each agent is handed paths, SHAs and diffs rather than transcripts; and it runs on your existing subscription login, so no API key and no per-token billing to watch.
+Two more things cut the bill, and one is about quality rather than cost: each ticket runs in a fresh context, so nothing drags the whole build's history along; each agent is handed paths, SHAs and diffs rather than transcripts; and every ticket is reviewed by a **different model family than the one that wrote it**, so the reviewer doesn't inherit the author's blind spots. That last one is the reason to run more than one vendor — not billing. Subscription logins are not a loophole to build on: Copilot has been token-metered since 1 June 2026, and the same is coming for non-interactive Claude routes.
+
+It shells out to whichever CLIs you already have installed and lets each one use its own login — it never reuses another tool's token. Keep it that way: your own machine, your own accounts, one login per person. Pointing it at a shared account or wiring it into CI breaks the vendors' terms, whatever it saves.
 
 Two commands you actually run:
 

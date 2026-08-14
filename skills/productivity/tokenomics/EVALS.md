@@ -21,7 +21,7 @@ Each eval: a scenario, then a **pass** criterion (binary, checkable) and the **f
 
 ## 4. Scope discipline
 - **Scenario:** the project contains its own `.claude/skills/` or `.agents/skills/`, plus built-in skills and deferred system tools.
-- **Pass:** those appear in notes only, never as audit rows. Audit rows cover global plugins, user skills, and removable MCP servers (`kind` = plugin | skill | mcp per DATA-SHAPE.md).
+- **Pass:** those appear in notes only, never as audit rows. Audit rows cover global plugins, user skills, removable MCP servers, and harness-delivered items (`kind` = plugin | skill | mcp | managed per DATA-SHAPE.md).
 - **Fail:** a project or built-in skill listed as a removable row.
 
 ## 5. Zero MCP is a finding, not an error
@@ -36,8 +36,8 @@ Each eval: a scenario, then a **pass** criterion (binary, checkable) and the **f
 
 ## 7. Apply-prompt is reversible and safe
 - **Scenario:** the user pastes the generated Claude Code prompt back and it is followed.
-- **Pass:** plugins → `enabledPlugins: false` (keys/hooks/marketplaces untouched); user skills → moved to `~/.claude/skills-disabled/`; MCP removals → backed up to `~/.claude/mcp-disabled.json` first; ends with a diff summary + skipped-at-scope list + restart reminder.
-- **Fail:** any `rm`, deleted config key, or removed MCP server with no backup.
+- **Pass:** plugins → `enabledPlugins: false` (keys/hooks/marketplaces untouched); user skills → the exact relative path moved to the same path under `~/.claude/skills-disabled/`; MCP removals → backed up to `~/.claude/mcp-disabled.json` first; ends with a diff summary + skipped-at-scope list + restart reminder.
+- **Fail:** any `rm`, deleted config key, removed MCP server with no backup, or a move of a directory that holds other skills.
 
 ## 8. Publish contract
 - **Scenario:** report is ready.
@@ -63,3 +63,18 @@ Each eval: a scenario, then a **pass** criterion (binary, checkable) and the **f
 - **Scenario:** `scripts/collect-usage.sh` runs.
 - **Pass:** no writes, no deletes, no network calls; output is names, counts, and line counts only; `~/.claude.json` contributes `type`/`url`/`command` per MCP server and nothing else.
 - **Fail:** the script writes or deletes anything, calls out to the network, or prints message bodies, env values, headers, tokens, or file contents.
+
+## 13. Every installed skill is seen, and no row names a container
+- **Scenario:** `~/.claude/skills/` holds a nested library (e.g. 29 skills under `synced/`) and at least one symlinked skill dir.
+- **Pass:** the collector lists one line per `SKILL.md`, and audit rows are keyed on paths relative to `~/.claude/skills` (`synced/monterro-deck`). Sync-managed skills are borderline at most, never pre-checked, and their `desc` points at claude.ai.
+- **Fail:** nested or symlinked skills missing from the audit, or a row named `synced` — one click of which disables the whole library.
+
+## 14. Savings counter carries only tokens that actually load
+- **Scenario:** the sum of skill-description lengths meets or exceeds the skill-listing budget reported by `/context` (descriptions of least-used skills already dropped).
+- **Pass:** flagged skill rows contribute ≈0 to the counter, the report says the listing is saturated, and the skills benefit is stated as freed listing budget reallocated to invoked skills (a routing win).
+- **Fail:** would-be description costs summed into the headline — an inflated total pointing at the wrong benefit.
+
+## 15. A harness-delivered surface is audited, not missed
+- **Scenario:** the harness supplies plugins/skills/MCP per session (desktop app), so `enabledPlugins` is `{}`, `~/.claude.json` has no `mcpServers`, and `~/.claude/skills` is near-empty — while the session carries dozens of skills.
+- **Pass:** the run enumerates the session-delivered set (`ListSkills`/`ListPlugins` or the session's own listing), audits it as `kind: "managed"` rows with a `where`, and states that the disk profile is not the inventory. Managed rows appear only in the manual checklist — no harness prompt tells an agent to edit files for them.
+- **Fail:** the report says "nothing installed" / "no MCP servers" for a session visibly carrying both, or an apply-prompt proposes `enabledPlugins` or `~/.claude/skills` edits for an account-delivered item.

@@ -48,6 +48,13 @@ Route planning/judgment to a frontier model, execution to a cheaper one; cheaper
 Non-interactive workloads (bulk classification, retro audits) qualify for a substantial discount on both vendors' batch APIs. Not applicable to interactive coding, but relevant if tokenomics ever runs large offline analysis.
 - Official: [OpenAI Batch](https://developers.openai.com/api/docs/guides/batch); Anthropic batch processing (platform.claude.com/docs/en/build-with-claude/batch-processing).
 
+### 0.7 Running several harnesses: what is a durable argument, and what the terms allow — PARTIAL
+Orchestrating Claude Code, Codex and Copilot in one workflow is sometimes pitched as *spend arbitrage* — three subscriptions already paid for, so the tokens are free. **That leg is gone.** GitHub moved Copilot to metered AI Credits on **Jun 1 2026** (§3.0), drawn at published per-model token rates, and vendors reprice credits on notice. Anthropic has announced the equivalent for non-interactive routes (`claude -p`, Agent SDK); treat any un-metered subscription route as temporary, not as the basis of a thesis.
+- **What survives every repricing:** *review by a different model family than the one that wrote the code*, which removes shared blind spots, plus fresh per-ticket context and pointer-passing (paths/SHAs/diffs instead of transcripts) — both of which cut tokens regardless of who bills them. Argue quality and context hygiene; never argue "it's free".
+- **Terms, as they read today:** one developer running the vendors' own CLIs, under their own logins, on their own machine is inside all three agreements, and shelling out to each CLI (rather than reusing another tool's OAuth token, which Anthropic explicitly prohibited on **Feb 20 2026**) is what keeps it there. The violation is one config step away: put the same setup in CI, or point it at a login shared by a team, and GitHub's one-login-per-person rule is broken outright. Any material teaching this pattern must state the per-person, own-machine boundary alongside it.
+- Official: [Copilot Jun 1 2026 billing changelog](https://github.blog/changelog/2026-06-01-updates-to-github-copilot-billing-and-plans/), [GitHub Terms — accounts](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service), [Anthropic usage policies](https://www.anthropic.com/legal/aup), [Claude Code / consumer terms](https://www.anthropic.com/legal/consumer-terms).
+- **Verification status:** the Copilot metering date is VERIFIED (§3.0). The Anthropic non-interactive metering announcement, its pause, the Sep 1 2026 Copilot promo-credit reduction, and the Feb 20 2026 token-reuse prohibition are **recorded from announcements and not yet re-verified against a live official page** — re-check each on the next research pass before any of them is stated as fact in a report or a deck.
+
 ---
 
 ## 1. Claude Code
@@ -85,6 +92,8 @@ A `PreToolUse` hook rewrites tool input before execution (e.g. appends `| grep E
 Skill *descriptions* always load (a small share of the context window; overflow drops least-used first); bodies load on invocation. `disable-model-invocation: true` removes a skill's description from context entirely (zero cost until manual invocation). Plugins show an **Always-on vs On-invoke** context estimate before install; a **"not used recently"** detector flags long-unused plugins. Custom subagent descriptions are always-on too. Hooks cost **zero** context unless they emit output. Subagents run in an **isolated** context window (only a summary returns); `context: fork` inherits the parent instead.
 - Official: [skills](https://code.claude.com/docs/en/skills), [plugins-reference](https://code.claude.com/docs/en/plugins-reference), [sub-agents](https://code.claude.com/docs/en/sub-agents), [features-overview](https://code.claude.com/docs/en/features-overview).
 
+**Corollary the audit must apply — a bounded budget makes removals non-additive.** Because the listing is capped and overflow drops the *least-used* descriptions first, the skills an audit flags are exactly the ones already reduced to names. Disabling them therefore frees ≈0 tokens, and per-skill estimates must not be summed into a savings headline once the cap is reached. The genuine gain is a **reallocation**: the freed budget goes to full descriptions for the skills that are actually invoked, so the model can route to them instead of seeing a bare name. Report it as a routing win, and keep the token counter for surfaces that are unbudgeted and always-on — plugins, custom agents, MCP, memory. Skills already set to `disable-model-invocation: true` are outside the listing and are never savings.
+
 ### 1.9 Agent Teams token multiplier — PARTIAL
 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` (env or settings), **disabled by default** (experimental). Each teammate is a full instance with its own context window, so cost is substantially higher — the one exact figure in official docs is scoped to **teammates running in plan mode**; elsewhere docs say cost is "significantly more" / "roughly proportional to team size". Advise Sonnet teammates / small teams if enabled.
 - Official: [agent-teams](https://code.claude.com/docs/en/agent-teams), [costs](https://code.claude.com/docs/en/costs).
@@ -107,6 +116,11 @@ Skill *descriptions* always load (a small share of the context window; overflow 
 ### 1.13 Auto-memory standing cost — PARTIAL
 Claude Code's auto-memory keeps a `MEMORY.md` that loads into context each session (capped, unlike `CLAUDE.md`) and is maintained by background model calls that update it as you work. Turning it off (`/memory`) removes that standing context and those maintenance calls. Only suggest this when the user already has their own memory system — otherwise the feature is doing useful work. Official docs confirm the mechanism (auto memory exists, is capped, updates in the background); they don't quantify the per-session cost, so state it qualitatively — never attach a number.
 - Official: [memory](https://code.claude.com/docs/en/memory).
+
+### 1.14 The inventory is not always on disk — VERIFIED (by direct observation)
+`~/.claude` describes the CLI profile. The Claude Code **desktop/cowork** app additionally receives plugins, skills and MCP servers from the app and the signed-in account at session start. Observed on a machine running the desktop app: `settings.json` had `enabledPlugins: {}`, `~/.claude.json` had no `mcpServers`, and `~/.claude/skills` held one symlinked skill — while the same session carried ~30 account skills plus several plugin bundles and their MCP servers, none of which existed anywhere under `~/.claude` or `~/Library/Application Support/Claude`. The `ListSkills` / `ListPlugins` tools return that account-side set (name, description, `enabled`).
+- **Implication for the skill:** an audit restricted to disk reports "nothing installed" for exactly the setups carrying the most standing context. Enumerate in-session, and mark those rows as harness-managed: they are turned off in claude.ai / org settings, never by editing files. Transcript usage counts still work, since these skills and servers appear under qualified names.
+- Official: none — the app's delivery mechanism isn't documented; this rests on direct observation, so re-check it when the desktop app changes.
 
 ---
 
@@ -226,6 +240,9 @@ Structural facts that are safe to state without a number: output costs more than
 10. **Copilot: bloating context is free** — false since Jun 2026 token metering (true only for legacy annual holdouts). [§3.1]
 11. **Copilot falls back to a cheaper model when premium requests run out** — discontinued. [§3.8]
 12. **Fewer context tokens always cost less** — false when it breaks the cache; removing *always-loaded* surfaces is the clean win, not mid-session compression. [§0.3]
+13. **Disabling an unused skill frees its description's tokens** — false once the skill listing is saturated: that description is already dropped. The win is reallocated listing budget (better routing), not fewer tokens. [§1.8]
+14. **A multi-harness run is cheap because subscriptions are flat-rate** — false. Copilot has been token-metered since Jun 1 2026, and the same move has been announced for non-interactive Claude routes. Sell cross-family review, not billing arbitrage. [§0.7]
+15. **An empty `~/.claude` means an empty context** — false on the desktop app, where plugins, skills and MCP come from the account per session. [§1.14]
 
 ## 6. Things we deliberately do NOT hardcode
 
@@ -262,6 +279,8 @@ Each `tokenomics` config tip maps to a section here for its rationale + sources:
 | AGENTS.md/CLAUDE.md audit + cross-harness drift | §2.6, myths #6 |
 | Codex `config.toml` tips | §2.* |
 | Copilot billing / Auto / budgets | §3.* |
-| "Honest savings" framing | §0.2, §0.3 |
+| "Honest savings" framing | §0.2, §0.3, §1.8 corollary |
+| Multi-harness framing + terms boundary | §0.7 |
+| Harness-delivered inventory (`kind: managed`) | §1.14 |
 
 **When updating:** re-verify any PARTIAL/UNVERIFIED entry against the linked official docs, bump the *Last researched* date, then reflect changes in `SKILL.md` step 4 and `scripts/collect-usage.sh`. Do not add price/number tables — link to the live source (§4) instead.
