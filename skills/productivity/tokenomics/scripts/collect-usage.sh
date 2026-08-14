@@ -10,7 +10,9 @@
 #   ~/.claude/settings.json                    enabledPlugins, marketplaces, hook event names, one env flag
 #   ~/.claude.json                             MCP servers — type/url/command only (never env or headers)
 #   ~/.claude/plugins/installed_plugins.json   installed plugin versions and scope
-#   ~/.claude/{skills,agents,commands,hooks}   directory listings only, no file contents
+#   ~/.claude/{agents,commands,hooks}          directory listings only, no file contents
+#   ~/.claude/skills/**/SKILL.md               path, description LENGTH, and whether
+#                                              disable-model-invocation is set — no text
 #   ~/.claude/CLAUDE.md, ./CLAUDE.md, ./AGENTS.md   line counts only, no contents
 #
 # Everything it prints is a name, a count, or a line count. It reads no message
@@ -46,7 +48,34 @@ echo; echo "== Enabled plugins (~/.claude/settings.json) =="
 python3 -c "import json,os;print(json.dumps(json.load(open(os.path.expanduser('~/.claude/settings.json'))).get('enabledPlugins',{}),indent=1))" 2>/dev/null || echo "(could not read)"
 
 echo; echo "== User skills (~/.claude/skills) =="
-ls -1 "$HOME/.claude/skills" 2>/dev/null || echo "(none)"
+# Columns: <description chars>  <path relative to ~/.claude/skills>  [disable-model-invocation]
+# find, not ls: skills are not always one level deep — claude.ai skill sync nests them
+# under synced/, so a plain listing sees the wrapper dir and misses every skill inside it.
+# Paths are the row keys downstream; never treat a parent dir as a skill.
+if [ -d "$HOME/.claude/skills" ]; then
+  find -L "$HOME/.claude/skills" -maxdepth 3 -name SKILL.md 2>/dev/null | sort | while read -r f; do
+    rel=$(dirname "$f"); rel="${rel#"$HOME"/.claude/skills/}"
+    # Whole description scalar, continuation lines included: a folded or block description
+    # (">-", "|", or plain indented wrapping) costs its full length in the listing, so counting
+    # only the first line would understate the budget the saturation check compares against.
+    # Length only — the text itself is never printed. chars ≈ 4× tokens.
+    n=$(awk '
+      /^---[[:space:]]*$/ { fm++; if (fm == 2) exit; next }
+      fm != 1 { next }
+      ind && /^[[:space:]]/ { gsub(/^[[:space:]]+|[[:space:]]+$/, ""); n += length($0) + (n > 0 ? 1 : 0); next }
+      ind { ind = 0 }
+      /^description:[[:space:]]*/ {
+        sub(/^description:[[:space:]]*/, ""); sub(/^[>|][-+0-9]*[[:space:]]*$/, "")
+        gsub(/[[:space:]]+$/, ""); n += length($0); ind = 1; next
+      }
+      END { print n + 0 }' "$f")
+    dmi=""; grep -qE '^disable-model-invocation:[[:space:]]*true' "$f" && dmi="  [disable-model-invocation]"
+    echo "$n  $rel$dmi"
+  done
+  [ -z "$(find -L "$HOME/.claude/skills" -maxdepth 3 -name SKILL.md 2>/dev/null)" ] && echo "(none)" || true
+else
+  echo "(none)"
+fi
 
 echo; echo "== Global inventory =="
 echo "-- user agents (~/.claude/agents):"; ls -1 "$HOME/.claude/agents" 2>/dev/null || echo "(none)"
@@ -65,9 +94,34 @@ python3 -c "import json,os;d=json.load(open(os.path.expanduser('~/.claude/settin
 echo "-- global hooks (settings.json events):"
 python3 -c "import json,os;d=json.load(open(os.path.expanduser('~/.claude/settings.json')));print('\n'.join(d.get('hooks',{}).keys()))" 2>/dev/null || echo "(none)"
 
+echo; echo "== Inventory source check =="
+# An empty on-disk profile is not the same as an empty session. Desktop/cowork harnesses deliver
+# plugins, skills and MCP servers per session; auditing only ~/.claude there reports "nothing
+# installed" about a large standing surface. Tell the caller to enumerate in-session (SKILL.md 1b).
+disk=0
+python3 -c "import json,os;d=json.load(open(os.path.expanduser('~/.claude/settings.json')));exit(0 if d.get('enabledPlugins') else 1)" 2>/dev/null && disk=$((disk+1))
+python3 -c "import json,os;d=json.load(open(os.path.expanduser('~/.claude.json')));exit(0 if d.get('mcpServers') else 1)" 2>/dev/null && disk=$((disk+1))
+[ -n "$(find -L "$HOME/.claude/skills" -maxdepth 3 -name SKILL.md 2>/dev/null)" ] && disk=$((disk+1))
+if [ "$disk" -le 1 ]; then
+  echo "on-disk profile is nearly empty (enabledPlugins / mcpServers / user skills: $disk of 3 populated)."
+  echo "If this session lists more skills, agents or MCP servers than appear above, they are harness-delivered:"
+  echo "enumerate them in-session (ListSkills/ListPlugins or the session's own listing) and audit those as kind=managed."
+else
+  echo "on-disk profile populated ($disk of 3) — still cross-check against what the session lists."
+fi
+
 echo; echo "== Config hygiene (token-tip signals) =="
 echo "-- global CLAUDE.md lines:"; awk 'END{print NR}' "$HOME/.claude/CLAUDE.md" 2>/dev/null || echo "(none)"
-echo "-- context files in project ($ORIG_PWD):"; for f in CLAUDE.md AGENTS.md .claude/CLAUDE.md; do [ -f "$ORIG_PWD/$f" ] && echo "$(awk 'END{print NR}' "$ORIG_PWD/$f")  $f"; done || true
+# Marks files that are the same inode (the recommended CLAUDE.md -> AGENTS.md symlink) so the
+# lines are counted once, not once per name — the file loads once per turn however many names it has.
+echo "-- context files in project ($ORIG_PWD)  [lines  path  (same-file marker)]:"
+seen=""
+for f in CLAUDE.md AGENTS.md .claude/CLAUDE.md; do
+  [ -f "$ORIG_PWD/$f" ] || continue
+  ino=$(ls -Li "$ORIG_PWD/$f" 2>/dev/null | awk '{print $1}')
+  case " $seen " in *" $ino "*) dup="  (same file as an entry above — count its lines once)";; *) dup=""; seen="$seen $ino";; esac
+  echo "$(awk 'END{print NR}' "$ORIG_PWD/$f")  $f$dup"
+done || true
 echo "-- AGENTS.md present but no CLAUDE.md / .claude/CLAUDE.md (Claude Code won't load it):"
 if [ -f "$ORIG_PWD/AGENTS.md" ] && [ ! -e "$ORIG_PWD/CLAUDE.md" ] && [ ! -e "$ORIG_PWD/.claude/CLAUDE.md" ]; then echo "YES — drift risk (add symlink or thin CLAUDE.md importing @AGENTS.md)"; else echo "no"; fi
 echo "-- Agent Teams flag (CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS; each teammate is a full instance, so substantially more tokens):"

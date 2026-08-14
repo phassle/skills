@@ -408,7 +408,7 @@ function claudePrompt(sel, tips, scope) {
     : "\nSCOPE: GLOBAL. Apply changes in my user settings (~/.claude/settings.json, ~/.claude/skills, ~/.claude.json) so every project benefits. Repo-specific items (project permissions.deny rules, project CLAUDE.md) still go in this repo.\n";
   let step = 1;
   if (plugins.length) p += `\n${step++}. Disable these plugins (enabledPlugins → false):\n` + plugins.map(x => "   - " + x).join("\n") + "\n";
-  if (skills.length) p += `\n${step++}. Disable these user skills by moving them from ~/.claude/skills/ to ~/.claude/skills-disabled/ (create the dir; never delete):\n` + skills.map(x => "   - " + x).join("\n") + "\n";
+  if (skills.length) p += `\n${step++}. Disable these user skills by moving each one from ~/.claude/skills/<path> to ~/.claude/skills-disabled/<path> (paths are relative to ~/.claude/skills; create parent dirs; never delete). Move exactly the directory named — if a path has a parent holding other skills, move only the leaf, and skip anything whose directory is missing or is a symlink, reporting it back instead:\n` + skills.map(x => "   - " + x).join("\n") + "\n";
   if (mcps.length) p += `\n${step++}. Remove these servers from the top-level mcpServers in ~/.claude.json (back up the removed JSON to ~/.claude/mcp-disabled.json first):\n` + mcps.map(x => "   - " + x).join("\n") + "\n";
   if (tips.length) p += `\n${step++}. Apply these config changes (adapt file paths to the scope above):\n` + tips.map(t => "   - " + t.apply).join("\n") + "\n";
   p += "\nDon't touch anything else (hooks, marketplaces, other plugins/servers). Show a diff-style summary of what changed, list anything skipped, and remind me to restart the session.";
@@ -446,12 +446,27 @@ const HARNESSES = [
   { name: "GitHub Copilot", build: (sel, tips, scope) => copilotPrompt(tips.filter(t => t.harness === "GitHub Copilot"), scope) },
 ];
 
+// Harness-delivered items (kind "managed") have no file on disk to move, so they never enter a
+// harness prompt — they'd invite an agent to "fix" config that isn't there. They get a manual list.
+function managedList(sel) {
+  const managed = sel.filter(i => i.kind === "managed");
+  if (!managed.length) return null;
+  return managed.map(i => "- " + i.name + (i.where ? " — " + i.where : "")).join("\n");
+}
+
 function buildPrompt(sel) {
   const tips = TIPS.filter(t => t.checked);
   const scope = getScope();
   const el = document.getElementById("prompts");
   el.innerHTML = "";
   let any = false;
+  const manual = managedList(sel);
+  if (manual) {
+    any = true;
+    el.insertAdjacentHTML("beforeend",
+      `<div class="prompthead">Turn these off yourself — no prompt, no config file<span class="tag harness">Manual</span></div>
+       <div class="promptbox"><button class="copybtn" data-copy>Copy</button><pre>${esc(manual)}</pre></div>`);
+  }
   for (const h of HARNESSES) {
     const text = h.build(sel, tips, scope);
     if (!text) continue;
