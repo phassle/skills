@@ -55,8 +55,20 @@ echo; echo "== User skills (~/.claude/skills) =="
 if [ -d "$HOME/.claude/skills" ]; then
   find -L "$HOME/.claude/skills" -maxdepth 3 -name SKILL.md 2>/dev/null | sort | while read -r f; do
     rel=$(dirname "$f"); rel="${rel#"$HOME"/.claude/skills/}"
-    # first line of the description only (folded YAML continuations are not counted) — chars ≈ 4× tokens
-    n=$(awk '/^description:/{sub(/^description:[[:space:]]*/,"");print length($0);f=1;exit} END{if(!f)print 0}' "$f")
+    # Whole description scalar, continuation lines included: a folded or block description
+    # (">-", "|", or plain indented wrapping) costs its full length in the listing, so counting
+    # only the first line would understate the budget the saturation check compares against.
+    # Length only — the text itself is never printed. chars ≈ 4× tokens.
+    n=$(awk '
+      /^---[[:space:]]*$/ { fm++; if (fm == 2) exit; next }
+      fm != 1 { next }
+      ind && /^[[:space:]]/ { gsub(/^[[:space:]]+|[[:space:]]+$/, ""); n += length($0) + (n > 0 ? 1 : 0); next }
+      ind { ind = 0 }
+      /^description:[[:space:]]*/ {
+        sub(/^description:[[:space:]]*/, ""); sub(/^[>|][-+0-9]*[[:space:]]*$/, "")
+        gsub(/[[:space:]]+$/, ""); n += length($0); ind = 1; next
+      }
+      END { print n + 0 }' "$f")
     dmi=""; grep -qE '^disable-model-invocation:[[:space:]]*true' "$f" && dmi="  [disable-model-invocation]"
     echo "$n  $rel$dmi"
   done

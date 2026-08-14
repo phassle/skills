@@ -34,7 +34,7 @@ bash <this skill's directory>/scripts/collect-usage.sh
 
 Outputs: sessions per project, skill invocations, agent invocations, slash commands, MCP calls (all projects, all-time), current `enabledPlugins`, and user skills. Slash-command counts complement Skill-tool counts — sum both when judging usage (e.g. `/graphify` typed 5× + skill called 2× = 7 uses).
 
-The user-skills block lists **one line per `SKILL.md`** — `<description chars>  <path relative to ~/.claude/skills>  [disable-model-invocation]` — found with `find -L -maxdepth 3`, because skills are not always one level deep or even real directories: claude.ai skill sync nests dozens under `synced/`, and skills.sh installs symlinks. Use those relative paths as the row keys; a top-level name like `synced` is a container, never a skill.
+The user-skills block lists **one line per `SKILL.md`** — `<description chars>  <path relative to ~/.claude/skills>  [disable-model-invocation]`, where the char count covers the whole description scalar including folded/block continuations, since all of it loads — found with `find -L -maxdepth 3`, because skills are not always one level deep or even real directories: claude.ai skill sync nests dozens under `synced/`, and skills.sh installs symlinks. Use those relative paths as the row keys; a top-level name like `synced` is a container, never a skill.
 
 ### 1b. Collect what the harness delivers (not on disk)
 
