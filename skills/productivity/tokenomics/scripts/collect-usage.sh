@@ -54,7 +54,7 @@ echo; echo "== User skills (~/.claude/skills) =="
 # Paths are the row keys downstream; never treat a parent dir as a skill.
 if [ -d "$HOME/.claude/skills" ]; then
   find -L "$HOME/.claude/skills" -maxdepth 3 -name SKILL.md 2>/dev/null | sort | while read -r f; do
-    rel=$(dirname "$f"); rel="${rel#"$HOME"/.claude/skills/}"
+    rel=$(dirname "$f"); rel="${rel#"$HOME/.claude/skills/"}"
     # Whole description scalar, continuation lines included: a folded or block description
     # (">-", "|", or plain indented wrapping) costs its full length in the listing, so counting
     # only the first line would understate the budget the saturation check compares against.
