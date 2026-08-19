@@ -25,7 +25,7 @@ Use the harness's current help before composing a probe. The exact flags evolve,
 - set a small budget/credit ceiling when supported;
 - never print or persist credential-bearing configuration.
 
-Typical current primitives include ephemeral read-only `codex exec`, non-persistent tool-free `claude --print`, a new non-interactive `copilot --prompt` session with memory disabled and a restricted tool set, a new `opencode run` session with read-only permissions, and `pi --print --no-session` with a read-only tool allowlist. Treat these only as hints; inspect installed-version help first.
+Typical current primitives include ephemeral read-only `codex exec`, non-persistent tool-free `claude --print`, a new non-interactive `copilot --prompt` session with memory disabled and a restricted tool set, a new `opencode run` session with read-only permissions, and `pi --print --no-session` with a read-only tool allowlist, and a one-shot `dsh --profile headless` task with the model pinned through a `--patch` overlay on its `agent-default-model` plugin (no reasoning-effort surface observed in 0.1.x, so `reasoningEffort.supported=false`). Treat these only as hints; inspect installed-version help first.
 
 To verify review support without reviewing code, start another clean session with a minimal request to locate and load the installed `code-review` skill, state its two axes, and exit without subagents or repository writes. Confirm project or personal discovery paths for that harness and record the exact reviewer effort used.
 

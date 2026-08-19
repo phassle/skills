@@ -22,6 +22,7 @@ The accepted root entries are:
 | GitHub Copilot CLI/app | `/dynamic-implement [issue-or-smoke-flag]` |
 | OpenCode | `/dynamic-implement [issue-or-smoke-flag]` through the installed custom-command adapter. |
 | Pi | `/skill:dynamic-implement [issue-or-smoke-flag]` |
+| dsh (DeepSeek Harness) | No accepted root entry yet — the 0.1.x rc exposes no skill-invocation surface, so root entry on dsh is unverified. Run the root from another harness. |
 
 Codex retains the `$skill` mention or explicit selector metadata. Claude Code, GitHub Copilot, and Pi retain their direct command invocation. The OpenCode adapter expands to a prompt containing the exact line `DYNAMIC_IMPLEMENT_SLASH_ENTRY=1`. A host that strips its explicit invocation evidence is unverified for root entry and setup reports that blocker.
 
@@ -40,6 +41,7 @@ Capability setup is a separate manual action and is never auto-invoked by Dynami
 | GitHub Copilot CLI/app | `/dynamic-skills-setup` |
 | OpenCode | `/dynamic-skills-setup` through the installed custom-command adapter. |
 | Pi | `/skill:dynamic-skills-setup` |
+| dsh (DeepSeek Harness) | Not available on dsh — run setup from another harness; dsh appears in the profile as a probed worker route only. |
 
 Setup must finish and persist a current profile before the user invokes Dynamic Implement again. Do not combine setup and implementation in one automatic continuation.
 
@@ -54,6 +56,7 @@ Use the skill mechanism native to the active host:
 - GitHub Copilot CLI/app: invoke named skills with `/skill-name` or explicitly instruct Copilot to use the named skill.
 - OpenCode: instruct the agent to load the named skill through its native `skill` tool.
 - Pi: invoke an installed downstream skill with `/skill:skill-name`, or pass its directory/file with `--skill` for a standalone process.
+- dsh: no native skill mechanism observed in the 0.1.x rc (plugin architecture; no skills plugin ships yet). Never imitate a skill body in a prompt; until a skills plugin is live-verified, restrict dsh routes to roles that require no installed skill.
 
 Always read the installed skill file completely before acting. A subagent does not necessarily inherit the coordinator's loaded skills; explicitly tell every worker which skills to load.
 
@@ -66,6 +69,7 @@ Implement `goal-contract.md` on every host. The root issue and its child/depende
 - GitHub Copilot: use autopilot for continuation until completion or a real blocker. `/tasks` represents running subagents and shell jobs rather than a durable root-plan store, so keep the root goal in the ledger. `/fleet` may execute independent units, but fleet workers do not own or complete the root goal.
 - OpenCode: mirror the current plan into its session-persisted `todowrite` and delegate through native `task` subagents. It has no documented automatic continuation; resume the coordinator session when appropriate or reconstruct from the ledger in a new run.
 - Pi: the base CLI has no built-in root task list or subagent tool. Use the ledger plus coordinator loop. When a trusted task/subagent extension is installed, it may mirror progress and launch isolated Pi processes; review subprocesses never own the root goal.
+- dsh: no root task list or subagent tool observed in the base profiles. Use the ledger plus coordinator loop; dsh processes never own the root goal.
 
 If a host cannot auto-continue, perform all safe ready steps in the current orchestration run. On re-entry, re-fetch the same issue graph and ledger rather than creating a new plan or declaring completion. Mark the goal complete only under `goal-contract.md`.
 
