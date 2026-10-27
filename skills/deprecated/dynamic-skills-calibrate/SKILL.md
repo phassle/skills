@@ -1,6 +1,6 @@
 ---
 name: dynamic-skills-calibrate
-description: "Rebuild a repository-owned Dynamic Implement model-and-effort knowledge profile from feature-reviewed or integrated tracker-comment or run-ledger telemetry. Use before a feature PR, periodically after integration, or when model/effort routing is too weak, slow, or costly."
+description: "Deprecated — use Matt Pocock's implement-spec instead. Rebuild a repository-owned Dynamic Implement model-and-effort knowledge profile from feature-reviewed or integrated tracker-comment or run-ledger telemetry. Use before a feature PR, periodically after integration, or when model/effort routing is too weak, slow, or costly."
 metadata:
   version: 0.3.1
 ---

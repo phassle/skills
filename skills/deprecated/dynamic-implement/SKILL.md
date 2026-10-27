@@ -1,6 +1,6 @@
 ---
 name: dynamic-implement
-description: "Orient repository work when explicitly invoked without an issue, or implement one spec-level issue end to end with planning, TDD, clean-context review, integration, and tracker updates."
+description: "Deprecated — use Matt Pocock's implement-spec instead. Orient repository work when explicitly invoked without an issue, or implement one spec-level issue end to end with planning, TDD, clean-context review, integration, and tracker updates."
 metadata:
   version: 0.3.1
 ---
