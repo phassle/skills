@@ -25,7 +25,7 @@ Replace `/*__DATA__*/ null` in `template.html` with one JSON object:
       // "managed" = delivered by the harness/account, not by a file on disk (claude.ai skills,
       // org plugins, app-supplied MCP). Requires "where": the exact place the user turns it off.
       // Managed rows never enter a harness prompt — the page lists them as a manual checklist.
-      "name": "azure",
+      "name": "azure",                // skill rows: the frontmatter name (collector name=) — skillOverrides key
       "src": "claude-plugins-official",
       "tok": 3540,                    // estimated tokens per session
       "uses": 0,                      // all-time invocations; null = "—" (implicit, e.g. LSP)

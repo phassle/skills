@@ -88,20 +88,21 @@ Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`
 - `README.md` — user-facing quickstart + skill reference, grouped by category and by who can invoke.
 - `docs/architectural_patterns.md` — recurring structural patterns across skills, including the cheapest-verified-step ladder (pattern 15) and the three knowledge stores (pattern 9). Read before adding a skill.
 - `docs/tokenomics-report.png` — screenshot used in README.
-- `CLAUDE.md` → symlink to this file; `docs/tokenomics-rationale.md` → symlink to the skill's `RATIONALE.md`. Claude Code reads only `CLAUDE.md`, so the symlink is what makes this file load — never replace either with a copy.
+- `docs/tokenomics-rationale.md` → symlink to the skill's `RATIONALE.md` — never replace it with a copy.
+- No `CLAUDE.md` anywhere in the repo, on purpose: Claude Code (v2.1.277+) reads `AGENTS.md` directly when no `CLAUDE.md` exists, and adding one would stop it loading this file.
 - `.claude-plugin/plugin.json` — released skill set (`skills`) + `version`. Release gate.
 - `.claude-plugin/marketplace.json` — marketplace manifest, `name: "phassle"`.
 - `skills/<category>/<name>/SKILL.md` — one folder per skill. Frontmatter: `name`, `description`, plus `disable-model-invocation: true` for slash-only skills.
 - `skills/productivity/tokenomics/references/DATA-SHAPE.md` — JSON contract the report template consumes.
 - `skills/productivity/tokenomics/references/RATIONALE.md` — sourced why behind every config tip; embedded verbatim in the report. Update when tips, stats, or pricing change.
 - `skills/productivity/tokenomics/EVALS.md` — eval cases for the tokenomics workflow.
-- `skills/other/dynamic-run-dashboard/references/DATA-SHAPE.md` — JSON contract the run-dashboard template consumes.
+- `skills/deprecated/dynamic-run-dashboard/references/DATA-SHAPE.md` — JSON contract the run-dashboard template consumes.
 - `skills/other/README.md` — what the staging category means and how a skill leaves it.
-- `skills/other/dynamic-qa/SPEC.md` — buildable spec for an unbuilt two-skill QA bundle.
+- `skills/deprecated/dynamic-qa/SPEC.md` — buildable spec for an unbuilt two-skill QA bundle.
 
 ### Categories
 
-`productivity`, `engineering` — released, listed in `plugin.json`. `other` — the single staging category; everything unready lives here, currently the five `dynamic-*` bundles. No other staging dir; do not reintroduce one.
+`productivity`, `engineering` — released, listed in `plugin.json`. `other` — the single staging category; everything unready lives here, currently `spec-to-scenarios` and `discover-conventions`. `deprecated` — unmaintained skills (the five `dynamic-*` bundles), kept but not developed. No other staging dir; do not reintroduce one.
 
 ### Installed-copy drift
 
@@ -110,7 +111,7 @@ There are no maintenance skills. This repo publishes skills for other people to 
 One thing still needs a habit rather than a skill. The `dynamic-*` bundles get edited **where they run**: a run that hits a gap writes the safeguard into the installed copy under `~/.claude/skills/`, so the installed copy is normally ahead of this repo. Before editing a `dynamic-*` file here, and before releasing one, compare:
 
 ```bash
-diff -rq skills/other/dynamic-<name> ~/.claude/skills/dynamic-<name>
+diff -rq skills/deprecated/dynamic-<name> ~/.claude/skills/dynamic-<name>
 ```
 
 A difference means the installed copy probably won — it usually carries a safeguard a real run paid for. Bring it across before editing, or the edit lands on a stale base and overwrites it.

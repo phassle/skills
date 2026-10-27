@@ -36,7 +36,7 @@ Each eval: a scenario, then a **pass** criterion (binary, checkable) and the **f
 
 ## 7. Apply-prompt is reversible and safe
 - **Scenario:** the user pastes the generated Claude Code prompt back and it is followed.
-- **Pass:** plugins → `enabledPlugins: false` (keys/hooks/marketplaces untouched); user skills → the exact relative path moved to the same path under `~/.claude/skills-disabled/`; MCP removals → backed up to `~/.claude/mcp-disabled.json` first; ends with a diff summary + skipped-at-scope list + restart reminder.
+- **Pass:** plugins → `enabledPlugins: false` (keys/hooks/marketplaces untouched); user skills → hidden by frontmatter name with `skillOverrides: "off"` in the scope's settings file (no files moved or deleted; synced skills reported back); MCP removals → backed up to `~/.claude/mcp-disabled.json` first; ends with a diff summary + skipped-at-scope list + restart reminder.
 - **Fail:** any `rm`, deleted config key, removed MCP server with no backup, or a move of a directory that holds other skills.
 
 ## 8. Publish contract

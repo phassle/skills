@@ -1,0 +1,5 @@
+interface:
+  display_name: "Spec to Scenarios"
+  short_description: "Prepare acceptance scenarios and planner briefs"
+policy:
+  allow_implicit_invocation: false
