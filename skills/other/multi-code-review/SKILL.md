@@ -88,6 +88,25 @@ security, correctness, reliability, architecture, testing, best-practices.
 Blocking findings come first in each. End with one line: the blocking count,
 or "passed".
 
+## Set up CI (GitHub Actions)
+
+Use this when the user wants every pull request reviewed automatically. CI runs
+the whole stack on the runner; no local server is needed for it.
+
+1. Copy `references/github-workflow.yml` to `.github/workflows/code-review.yml`
+   in the user's repo. Set `prepare` to the repo's install command (`npm ci`,
+   `dotnet restore`, ...) so ESLint, tsc, Roslyn can run; empty if none.
+2. If the repo has no `.mcr/settings.yml`, offer `references/settings.yml` and
+   ask the user for each category's level. Do not choose for them.
+3. Secrets are optional. Ask before adding any: `LLM_API_KEY` (LLM reviewers;
+   code goes to that API) and `TYPESAFE_API_KEY` (Jev as judge). Without them,
+   or with `offline: true`, no code leaves the runner.
+4. Tell the user what the check does: one PR review per push, a line comment
+   per new finding, and a failing check when a finding blocks. The full report
+   is the job summary and an HTML artifact.
+
+Do not commit or push unless asked.
+
 ## When the server is unavailable
 
 If `list_analyzers` fails or the tools are missing, the stack is not running.

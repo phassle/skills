@@ -1,0 +1,13 @@
+# Copy to .mcr/settings.yml in a reviewed repo. Commit it; it is reviewed like code.
+#
+# off      not reviewed
+# minimum  analyzers only; only high severity shown; high blocks
+# medium   analyzers + LLM reviewer (not on trivial diffs); high and medium shown; high blocks (default)
+# maximum  analyzers + LLM reviewer on every diff; everything shown; high and medium block
+review:
+  security: maximum
+  architecture: medium
+  best-practices: minimum
+  testing: medium
+  correctness: medium
+  reliability: medium
