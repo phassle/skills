@@ -88,20 +88,21 @@ Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`
 - `README.md` — user-facing quickstart + skill reference, grouped by category and by who can invoke.
 - `docs/architectural_patterns.md` — recurring structural patterns across skills, including the cheapest-verified-step ladder (pattern 15) and the three knowledge stores (pattern 9). Read before adding a skill.
 - `docs/tokenomics-report.png` — screenshot used in README.
-- `CLAUDE.md` → symlink to this file; `docs/tokenomics-rationale.md` → symlink to the skill's `RATIONALE.md`. Claude Code reads only `CLAUDE.md`, so the symlink is what makes this file load — never replace either with a copy.
+- `docs/tokenomics-rationale.md` → symlink to the skill's `RATIONALE.md` — never replace it with a copy.
+- No `CLAUDE.md` anywhere in the repo, on purpose: Claude Code (v2.1.277+) reads `AGENTS.md` directly when no `CLAUDE.md` exists, and adding one would stop it loading this file.
 - `.claude-plugin/plugin.json` — released skill set (`skills`) + `version`. Release gate.
 - `.claude-plugin/marketplace.json` — marketplace manifest, `name: "phassle"`.
 - `skills/<category>/<name>/SKILL.md` — one folder per skill. Frontmatter: `name`, `description`, plus `disable-model-invocation: true` for slash-only skills.
 - `skills/productivity/tokenomics/references/DATA-SHAPE.md` — JSON contract the report template consumes.
 - `skills/productivity/tokenomics/references/RATIONALE.md` — sourced why behind every config tip; embedded verbatim in the report. Update when tips, stats, or pricing change.
 - `skills/productivity/tokenomics/EVALS.md` — eval cases for the tokenomics workflow.
-- `skills/other/dynamic-run-dashboard/references/DATA-SHAPE.md` — JSON contract the run-dashboard template consumes.
+- `skills/deprecated/dynamic-run-dashboard/references/DATA-SHAPE.md` — JSON contract the run-dashboard template consumes.
 - `skills/other/README.md` — what the staging category means and how a skill leaves it.
-- `skills/other/dynamic-qa/SPEC.md` — buildable spec for an unbuilt two-skill QA bundle.
+- `skills/deprecated/dynamic-qa/SPEC.md` — buildable spec for an unbuilt two-skill QA bundle.
 
 ### Categories
 
-`productivity`, `engineering` — released, listed in `plugin.json`. `other` — the single staging category; everything unready lives here, currently the five `dynamic-*` bundles. No other staging dir; do not reintroduce one.
+`productivity`, `engineering` — released, listed in `plugin.json`. `other` — the single staging category; everything unready lives here, currently `spec-to-scenarios` and `discover-conventions`. `deprecated` — unmaintained skills (the five `dynamic-*` bundles), kept but not developed. No other staging dir; do not reintroduce one.
 
 ### Installed-copy drift
 
@@ -110,7 +111,7 @@ There are no maintenance skills. This repo publishes skills for other people to 
 One thing still needs a habit rather than a skill. The `dynamic-*` bundles get edited **where they run**: a run that hits a gap writes the safeguard into the installed copy under `~/.claude/skills/`, so the installed copy is normally ahead of this repo. Before editing a `dynamic-*` file here, and before releasing one, compare:
 
 ```bash
-diff -rq skills/other/dynamic-<name> ~/.claude/skills/dynamic-<name>
+diff -rq skills/deprecated/dynamic-<name> ~/.claude/skills/dynamic-<name>
 ```
 
 A difference means the installed copy probably won — it usually carries a safeguard a real run paid for. Bring it across before editing, or the edit lands on a stale base and overwrites it.
@@ -140,7 +141,9 @@ A difference means the installed copy probably won — it usually carries a safe
 
 ## Unresolved questions
 
-- The `dynamic-*` bundles are committed on `develop` but not yet on `main`, so skills.sh users have not seen them (it compares against the default branch). Merging to `main` publishes all four under **General** at 0.2.x/0.3.0 — release with the next tokenomics release, or hold `main` back until their contracts settle?
-- Installed copies of `dynamic-implement`, `dynamic-run-dashboard`, `dynamic-skills-calibrate` are live in agent sessions and drift from this repo by design (see Installed-copy drift). The `diff -rq` check is a habit, not a gate — worth enforcing somehow?
-- No `.github/` — is `claude plugin validate .` the intended only pre-push gate?
-- `skills/engineering/` still empty; first entry triggers the "create the category heading" step in workflow 2.
+- All five `skills/other/` bundles are on `main`, so skills.sh users are already offered them under **General** — the "hold them back" question is closed by fact. Open instead: they ship at 0.1.x/0.2.x with contracts that still move, and nothing marks them as unstable in the picker, where `description` is the entire shop window. Say "staged, contracts may change" in each `description`, or accept that committing is release and stop treating `other/` as staging?
+- Installed copies of the `dynamic-*` bundles drift from this repo by design (see Installed-copy drift). The `diff -rq` check is a habit, not a gate — worth enforcing somehow?
+- No `.github/`, but PRs are not ungated: GitHub's Copilot reviewer runs on every PR and, across #10 and #11, found two real defects in `collect-usage.sh` that local checks missed. It also fails on its own infrastructure (a CAPI connect timeout failed #10's check with nothing to fix, and its runs can't be retried). So the working gate is Copilot review + `claude plugin validate .` by hand. Leave it there, or encode the repeatable parts — validate, `skills --list`, `bash -n` on the scripts — as a workflow so they don't depend on someone remembering?
+- `/tokenomics` has never been run end to end. `/context` and `/usage` are interactive-only, so every fix through 1.4.1 is verified by fixture and unit test, not by a live audit — including the saturation branch, which is the one carrying the headline number. What's the release rule: does a skill version ship without one live run?
+- Testing an install in-place (`npx skills@latest add .`) drops `skills-lock.json` and `.claude/` into the working tree, and neither is ignored — `.gitignore` covers `.agents/` only. Ignore both, or keep them visible so a stray install-for-testing can't be committed silently?
+- `skills/engineering/` is still empty; its first entry triggers the "create the category heading" step in workflow 2.
