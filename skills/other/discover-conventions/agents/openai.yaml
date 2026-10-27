@@ -1,0 +1,5 @@
+interface:
+  display_name: "Discover Conventions"
+  short_description: "Find competing patterns and agree coding standards"
+policy:
+  allow_implicit_invocation: false

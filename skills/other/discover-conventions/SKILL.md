@@ -1,6 +1,7 @@
 ---
 name: "discover-conventions"
 description: Scan an existing codebase for coding conventions, competing patterns and inconsistent terminology, then interview the developer one decision at a time so they choose what becomes standard. Writes only approved decisions to the glossary, ADRs, coding standards and AGENTS.md. Use when onboarding agents to a brownfield repo, when the user asks to find patterns, standardize conventions, or set up AGENTS.md for an existing codebase.
+disable-model-invocation: true
 ---
 
 # Discover conventions
