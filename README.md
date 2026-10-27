@@ -132,6 +132,7 @@ Everything up to the gate is autonomous — failing checks, dead agents, review 
 **In development** — installable via skills.sh, under **General** in the picker. Not in the plugin.
 
 - **[spec-to-scenarios](./skills/other/spec-to-scenarios/SKILL.md)** — Spec → agreed Gherkin scenarios saved on the chosen ticket, plus a planner brief for Playwright. Needs Matt Pocock's grilling/domain-modeling skills.
+- **[discover-conventions](./skills/other/discover-conventions/SKILL.md)** — find a brownfield repo's competing patterns, let the developer decide one at a time, write approved rules to `CODING_STANDARDS.md`. Builds on Matt Pocock's skills.
 
 **Deprecated** — no longer maintained. Still installable via skills.sh (under **General** in the picker), but not in the plugin.
 
