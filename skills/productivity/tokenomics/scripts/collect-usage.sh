@@ -13,7 +13,8 @@
 #   ~/.claude/{agents,commands,hooks}          directory listings only, no file contents
 #   ~/.claude/skills/**/SKILL.md               path, description LENGTH, and whether
 #                                              disable-model-invocation is set — no text
-#   ~/.claude/CLAUDE.md, ./CLAUDE.md, ./AGENTS.md   line counts only, no contents
+#   ~/.claude/CLAUDE.md, ./CLAUDE.md, ./AGENTS.md   line counts, and whether CLAUDE.md
+#                                              contains the literal "@AGENTS.md" — no text
 #
 # Everything it prints is a name, a count, or a line count. It reads no message
 # bodies, no secrets, and no credential files.
@@ -157,18 +158,30 @@ fi
 
 echo; echo "== Config hygiene (token-tip signals) =="
 echo "-- global CLAUDE.md lines:"; awk 'END{print NR}' "$HOME/.claude/CLAUDE.md" 2>/dev/null || echo "(none)"
-# Marks files that are the same inode (the recommended CLAUDE.md -> AGENTS.md symlink) so the
+# Marks files that are the same inode (a CLAUDE.md -> AGENTS.md symlink) so the
 # lines are counted once, not once per name — the file loads once per turn however many names it has.
 echo "-- context files in project ($ORIG_PWD)  [lines  path  (same-file marker)]:"
 seen=""
-for f in CLAUDE.md AGENTS.md .claude/CLAUDE.md; do
+for f in CLAUDE.md AGENTS.md .claude/CLAUDE.md CLAUDE.local.md; do
   [ -f "$ORIG_PWD/$f" ] || continue
   ino=$(ls -Li "$ORIG_PWD/$f" 2>/dev/null | awk '{print $1}')
   case " $seen " in *" $ino "*) dup="  (same file as an entry above — count its lines once)";; *) dup=""; seen="$seen $ino";; esac
   echo "$(awk 'END{print NR}' "$ORIG_PWD/$f")  $f$dup"
 done || true
-echo "-- AGENTS.md present but no CLAUDE.md / .claude/CLAUDE.md (Claude Code won't load it):"
-if [ -f "$ORIG_PWD/AGENTS.md" ] && [ ! -e "$ORIG_PWD/CLAUDE.md" ] && [ ! -e "$ORIG_PWD/.claude/CLAUDE.md" ]; then echo "YES — drift risk (add symlink or thin CLAUDE.md importing @AGENTS.md)"; else echo "no"; fi
+# Claude Code v2.1.277+ reads AGENTS.md itself, but only when no CLAUDE.md / .claude/CLAUDE.md /
+# CLAUDE.local.md exists; any of those shadows AGENTS.md unless it is a symlink to it or imports it.
+echo "-- AGENTS.md shadowed by a CLAUDE.md that neither links to nor imports it (Claude Code won't load AGENTS.md):"
+shadow=""
+if [ -f "$ORIG_PWD/AGENTS.md" ]; then
+  a_ino=$(ls -Li "$ORIG_PWD/AGENTS.md" 2>/dev/null | awk '{print $1}')
+  for f in CLAUDE.md .claude/CLAUDE.md CLAUDE.local.md; do
+    [ -f "$ORIG_PWD/$f" ] || continue
+    [ "$(ls -Li "$ORIG_PWD/$f" 2>/dev/null | awk '{print $1}')" = "$a_ino" ] && continue
+    grep -q '@AGENTS\.md' "$ORIG_PWD/$f" 2>/dev/null && continue
+    shadow="$shadow $f"
+  done
+fi
+if [ -n "$shadow" ]; then echo "YES —$shadow (delete it if AGENTS.md is the source of truth, or add @AGENTS.md to it)"; else echo "no"; fi
 echo "-- Agent Teams flag (CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS; each teammate is a full instance, so substantially more tokens):"
 if [ -n "${CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS:-}" ]; then echo "$CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS (from environment)"; else py "import json,os;print(json.load(open(os.path.expanduser('~/.claude/settings.json'))).get('env',{}).get('CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS','unset'))" "unset"; fi
 echo "-- CLIs present (prefer over MCP servers):"

@@ -102,7 +102,7 @@ Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`
 
 ### Categories
 
-`productivity`, `engineering` — released, listed in `plugin.json`. `other` — the single staging category; everything unready lives here, currently the five `dynamic-*` bundles. No other staging dir; do not reintroduce one.
+`productivity`, `engineering` — released, listed in `plugin.json`. `other` — the single staging category; everything unready lives here, currently `spec-to-scenarios` and `discover-conventions`. `deprecated` — unmaintained skills (the five `dynamic-*` bundles), kept but not developed. No other staging dir; do not reintroduce one.
 
 ### Installed-copy drift
 

@@ -234,7 +234,7 @@ Structural facts that are safe to state without a number: output costs more than
 3. **Effort is low/medium/high/max** — outdated; now includes `xhigh` (+ Claude-Code `ultracode`). [§1.3]
 4. **`MAX_THINKING_TOKENS` controls depth** — only on fixed-budget models; ignored on adaptive. [§1.3]
 5. **`@path` imports reduce CLAUDE.md cost** — false; they still load in full at launch. [§1.7]
-6. **Claude Code reads `AGENTS.md`** — false; it reads `CLAUDE.md` only. Cross-harness repos need a `CLAUDE.md` symlink or `@AGENTS.md` import, else Claude Code loads nothing. [see AGENTS.md audit tip]
+6. **Claude Code reads only `CLAUDE.md`** — false since v2.1.277; it reads `AGENTS.md` natively when no `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` exists in the working directory or above. Any of those shadows `AGENTS.md` unless it imports `@AGENTS.md` (or is a symlink to it). Official: [Claude Code memory — AGENTS.md](https://code.claude.com/docs/en/memory#agents-md). [see AGENTS.md audit tip]
 7. **Agent Teams cost multiplier** stated as a blanket number — the one official figure is scoped to teammates in plan mode. [§1.9]
 8. **Editing CLAUDE.md mid-session breaks the cache** — false; it's cache-neutral but the edit doesn't apply until `/clear`/`/compact`/restart. [§0.2]
 9. **Hiding Codex reasoning summaries saves money** — false; only lower effort does. [§2.2]

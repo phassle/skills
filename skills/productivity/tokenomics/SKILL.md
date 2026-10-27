@@ -3,7 +3,7 @@ name: tokenomics
 description: Audit what Claude Code loads into context every session vs what you actually use, then publish an interactive report with copy-paste apply-prompts. User-invoked — run /tokenomics.
 disable-model-invocation: true
 metadata:
-  version: 1.4.1
+  version: 1.4.2
 ---
 
 # Tokenomics — context audit
@@ -96,7 +96,7 @@ Fill `tips` with token-saving settings, personalized by reading the user's actua
 - **Auto-memory**: only if the user has their own memory system — suggest toggling `/memory` auto-memory off, so its loaded `MEMORY.md` and its background memory-maintenance calls stop adding to standing context and input spend (rationale §1.13).
 - **Spend cap**: set the monthly limit in-CLI with `/usage-credits` (Pro/Max), or in admin settings (Team/Enterprise). No config file — tip has no `apply`; present as a manual step in `desc`, set `apply` to a reminder line.
 - **Effort**: levels are low / medium / high / xhigh / max — `/effort` low/medium for everyday tasks, high+ only when warranted. Adaptive-reasoning models (Fable 5, Opus 4.8/4.7, Sonnet 5) ignore `MAX_THINKING_TOKENS` and use effort; it only sets a real budget on models that still take a fixed thinking budget (Opus 4.6 / Sonnet 4.6 via the deprecated escape hatch, and older 4.5-era models).
-- **AGENTS.md / CLAUDE.md audit**: report line count ≈ tokens loaded every turn — but count a file **once**, however many names it has: where the collector marks an entry "same file as an entry above", the symlink fix is already in place and summing both names doubles the figure (token framing only — no $/month), then split the file into: rules inferable from code / already linter-enforced (cut), recurring architecture notes (→ `docs/architectural_patterns.md`), procedural workflows (→ a skill). Also flag **cross-harness drift**: a repo with `AGENTS.md` but no `CLAUDE.md`/symlink/`@AGENTS.md` import means Claude Code won't load it (Claude Code reads `CLAUDE.md` only); recommend a symlink or thin importing CLAUDE.md.
+- **AGENTS.md / CLAUDE.md audit**: report line count ≈ tokens loaded every turn — but count a file **once**, however many names it has: where the collector marks an entry "same file as an entry above", the symlink fix is already in place and summing both names doubles the figure (token framing only — no $/month), then split the file into: rules inferable from code / already linter-enforced (cut), recurring architecture notes (→ `docs/architectural_patterns.md`), procedural workflows (→ a skill). Also flag **cross-harness drift**: Claude Code (v2.1.277+) reads `AGENTS.md` natively, but only when no `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` exists — any of those shadows it. Where the collector reports `AGENTS.md` shadowed, recommend deleting the stray `CLAUDE.md` if `AGENTS.md` is the source of truth, or adding `@AGENTS.md` to it. A repo with only `AGENTS.md` is fine — don't recommend adding a symlink.
 
 Tips may cover other harnesses the user runs (Codex CLI via `~/.codex/config.toml` — model_reasoning_effort, model tiers; GitHub Copilot — usage-based billing since June 1 2026: token-metered GitHub AI Credits with admin budgets and free completions, so premium-request multipliers and "0x models" are legacy — advise model-tier choice and budgets instead). **Always set `harness` on every tip** so the dashboard shows which tool each applies to; only include harnesses the user actually has installed. If asked for broader research, delegate a web-research agent and verify against official docs before adding tips.
 

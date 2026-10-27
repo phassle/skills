@@ -2,6 +2,8 @@
 name: spec-to-scenarios
 description: "Prepare acceptance scenarios and save the Gherkin in the Spec on the user's chosen ticket, with a planner brief."
 disable-model-invocation: true
+metadata:
+  version: 0.1.0
 ---
 
 # Spec to scenarios
