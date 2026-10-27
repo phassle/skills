@@ -11,8 +11,9 @@
 #   ~/.claude.json                             MCP servers — type/url/command only (never env or headers)
 #   ~/.claude/plugins/installed_plugins.json   installed plugin versions and scope
 #   ~/.claude/{agents,commands,hooks}          directory listings only, no file contents
-#   ~/.claude/skills/**/SKILL.md               path, description LENGTH, and whether
-#                                              disable-model-invocation is set — no text
+#   ~/.claude/skills/**/SKILL.md               path, frontmatter name, description LENGTH, and
+#                                              whether disable-model-invocation is set — no text
+#   settings.json (user, project, local)       a fixed allow-list of token-relevant keys only
 #   ~/.claude/CLAUDE.md, ./CLAUDE.md, ./AGENTS.md   line counts, and whether CLAUDE.md
 #                                              contains the literal "@AGENTS.md" — no text
 #
@@ -78,7 +79,8 @@ echo; echo "== Enabled plugins (~/.claude/settings.json) =="
 py "import json,os;print(json.dumps(json.load(open(os.path.expanduser('~/.claude/settings.json'))).get('enabledPlugins',{}),indent=1))" "(could not read ~/.claude/settings.json)"
 
 echo; echo "== User skills (~/.claude/skills) =="
-# Columns: <description chars>  <path relative to ~/.claude/skills>  [disable-model-invocation]
+# Columns: <description chars>  <path relative to ~/.claude/skills>  name=<frontmatter name>  [disable-model-invocation]
+# The name is what skillOverrides is keyed on, so the apply-prompt needs it; the path stays the row key.
 # find, not ls: skills are not always one level deep — claude.ai skill sync nests them
 # under synced/, so a plain listing sees the wrapper dir and misses every skill inside it.
 # Paths are the row keys downstream; never treat a parent dir as a skill.
@@ -97,7 +99,7 @@ if [ -n "$SKILL_FILES" ]; then
     #     print that key inside example YAML, and treating one as slash-only would wrongly excuse
     #     a description that really is loading every session.
     # Lengths and a flag only; the text itself is never printed. chars ≈ 4× tokens.
-    read -r n dmi <<EOF
+    read -r n dmi nm <<EOF
 $(awk '
       /^---[[:space:]]*$/ { fm++; if (fm == 2) exit; next }
       fm != 1 { next }
@@ -108,10 +110,11 @@ $(awk '
         gsub(/[[:space:]]+$/, ""); n += length($0); ind = 1; next
       }
       /^disable-model-invocation:[[:space:]]*true[[:space:]]*$/ { dmi = 1; next }
-      END { print n + 0, dmi + 0 }' "$f")
+      /^name:[[:space:]]*/ { nm = $0; sub(/^name:[[:space:]]*/, "", nm); gsub(/["'\'' [:space:]]/, "", nm); next }
+      END { print n + 0, dmi + 0, (nm == "" ? "-" : nm) }' "$f")
 EOF
     [ "$dmi" = "1" ] && dmi="  [disable-model-invocation]" || dmi=""
-    echo "$n  $rel$dmi"
+    echo "$n  $rel  name=$nm$dmi"
   done
 elif [ -d "$HOME/.claude/skills" ]; then
   echo "(none)"
@@ -184,5 +187,24 @@ fi
 if [ -n "$shadow" ]; then echo "YES —$shadow (delete it if AGENTS.md is the source of truth, or add @AGENTS.md to it)"; else echo "no"; fi
 echo "-- Agent Teams flag (CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS; each teammate is a full instance, so substantially more tokens):"
 if [ -n "${CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS:-}" ]; then echo "$CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS (from environment)"; else py "import json,os;print(json.load(open(os.path.expanduser('~/.claude/settings.json'))).get('env',{}).get('CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS','unset'))" "unset"; fi
+# Token-relevant settings the tips check before suggesting anything (SKILL.md step 4). A fixed
+# allow-list: values of other keys — and every other env var, which may hold secrets — are never printed.
+echo "-- token-relevant settings [file: key = value] (absent = unset):"
+TOK_CWD="$ORIG_PWD" py "
+import json,os,sys
+keys=('model','effortLevel','autoCompactWindow','skillListingBudgetFraction','skillOverrides','autoMemoryEnabled','promptCacheTtl','subagentPromptCacheTtl','idleCompaction')
+envk=('CLAUDE_CODE_SUBAGENT_MODEL','CLAUDE_CODE_SUBAGENT_MODEL_FORCE','ENABLE_TOOL_SEARCH','CLAUDE_CODE_AUTO_COMPACT_WINDOW','CLAUDE_CODE_DISABLE_1M_CONTEXT','CLAUDE_CODE_DISABLE_AUTO_MEMORY','CLAUDE_CODE_EFFORT_LEVEL','MAX_THINKING_TOKENS','CLAUDE_CODE_PROMPT_CACHE_TTL')
+cwd=os.environ.get('TOK_CWD','.')
+files=[('user',os.path.expanduser('~/.claude/settings.json')),('project',os.path.join(cwd,'.claude/settings.json')),('local',os.path.join(cwd,'.claude/settings.local.json'))]
+for label,f in files:
+    try: d=json.load(open(f))
+    except Exception: continue
+    for k in d:
+        if k in keys or 'fast' in k.lower(): print(f'{label}: {k} = {json.dumps(d[k])}')
+    for k,v in d.get('env',{}).items():
+        if k in envk: print(f'{label}: env.{k} = {v}')
+for k in envk:
+    if os.environ.get(k): print(f'environment: {k} = {os.environ[k]}')
+" "(could not read settings)"
 echo "-- CLIs present (prefer over MCP servers):"
 for c in gh aws gcloud sentry-cli; do command -v "$c" >/dev/null 2>&1 && echo "$c: yes" || echo "$c: no"; done

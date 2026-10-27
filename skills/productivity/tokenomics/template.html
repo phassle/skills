@@ -399,16 +399,16 @@ function getScope() {
 
 function claudePrompt(sel, tips, scope) {
   const plugins = sel.filter(i => i.kind === "plugin").map(i => i.id);
-  const skills = sel.filter(i => i.kind === "skill").map(i => i.id);
+  const skills = sel.filter(i => i.kind === "skill").map(i => (i.name || i.id) + (i.name && i.name !== i.id ? "  (" + i.id + ")" : ""));
   const mcps = sel.filter(i => i.kind === "mcp").map(i => i.id);
   if (!plugins.length && !skills.length && !mcps.length && !tips.length) return null;
   let p = "Clean up my Claude Code token usage based on the tokenomics audit.\n";
   p += scope === "project"
-    ? "\nSCOPE: THIS PROJECT ONLY. Make every change in this repo's project config (.claude/settings.local.json — create it if missing; enabledPlugins and env overrides go there). Do NOT edit ~/.claude/settings.json, ~/.claude/skills, or ~/.claude.json. If an action below is global-only (user skills, global mcpServers), SKIP it and list it at the end under \"Requires global scope\".\n"
+    ? "\nSCOPE: THIS PROJECT ONLY. Make every change in this repo's project config (.claude/settings.local.json — create it if missing; enabledPlugins and env overrides go there). Do NOT edit ~/.claude/settings.json, ~/.claude/skills, or ~/.claude.json. If an action below is global-only (global mcpServers), SKIP it and list it at the end under \"Requires global scope\".\n"
     : "\nSCOPE: GLOBAL. Apply changes in my user settings (~/.claude/settings.json, ~/.claude/skills, ~/.claude.json) so every project benefits. Repo-specific items (project permissions.deny rules, project CLAUDE.md) still go in this repo.\n";
   let step = 1;
   if (plugins.length) p += `\n${step++}. Disable these plugins (enabledPlugins → false):\n` + plugins.map(x => "   - " + x).join("\n") + "\n";
-  if (skills.length) p += `\n${step++}. Disable these user skills by moving each one from ~/.claude/skills/<path> to ~/.claude/skills-disabled/<path> (paths are relative to ~/.claude/skills; create parent dirs; never delete). Move exactly the directory named — if a path has a parent holding other skills, move only the leaf, and skip anything whose directory is missing or is a symlink, reporting it back instead:\n` + skills.map(x => "   - " + x).join("\n") + "\n";
+  if (skills.length) p += `\n${step++}. Hide these user skills by setting each skill name to "off" under "skillOverrides" in the settings file for the scope above (merge into any existing skillOverrides; the path in brackets is only for reference). Never move, edit or delete skill files. If a name is ambiguous or the skill is synced from claude.ai, skip it and report it back:\n` + skills.map(x => "   - " + x).join("\n") + "\n";
   if (mcps.length) p += `\n${step++}. Remove these servers from the top-level mcpServers in ~/.claude.json (back up the removed JSON to ~/.claude/mcp-disabled.json first):\n` + mcps.map(x => "   - " + x).join("\n") + "\n";
   if (tips.length) p += `\n${step++}. Apply these config changes (adapt file paths to the scope above):\n` + tips.map(t => "   - " + t.apply).join("\n") + "\n";
   p += "\nDon't touch anything else (hooks, marketplaces, other plugins/servers). Show a diff-style summary of what changed, list anything skipped, and remind me to restart the session.";
@@ -419,8 +419,8 @@ function codexPrompt(tips, scope) {
   if (!tips.length) return null;
   let p = "Optimize my Codex CLI token usage based on an external audit.\n";
   p += scope === "project"
-    ? "\nSCOPE: THIS PROJECT ONLY. Only change project-level files (this repo's AGENTS.md or project config). ~/.codex/config.toml is global — do NOT edit it; instead print the exact TOML for each change below and ask me to confirm before anything global happens.\n"
-    : "\nSCOPE: GLOBAL. You may edit ~/.codex/config.toml directly. Back up the file first (config.toml.bak).\n";
+    ? "\nSCOPE: THIS PROJECT ONLY. Only change project-level files: this repo's AGENTS.md and .codex/config.toml (Codex loads it only in a trusted project, and ignores model_provider, profile, notify and otel keys there). ~/.codex/config.toml and ~/.codex/*.config.toml profiles are global — do NOT edit them; print the exact TOML for any change that must go there and ask me to confirm first.\n"
+    : "\nSCOPE: GLOBAL. You may edit ~/.codex/config.toml directly. Back up the file first (config.toml.bak). Never add [profiles.*] tables — since Codex 0.134.0 a profile is its own ~/.codex/<name>.config.toml file.\n";
   p += "\nChanges:\n" + tips.map(t => "- " + t.apply.replace(/^In ~\/\.codex\/config\.toml,?\s*/i, "In config: ")).join("\n") + "\n";
   p += "\nShow a diff of every file you changed and a list of anything you could not do at this scope.";
   return p;
