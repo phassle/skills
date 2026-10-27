@@ -63,7 +63,14 @@ Re-running picks up where the last session stopped. Manual invocation only. Buil
 
 ## Deprecated: `dynamic-*` — build a whole feature on the cheapest model that can do it
 
-No longer maintained. The skills still install via skills.sh but get no updates.
+No longer maintained. **Use Matt Pocock's [`implement-spec`](https://github.com/mattpocock/skills) instead** — it implements a whole spec on one branch by working its tickets as a task graph, with implementer subagents in parallel, and ends in one PR:
+
+```bash
+npx skills@latest add mattpocock/skills   # pick implement-spec
+/implement-spec <spec>
+```
+
+The `dynamic-*` skills still install via skills.sh but get no updates.
 
 <details>
 <summary>What they did</summary>
@@ -168,7 +175,7 @@ Everything up to the gate is autonomous — failing checks, dead agents, review 
 - **[spec-to-scenarios](./skills/other/spec-to-scenarios/SKILL.md)** — Spec → agreed Gherkin scenarios saved on the chosen ticket, plus a planner brief for Playwright. User-invoked; needs Matt Pocock's grilling/domain-modeling skills.
 - **[discover-conventions](./skills/other/discover-conventions/SKILL.md)** — find a brownfield repo's competing patterns, let the developer decide one at a time, write approved rules to `CODING_STANDARDS.md`. User-invoked; builds on Matt Pocock's skills.
 
-**Deprecated** — no longer maintained. Still installable via skills.sh (under **General** in the picker), but not in the plugin.
+**Deprecated** — no longer maintained; use Matt Pocock's [`implement-spec`](https://github.com/mattpocock/skills) instead. Still installable via skills.sh (under **General** in the picker), but not in the plugin.
 
 - **[dynamic-implement](./skills/deprecated/dynamic-implement/SKILL.md)** — one spec end to end: plan, per-ticket worktrees on the cheapest verified model step, escalate only on failure, clean-context review, integrate, PR.
 - **[dynamic-skills-setup](./skills/deprecated/dynamic-skills-setup/SKILL.md)** — probe which harnesses, models and effort levels are really callable here.
