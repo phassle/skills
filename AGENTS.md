@@ -95,9 +95,9 @@ Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`
 - `skills/productivity/tokenomics/references/DATA-SHAPE.md` — JSON contract the report template consumes.
 - `skills/productivity/tokenomics/references/RATIONALE.md` — sourced why behind every config tip; embedded verbatim in the report. Update when tips, stats, or pricing change.
 - `skills/productivity/tokenomics/EVALS.md` — eval cases for the tokenomics workflow.
-- `skills/other/dynamic-run-dashboard/references/DATA-SHAPE.md` — JSON contract the run-dashboard template consumes.
+- `skills/deprecated/dynamic-run-dashboard/references/DATA-SHAPE.md` — JSON contract the run-dashboard template consumes.
 - `skills/other/README.md` — what the staging category means and how a skill leaves it.
-- `skills/other/dynamic-qa/SPEC.md` — buildable spec for an unbuilt two-skill QA bundle.
+- `skills/deprecated/dynamic-qa/SPEC.md` — buildable spec for an unbuilt two-skill QA bundle.
 
 ### Categories
 
@@ -110,7 +110,7 @@ There are no maintenance skills. This repo publishes skills for other people to 
 One thing still needs a habit rather than a skill. The `dynamic-*` bundles get edited **where they run**: a run that hits a gap writes the safeguard into the installed copy under `~/.claude/skills/`, so the installed copy is normally ahead of this repo. Before editing a `dynamic-*` file here, and before releasing one, compare:
 
 ```bash
-diff -rq skills/other/dynamic-<name> ~/.claude/skills/dynamic-<name>
+diff -rq skills/deprecated/dynamic-<name> ~/.claude/skills/dynamic-<name>
 ```
 
 A difference means the installed copy probably won — it usually carries a safeguard a real run paid for. Bring it across before editing, or the edit lands on a stale base and overwrites it.

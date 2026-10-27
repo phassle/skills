@@ -13,4 +13,6 @@ When a skill is ready, move its folder to its real category (`skills/engineering
 
 ## Current contents
 
-Five `dynamic-*` bundles — multi-agent orchestration of one issue end to end. `dynamic-qa` is a specification only (`SPEC.md`, no `SKILL.md`) and is therefore not invocable.
+- **spec-to-scenarios** — turns a Spec into agreed Gherkin acceptance scenarios plus a planner brief for Playwright's planner agent. Tested on beefcake-platform. Depends on Matt Pocock's `grill-with-docs`, `grilling`, `domain-modeling` and `setup-matt-pocock-skills` installed as sibling skills.
+
+The former `dynamic-*` bundles moved to [`../deprecated/`](../deprecated/README.md).

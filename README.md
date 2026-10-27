@@ -74,7 +74,7 @@ flowchart LR
 
 ![The run dashboard](./docs/dynamic-run-dashboard.png)
 
-<sub>Rendered from [`example-run.json`](./skills/other/dynamic-run-dashboard/references/example-run.json) — simulated events, real verified routes.</sub>
+<sub>Rendered from [`example-run.json`](./skills/deprecated/dynamic-run-dashboard/references/example-run.json) — simulated events, real verified routes.</sub>
 
 <details>
 <summary><b>What one run does</b> — spec in, child tickets worked off, one PR out</summary>
@@ -129,10 +129,14 @@ Everything up to the gate is autonomous — failing checks, dead agents, review 
 
 - **[tokenomics](./skills/productivity/tokenomics/SKILL.md)** — context audit → interactive report → apply-prompt per harness. User-invoked.
 
-**In development** — installable via skills.sh, under **General** in the picker. Not in the plugin; contracts still move.
+**In development** — installable via skills.sh, under **General** in the picker. Not in the plugin.
 
-- **[dynamic-implement](./skills/other/dynamic-implement/SKILL.md)** — one spec end to end: plan, per-ticket worktrees on the cheapest verified model step, escalate only on failure, clean-context review, integrate, PR.
-- **[dynamic-skills-setup](./skills/other/dynamic-skills-setup/SKILL.md)** — probe which harnesses, models and effort levels are really callable here.
-- **[dynamic-skills-calibrate](./skills/other/dynamic-skills-calibrate/SKILL.md)** — learn the cheapest model step that gets work accepted.
-- **[dynamic-run-dashboard](./skills/other/dynamic-run-dashboard/SKILL.md)** — one page for a run in flight: units, models, cost, lessons.
-- **dynamic-qa** — [spec](./skills/other/dynamic-qa/SPEC.md) only, nothing to invoke yet.
+- **[spec-to-scenarios](./skills/other/spec-to-scenarios/SKILL.md)** — Spec → agreed Gherkin scenarios saved on the chosen ticket, plus a planner brief for Playwright. Needs Matt Pocock's grilling/domain-modeling skills.
+
+**Deprecated** — no longer maintained. Still installable via skills.sh (under **General** in the picker), but not in the plugin.
+
+- **[dynamic-implement](./skills/deprecated/dynamic-implement/SKILL.md)** — one spec end to end: plan, per-ticket worktrees on the cheapest verified model step, escalate only on failure, clean-context review, integrate, PR.
+- **[dynamic-skills-setup](./skills/deprecated/dynamic-skills-setup/SKILL.md)** — probe which harnesses, models and effort levels are really callable here.
+- **[dynamic-skills-calibrate](./skills/deprecated/dynamic-skills-calibrate/SKILL.md)** — learn the cheapest model step that gets work accepted.
+- **[dynamic-run-dashboard](./skills/deprecated/dynamic-run-dashboard/SKILL.md)** — one page for a run in flight: units, models, cost, lessons.
+- **dynamic-qa** — [spec](./skills/deprecated/dynamic-qa/SPEC.md) only, nothing to invoke yet.
