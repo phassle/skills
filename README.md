@@ -174,7 +174,7 @@ Everything up to the gate is autonomous — failing checks, dead agents, review 
 
 - **[tokenomics](./skills/productivity/tokenomics/SKILL.md)** — context audit → interactive report → apply-prompt per harness. User-invoked.
 
-**In development** — installable via skills.sh, under **General** in the picker. Not in the plugin.
+**In development** — installable via skills.sh, under **Phassle In Development** in the picker. Not in the main plugin; `claude plugin install phassle-in-development@phassle` for the plugin route.
 
 - **[spec-to-scenarios](./skills/other/spec-to-scenarios/SKILL.md)** — Spec → agreed Gherkin scenarios saved on the chosen ticket, plus a planner brief for Playwright. User-invoked; needs Matt Pocock's grilling/domain-modeling skills.
 - **[discover-conventions](./skills/other/discover-conventions/SKILL.md)** — find a brownfield repo's competing patterns, let the developer decide one at a time, write approved rules to `CODING_STANDARDS.md`. User-invoked; builds on Matt Pocock's skills.
@@ -183,7 +183,7 @@ Everything up to the gate is autonomous — failing checks, dead agents, review 
 
 - **[multi-code-review](https://github.com/phassle/multi-code-review)** — containerised review across security, architecture, testing and more behind an MCP server; the skill triages findings and records team decisions. Install from that repo.
 
-**Deprecated** — no longer maintained; use Matt Pocock's [`implement-spec`](https://github.com/mattpocock/skills) instead. Still installable via skills.sh (under **General** in the picker), but not in the plugin.
+**Deprecated** — no longer maintained; use Matt Pocock's [`implement-spec`](https://github.com/mattpocock/skills) instead. Still installable via skills.sh (under **Phassle Deprecated** in the picker); not in the main plugin.
 
 - **[dynamic-implement](./skills/deprecated/dynamic-implement/SKILL.md)** — one spec end to end: plan, per-ticket worktrees on the cheapest verified model step, escalate only on failure, clean-context review, integrate, PR.
 - **[dynamic-skills-setup](./skills/deprecated/dynamic-skills-setup/SKILL.md)** — probe which harnesses, models and effort levels are really callable here.

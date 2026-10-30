@@ -19,6 +19,30 @@
         "codex",
         "copilot"
       ]
+    },
+    {
+      "name": "phassle-in-development",
+      "source": "./skills/other",
+      "strict": false,
+      "description": "Staged skills, contracts may change — spec-to-scenarios and discover-conventions.",
+      "category": "development",
+      "skills": [
+        "./spec-to-scenarios",
+        "./discover-conventions"
+      ]
+    },
+    {
+      "name": "phassle-deprecated",
+      "source": "./skills/deprecated",
+      "strict": false,
+      "description": "Deprecated, unmaintained dynamic-* skills — use Matt Pocock's implement-spec instead.",
+      "category": "development",
+      "skills": [
+        "./dynamic-implement",
+        "./dynamic-skills-setup",
+        "./dynamic-skills-calibrate",
+        "./dynamic-run-dashboard"
+      ]
     }
   ]
 }
