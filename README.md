@@ -46,6 +46,8 @@ A Spec says what a feature should do. Playwright's planner agent needs more than
 4. **Environment** — reports app, test accounts, data reset, fakes for outside services and the seed test as verified, missing or unverified, with evidence.
 5. **Hand over** — saves the agreed Gherkin in the Spec on your chosen ticket, proposes `Covers: AS-1, AS-3` lines for the implementation tickets, and writes a planner brief.
 
+![Gherkin saved in the Spec: each scenario tagged with its ticket and the criteria it covers](./docs/spec-to-scenarios-gherkin.png)
+
 It writes neither test code nor the test plan — that's the planner's job. Manual invocation only (`/spec-to-scenarios` in Claude Code, `$spec-to-scenarios` in Codex). Needs Matt Pocock's `grill-with-docs`, `grilling`, `domain-modeling` and `setup-matt-pocock-skills` installed alongside it; it stops and says so if they're missing.
 
 ## `/discover-conventions` — agree on how the codebase is written, one decision at a time
