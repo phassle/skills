@@ -102,7 +102,7 @@ Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`
 
 ### Categories
 
-`productivity`, `engineering` — released, listed in `plugin.json`. `other` — the single staging category; everything unready lives here, currently `spec-to-scenarios` and `discover-conventions`. `deprecated` — unmaintained skills (the five `dynamic-*` bundles), kept but not developed. No other staging dir; do not reintroduce one.
+`productivity`, `engineering` — released, listed in `plugin.json`. `other` — the single staging category; everything unready lives here, currently `spec-to-scenarios` and `discover-conventions`. `deprecated` — unmaintained skills (four `dynamic-*` skills plus the unbuilt `dynamic-qa` spec), kept but not developed. No other staging dir; do not reintroduce one.
 
 ### Installed-copy drift
 
@@ -141,7 +141,7 @@ A difference means the installed copy probably won — it usually carries a safe
 
 ## Unresolved questions
 
-- All five `skills/other/` bundles are on `main`, so skills.sh users are already offered them under **General** — the "hold them back" question is closed by fact. Open instead: they ship at 0.1.x/0.2.x with contracts that still move, and nothing marks them as unstable in the picker, where `description` is the entire shop window. Say "staged, contracts may change" in each `description`, or accept that committing is release and stop treating `other/` as staging?
+- Both `skills/other/` bundles are on `main`, so skills.sh users are already offered them under **General** — the "hold them back" question is closed by fact. Open instead: they ship at 0.1.x/0.2.x with contracts that still move, and nothing marks them as unstable in the picker, where `description` is the entire shop window. Say "staged, contracts may change" in each `description`, or accept that committing is release and stop treating `other/` as staging?
 - Installed copies of the `dynamic-*` bundles drift from this repo by design (see Installed-copy drift). The `diff -rq` check is a habit, not a gate — worth enforcing somehow?
 - No `.github/`, but PRs are not ungated: GitHub's Copilot reviewer runs on every PR and, across #10 and #11, found two real defects in `collect-usage.sh` that local checks missed. It also fails on its own infrastructure (a CAPI connect timeout failed #10's check with nothing to fix, and its runs can't be retried). So the working gate is Copilot review + `claude plugin validate .` by hand. Leave it there, or encode the repeatable parts — validate, `skills --list`, `bash -n` on the scripts — as a workflow so they don't depend on someone remembering?
 - `/tokenomics` has never been run end to end. `/context` and `/usage` are interactive-only, so every fix through 1.4.1 is verified by fixture and unit test, not by a live audit — including the saturation branch, which is the one carrying the headline number. What's the release rule: does a skill version ship without one live run?

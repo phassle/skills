@@ -46,6 +46,8 @@ A Spec says what a feature should do. Playwright's planner agent needs more than
 4. **Environment** — reports app, test accounts, data reset, fakes for outside services and the seed test as verified, missing or unverified, with evidence.
 5. **Hand over** — saves the agreed Gherkin in the Spec on your chosen ticket, proposes `Covers: AS-1, AS-3` lines for the implementation tickets, and writes a planner brief.
 
+![Gherkin saved in the Spec: each scenario tagged with its ticket and the criteria it covers](./docs/spec-to-scenarios-gherkin.png)
+
 It writes neither test code nor the test plan — that's the planner's job. Manual invocation only (`/spec-to-scenarios` in Claude Code, `$spec-to-scenarios` in Codex). Needs Matt Pocock's `grill-with-docs`, `grilling`, `domain-modeling` and `setup-matt-pocock-skills` installed alongside it; it stops and says so if they're missing.
 
 ## `/discover-conventions` — agree on how the codebase is written, one decision at a time
@@ -58,6 +60,8 @@ Agents copy whatever they see. In a brownfield repo that means two error-handlin
 - **Classifies every finding** — *consistent* (confirm it), *competing* (two variants with real usage — you choose), *terminology* (synonyms — goes to the glossary), *deliberate absence* (is it intentional?), *drift* (code contradicts a documented decision — report only), and *discarded* (framework defaults and anything a linter already enforces).
 - **Publishes an HTML report** of the session, then interviews you: variant A vs B with real excerpts, counts, which is newer and a labelled recommendation. Widest blast radius first.
 - **Writes only approved decisions** — rules to a root `CODING_STANDARDS.md` (where Matt Pocock's `code-review` reads them and `retro` adds to them), terms to the glossary, big calls as ADRs, a decision log in `docs/coding-standards/`, and a single pointer line in AGENTS.md.
+
+![The convention discovery report: findings counted by class, then how the code is layered today](./docs/discover-conventions-report.png)
 
 Re-running picks up where the last session stopped. Manual invocation only. Builds on Matt Pocock's `grilling`, `domain-modeling`, `writing-for-agents` and `setup-matt-pocock-skills`.
 
@@ -174,6 +178,10 @@ Everything up to the gate is autonomous — failing checks, dead agents, review 
 
 - **[spec-to-scenarios](./skills/other/spec-to-scenarios/SKILL.md)** — Spec → agreed Gherkin scenarios saved on the chosen ticket, plus a planner brief for Playwright. User-invoked; needs Matt Pocock's grilling/domain-modeling skills.
 - **[discover-conventions](./skills/other/discover-conventions/SKILL.md)** — find a brownfield repo's competing patterns, let the developer decide one at a time, write approved rules to `CODING_STANDARDS.md`. User-invoked; builds on Matt Pocock's skills.
+
+**Elsewhere** — skills that ship with the tool they drive.
+
+- **[multi-code-review](https://github.com/phassle/multi-code-review)** — containerised review across security, architecture, testing and more behind an MCP server; the skill triages findings and records team decisions. Install from that repo.
 
 **Deprecated** — no longer maintained; use Matt Pocock's [`implement-spec`](https://github.com/mattpocock/skills) instead. Still installable via skills.sh (under **General** in the picker), but not in the plugin.
 
