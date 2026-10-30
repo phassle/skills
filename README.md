@@ -61,6 +61,8 @@ Agents copy whatever they see. In a brownfield repo that means two error-handlin
 - **Publishes an HTML report** of the session, then interviews you: variant A vs B with real excerpts, counts, which is newer and a labelled recommendation. Widest blast radius first.
 - **Writes only approved decisions** — rules to a root `CODING_STANDARDS.md` (where Matt Pocock's `code-review` reads them and `retro` adds to them), terms to the glossary, big calls as ADRs, a decision log in `docs/coding-standards/`, and a single pointer line in AGENTS.md.
 
+![The convention discovery report: findings counted by class, then how the code is layered today](./docs/discover-conventions-report.png)
+
 Re-running picks up where the last session stopped. Manual invocation only. Builds on Matt Pocock's `grilling`, `domain-modeling`, `writing-for-agents` and `setup-matt-pocock-skills`.
 
 ## Deprecated: `dynamic-*` — build a whole feature on the cheapest model that can do it
