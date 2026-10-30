@@ -50,7 +50,7 @@ This repo is published to [skills.sh](https://skills.sh/phassle/skills) as `phas
 - **Discovery walks every subdirectory** for `SKILL.md`. No allowlist, no manifest, no per-directory opt-out. Category dirs, staging dirs, dot-dirs — all scanned.
 - Exception: a `SKILL.md` at repo root makes that the *only* skill unless `--full-depth`. This repo has none, so the full scan applies.
 - Consequence: **anything committed containing a `SKILL.md` is an installable skill.** That is why this repo holds no upkeep skills of its own: a skill that only maintains this repo would be offered to every user who installs from it.
-- Grouping in the picker: skills listed in `plugin.json`'s `skills` array show under **Phassle Skills**; every other discovered skill falls under **General**. There is no "Other" group — a staged skill is publicly visible and installable, just ungrouped.
+- Grouping in the picker mirrors the category folders, via plugin names: `plugin.json`'s `skills` → **Phassle Skills**; the `marketplace.json` entries `phassle-in-development` (`skills/other`) and `phassle-deprecated` (`skills/deprecated`) → **Phassle In Development** / **Phassle Deprecated**. A skill in none of these lists falls under **General**. Side effect: those two entries are also installable Claude Code plugins. Moving a skill between categories means moving it between these lists too.
 - Frontmatter `description` is the entire shop window. It is what the picker prints and what a model matches on. Write it as *what it does + when to trigger*.
 - Verify discovery locally before pushing, against the working tree:
 
@@ -120,13 +120,13 @@ A difference means the installed copy probably won — it usually carries a safe
 
 1. Create `skills/other/<name>/SKILL.md`. Frontmatter `name` + `description` + `metadata.version: 0.1.0`; add `disable-model-invocation: true` when the skill must not sit in context. Copy the shape from `tokenomics`.
 2. Keep `SKILL.md` thin — orchestration in numbered steps. Push detail into `references/`, deterministic collection into `scripts/` (patterns 3, 4).
-3. `npx skills@latest add . --list` — confirm it is discovered, under **General**. Then `npx skills@latest add .` and pick it.
+3. `npx skills@latest add . --list` — confirm it is discovered, under **General**; then add it to the `phassle-in-development` entry's `skills` in `marketplace.json` and re-list — it should show under **Phassle In Development**. Then `npx skills@latest add .` and pick it.
 4. Invoke in a real agent session, iterate. Absent from `skills` in `plugin.json` = not shipped to *plugin* users — but committing it does expose it to skills.sh users. Keep genuine WIP uncommitted.
 
 ## Workflow 2: release a skill
 
 1. Move folder to its category: `skills/productivity/<name>/` or `skills/engineering/<name>/`.
-2. Append `"./skills/<category>/<name>"` to `skills` in `plugin.json`; bump its `version` and the skill's own `metadata.version` together (see Versioning).
+2. Append `"./skills/<category>/<name>"` to `skills` in `plugin.json` and remove it from the `phassle-in-development` entry in `marketplace.json`; bump its `version` and the skill's own `metadata.version` together (see Versioning).
 3. Add a one-line entry under the matching heading in README.md's **Reference** section. Create the category heading only if this is its first released skill.
 4. `claude plugin validate .`, then `npx skills@latest add phassle/skills --list` — confirm the skill lists as released, not Other.
 5. Commit + push. Plugin users get it on next update.
@@ -141,7 +141,7 @@ A difference means the installed copy probably won — it usually carries a safe
 
 ## Unresolved questions
 
-- Both `skills/other/` bundles are on `main`, so skills.sh users are already offered them under **General** — the "hold them back" question is closed by fact. Open instead: they ship at 0.1.x/0.2.x with contracts that still move, and nothing marks them as unstable in the picker, where `description` is the entire shop window. Say "staged, contracts may change" in each `description`, or accept that committing is release and stop treating `other/` as staging?
+- Both `skills/other/` bundles are on `main`, so skills.sh users are already offered them under **Phassle In Development** — the "hold them back" question is closed by fact. Open instead: they ship at 0.1.x/0.2.x with contracts that still move, and nothing marks them as unstable in the picker, where `description` is the entire shop window. Say "staged, contracts may change" in each `description`, or accept that committing is release and stop treating `other/` as staging?
 - Installed copies of the `dynamic-*` bundles drift from this repo by design (see Installed-copy drift). The `diff -rq` check is a habit, not a gate — worth enforcing somehow?
 - No `.github/`, but PRs are not ungated: GitHub's Copilot reviewer runs on every PR and, across #10 and #11, found two real defects in `collect-usage.sh` that local checks missed. It also fails on its own infrastructure (a CAPI connect timeout failed #10's check with nothing to fix, and its runs can't be retried). So the working gate is Copilot review + `claude plugin validate .` by hand. Leave it there, or encode the repeatable parts — validate, `skills --list`, `bash -n` on the scripts — as a workflow so they don't depend on someone remembering?
 - `/tokenomics` has never been run end to end. `/context` and `/usage` are interactive-only, so every fix through 1.4.1 is verified by fixture and unit test, not by a live audit — including the saturation branch, which is the one carrying the headline number. What's the release rule: does a skill version ship without one live run?
