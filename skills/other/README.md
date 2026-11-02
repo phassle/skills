@@ -14,6 +14,6 @@ When a skill is ready, move its folder to its real category (`skills/engineering
 ## Current contents
 
 - **spec-to-scenarios** — turns a Spec into agreed Gherkin acceptance scenarios plus a planner brief for Playwright's planner agent. Tested on beefcake-platform. Depends on Matt Pocock's `grill-with-docs`, `grilling`, `domain-modeling` and `setup-matt-pocock-skills` installed as sibling skills.
-- **discover-conventions** — scans a brownfield repo for competing patterns and inconsistent terms, interviews the developer one decision at a time, and writes only approved rules to a root `CODING_STANDARDS.md` (plus glossary, ADRs and an AGENTS.md pointer). Builds on Matt Pocock's `grilling`, `domain-modeling`, `writing-for-agents`, `code-review` and `retro`.
+- **discover-conventions** — scans a brownfield repo for competing patterns and inconsistent terms, grills the developer through each decision, and writes only approved outcomes: mechanical rules as checks, judgement calls to a root `CODING_STANDARDS.md`, plus `GLOSSARY.md` terms and ADRs. Builds on Matt Pocock's `grilling`, `domain-modeling` and `writing-for-agents`, and follows `retro`'s and `code-review`'s standards conventions.
 
 The former `dynamic-*` bundles moved to [`../deprecated/`](../deprecated/README.md).
