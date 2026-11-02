@@ -50,20 +50,20 @@ A Spec says what a feature should do. Playwright's planner agent needs more than
 
 It writes neither test code nor the test plan — that's the planner's job. Manual invocation only (`/spec-to-scenarios` in Claude Code, `$spec-to-scenarios` in Codex). Needs Matt Pocock's `grill-with-docs`, `grilling`, `domain-modeling` and `setup-matt-pocock-skills` installed alongside it; it stops and says so if they're missing.
 
-## `/discover-conventions` — agree on how the codebase is written, one decision at a time
+## `/discover-conventions` — agree on how the codebase is written, decision by decision
 
 Agents copy whatever they see. In a brownfield repo that means two error-handling styles, three names for the same thing, and a rule nobody wrote down.
 
 `/discover-conventions` scans the code, sorts what it finds, and lets the developer decide. Nothing becomes a rule without an explicit yes.
 
-- **Reads what's already decided** — AGENTS.md, glossary, ADRs, linter config, and earlier sessions, so settled questions are not asked again.
+- **Reads what's already decided** — AGENTS.md, `GLOSSARY.md`, ADRs, linter config, CI and pre-commit checks, and earlier sessions, so settled questions are not asked again.
 - **Classifies every finding** — *consistent* (confirm it), *competing* (two variants with real usage — you choose), *terminology* (synonyms — goes to the glossary), *deliberate absence* (is it intentional?), *drift* (code contradicts a documented decision — report only), and *discarded* (framework defaults and anything a linter already enforces).
-- **Publishes an HTML report** of the session, then interviews you: variant A vs B with real excerpts, counts, which is newer and a labelled recommendation. Widest blast radius first.
-- **Writes only approved decisions** — rules to a root `CODING_STANDARDS.md` (where Matt Pocock's `code-review` reads them and `retro` adds to them), terms to the glossary, big calls as ADRs, a decision log in `docs/coding-standards/`, and a single pointer line in AGENTS.md.
+- **Publishes an HTML report** of the session, then grills you in rounds: variant A vs B with real excerpts, counts, which is newer and a labelled recommendation. Widest blast radius first.
+- **Writes only approved decisions**, the way Matt Pocock's `retro` does — mechanical rules become linter rules, pre-commit hooks or CI jobs; judgement calls go to a root `CODING_STANDARDS.md` (where `code-review` reads them); terms to `GLOSSARY.md`, big calls as ADRs, and a decision log in `docs/coding-standards/`. AGENTS.md is left alone.
 
 ![The convention discovery report: findings counted by class, then how the code is layered today](./docs/discover-conventions-report.png)
 
-Re-running picks up where the last session stopped. Manual invocation only. Builds on Matt Pocock's `grilling`, `domain-modeling`, `writing-for-agents` and `setup-matt-pocock-skills`.
+Re-running picks up where the last session stopped. Manual invocation only. Builds on Matt Pocock's `grilling`, `domain-modeling` and `writing-for-agents`; hands off to `/setup-matt-pocock-skills`, `/to-questionnaire` and `/to-tickets`.
 
 ## Deprecated: `dynamic-*` — build a whole feature on the cheapest model that can do it
 
@@ -177,7 +177,7 @@ Everything up to the gate is autonomous — failing checks, dead agents, review 
 **In development** — installable via skills.sh, under **Phassle In Development** in the picker. Not in the main plugin; `claude plugin install phassle-in-development@phassle` for the plugin route.
 
 - **[spec-to-scenarios](./skills/other/spec-to-scenarios/SKILL.md)** — Spec → agreed Gherkin scenarios saved on the chosen ticket, plus a planner brief for Playwright. User-invoked; needs Matt Pocock's grilling/domain-modeling skills.
-- **[discover-conventions](./skills/other/discover-conventions/SKILL.md)** — find a brownfield repo's competing patterns, let the developer decide one at a time, write approved rules to `CODING_STANDARDS.md`. User-invoked; builds on Matt Pocock's skills.
+- **[discover-conventions](./skills/other/discover-conventions/SKILL.md)** — find a brownfield repo's competing patterns, let the developer decide each one, turn mechanical rules into checks and write judgement calls to `CODING_STANDARDS.md`. User-invoked; builds on Matt Pocock's skills.
 
 **Elsewhere** — skills that ship with the tool they drive.
 
