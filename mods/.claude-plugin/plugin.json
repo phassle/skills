@@ -1,0 +1,12 @@
+{
+  "name": "phassle-mods",
+  "version": "0.2.0",
+  "description": "phassle's Claude Code mods: /phassle-mods:implement-spec-board and /phassle-mods:files panes",
+  "author": {
+    "name": "phassle",
+    "url": "https://github.com/phassle"
+  },
+  "repository": "https://github.com/phassle/skills",
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

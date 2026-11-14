@@ -26,6 +26,18 @@ claude plugin install phassle-skills@phassle
 
 </details>
 
+## Mods — Claude Code panes, installed on their own
+
+Mods change Claude Code itself: panes and commands beside the chat. They live in [`mods/`](./mods/README.md) as their own plugin, `phassle-mods`, so you can install them without any skill, or skills without them. Claude Code only; skills.sh never offers them.
+
+```bash
+claude plugin marketplace add phassle/skills
+claude plugin install phassle-mods@phassle
+```
+
+- **`/phassle-mods:implement-spec-board [slug]`** — a pane for Matt Pocock's `/implement-spec`: the spec, a progress bar, tickets grouped as Building now, Ready to start, Waiting, Needs a person and Done, and the dependency graph. Opens by itself when `/implement-spec` starts; refreshes every 3 minutes or on demand.
+- **`/phassle-mods:files`** — the working directory's files with git change marks and a preview of the selected file or its diff.
+
 ## `/tokenomics` — stop paying for context you never use
 
 Every session loads plugins, skills, agents and MCP schemas before you type anything, on every message. Most of it is never invoked.
@@ -178,6 +190,11 @@ Everything up to the gate is autonomous — failing checks, dead agents, review 
 
 - **[spec-to-scenarios](./skills/other/spec-to-scenarios/SKILL.md)** — Spec → agreed Gherkin scenarios saved on the chosen ticket, plus a planner brief for Playwright. User-invoked; needs Matt Pocock's grilling/domain-modeling skills.
 - **[discover-conventions](./skills/other/discover-conventions/SKILL.md)** — find a brownfield repo's competing patterns, let the developer decide each one, turn mechanical rules into checks and write judgement calls to `CODING_STANDARDS.md`. User-invoked; builds on Matt Pocock's skills.
+
+**Mods** — the separate `phassle-mods` plugin; Claude Code only. `claude plugin install phassle-mods@phassle`.
+
+- **[implement-spec-board](./mods/hooks/implement-spec-board.tsx)** — pane: spec, tickets by state and dependency graph while `/implement-spec` runs.
+- **[files](./mods/hooks/files.tsx)** — pane: working-directory files, git marks, preview.
 
 **Elsewhere** — skills that ship with the tool they drive.
 
