@@ -26,6 +26,8 @@ claude plugin install phassle-skills@phassle
 
 </details>
 
+**Mods** — Claude Code panes such as the [implement-spec board](#mods--claude-code-panes-installed-on-their-own) — are a separate plugin you install on their own: `claude plugin install phassle-mods@phassle`. See [Mods](#mods--claude-code-panes-installed-on-their-own) and [`mods/README.md`](./mods/README.md).
+
 ## Mods — Claude Code panes, installed on their own
 
 Mods change Claude Code itself: panes and commands beside the chat. They live in [`mods/`](./mods/README.md) as their own plugin, `phassle-mods`, so you can install them without any skill, or skills without them. Claude Code only; skills.sh never offers them.

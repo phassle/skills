@@ -54,6 +54,8 @@ const emptyView = (): GitView => ({
 
 const join = (a: string, b: string) => (!b ? a : a ? `${a}/${b}` : b)
 const lines = (s: string) => s.split('\n').filter(Boolean)
+// Git's -z output: NUL-separated and unquoted, so names like `café.md` stay literal.
+const fields = (s: string) => s.split('\u0000').filter(Boolean)
 const dirOf = (p: string) => p.slice(0, p.lastIndexOf('/'))
 const baseOf = (p: string) => p.slice(p.lastIndexOf('/') + 1)
 
@@ -114,10 +116,10 @@ async function readRepo($: R, root: string, m: CompareMode, view: GitView) {
   let from = 'HEAD'
   if (base) from = (await git($, root, ['merge-base', base, 'HEAD']))?.trim() || 'HEAD'
   const [diff, numstat, untracked, ignored] = await Promise.all([
-    git($, root, ['diff', '--name-status', '-M', from]),
-    git($, root, ['diff', '--numstat', from]),
-    git($, root, ['ls-files', '--others', '--exclude-standard']),
-    git($, root, ['ls-files', '--others', '--ignored', '--exclude-standard', '--directory']),
+    git($, root, ['diff', '--name-status', '-M', '-z', from]),
+    git($, root, ['diff', '--numstat', '-M', '-z', from]),
+    git($, root, ['ls-files', '-z', '--others', '--exclude-standard']),
+    git($, root, ['ls-files', '-z', '--others', '--ignored', '--exclude-standard', '--directory']),
   ])
   let count = 0
   const mark = (rel: string, k: Mark) => {
@@ -130,21 +132,30 @@ async function readRepo($: R, root: string, m: CompareMode, view: GitView) {
       view.deleted.set(d, [...(view.deleted.get(d) ?? []), baseOf(abs)])
     }
   }
-  for (const line of lines(diff ?? '')) {
-    const [st = '', a = '', b] = line.split('\t')
-    const c = st[0]
-    if (c === 'A') mark(a, 'A')
+  // --name-status -z: status, path; a rename or copy has status, old path, new path.
+  const ns = fields(diff ?? '')
+  for (let i = 0; i < ns.length; ) {
+    const c = (ns[i++] ?? '')[0]
+    const a = ns[i++] ?? ''
+    if (c === 'R' || c === 'C') mark(ns[i++] ?? a, 'M')
+    else if (c === 'A') mark(a, 'A')
     else if (c === 'D') mark(a, 'D')
-    else if ((c === 'R' || c === 'C') && b) mark(b, 'M')
     else mark(a, 'M')
   }
-  for (const rel of lines(untracked ?? '')) mark(rel, 'A')
-  for (const line of lines(numstat ?? '')) {
-    const [add = '', del = '', rel = ''] = line.split('\t')
-    if (add === '-') continue // binary
+  for (const rel of fields(untracked ?? '')) mark(rel, 'A')
+  // --numstat -z: "add\tdel\tpath"; a rename is "add\tdel\t" then old path, new path.
+  const st = fields(numstat ?? '')
+  for (let i = 0; i < st.length; ) {
+    const [add = '', del = '', path = ''] = (st[i++] ?? '').split('\t')
+    let rel = path
+    if (!path) {
+      i++ // old path
+      rel = st[i++] ?? ''
+    }
+    if (add === '-' || !rel) continue // binary
     view.stats.set(`${root}/${rel}`, { add: Number(add), del: Number(del) })
   }
-  for (const rel of lines(ignored ?? '')) view.ignored.add(`${root}/${rel.replace(/\/$/, '')}`)
+  for (const rel of fields(ignored ?? '')) view.ignored.add(`${root}/${rel.replace(/\/$/, '')}`)
   const name = baseOf(root) || root
   view.repos.push({ root, name, branch, base: base.replace(/^origin\//, ''), from, count })
 }
@@ -184,7 +195,11 @@ async function renderPreview($: R, ui: Ui, cwd: string, rel: RelPath, pm: Compar
   let note = ''
   if (showDiff && repo) {
     const out = await git($, repo.root, ['diff', '--no-color', repo.from, '--', abs.slice(repo.root.length + 1)])
-    body = lines(out ?? '').filter(l => !/^(diff --git|index |--- |\+\+\+ )/.test(l))
+    // Drop the file header only: everything from the first hunk on is content,
+    // including changed lines that themselves start with -- or ++.
+    const all = lines(out ?? '')
+    const firstHunk = all.findIndex(l => l.startsWith('@@'))
+    body = firstHunk < 0 ? [] : all.slice(firstHunk)
     if (body.length === 0) note = 'No differences.'
   } else if (k === 'D') {
     note = 'The file is deleted. Show the diff to see what it held.'

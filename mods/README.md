@@ -16,7 +16,7 @@ Answer `y` to add the marketplace, then pick the user scope so the mods load in 
 
 ### `/phassle-mods:implement-spec-board [slug]`
 
-A pane for Matt Pocock's `/implement-spec`: the spec, its tickets grouped as Building now, Ready to start, Not started: waiting, Needs a person, Needs triage and Done, and the dependency graph. It opens by itself when `/implement-spec` starts. It reads the local markdown issue tracker: `docs/<slug>/spec.md`, `.scratch/<slug>/issues/NN-*.md` (`**Status:**`, `**Blocked by:**`) and any `.scratch/<slug>/*.md` progress table (`| NN | state | … |`). The refresh button counts down from 180 s; press it, or `r`, to reload now.
+A pane for Matt Pocock's `/implement-spec`: the spec, its tickets grouped as Building now, Ready to start, Not started: waiting, Needs a person, Needs triage and Done, and the dependency graph. It opens by itself when `/implement-spec` starts. It reads the local markdown issue tracker: `docs/<slug>/spec.md` (or `.scratch/<slug>/spec.md`, the tracker's default), `.scratch/<slug>/issues/NN-*.md` (`**Status:**`, `**Blocked by:**`) and any `.scratch/<slug>/*.md` progress table (`| NN | state | … |`). The refresh button counts down from 180 s; press it, or `r`, to reload now.
 
 ![implement-spec-board pane beside the chat](../docs/phassle-mods-implement-spec-board.svg)
 

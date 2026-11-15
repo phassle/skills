@@ -96,15 +96,23 @@ function parseProgress(text: string, into: Map<string, string>) {
   }
 }
 
+const LABEL = (s: string): TicketState | null | undefined =>
+  /\bready-for-human\b/.test(s) ? 'human'
+  : /\bneeds-(triage|info)\b/.test(s) ? 'triage'
+  : /\b(wontfix|won't fix)\b/.test(s) ? 'wontfix'
+  : /\bready-for-agent\b|\bnot (yet )?started\b|\bpending\b|\bqueued\b/.test(s) ? null // by dependencies
+  : undefined // no triage label: read the words
+
 function classify(raw: string, progress: string | undefined): TicketState | null {
+  // The live state wins over the ticket file; within one, a triage label
+  // wins over keywords, so "not started" is never read as "started".
   for (const s of [progress, raw]) {
     if (!s) continue
-    if (/^wontfix|won't fix/.test(s)) return 'wontfix'
+    const label = LABEL(s)
+    if (label !== undefined) return label
     if (ACTIVE.test(s)) return 'active'
     if (DONE.test(s)) return 'done'
   }
-  if (raw === 'ready-for-human') return 'human'
-  if (raw === 'needs-triage' || raw === 'needs-info') return 'triage'
   return null // ready or blocked, decided by its dependencies
 }
 
@@ -158,7 +166,10 @@ async function load($: EngineInterface, cwd: string, want: string | null): Promi
     level: Math.max(0, levelOf(p.num, new Set())),
   }))
 
-  const spec = await tryRead($, join(root, 'docs', slug, 'spec.md'))
+  // docs/<slug>/spec.md where a project keeps specs as docs; Matt Pocock's
+  // default Local Markdown tracker keeps it at .scratch/<slug>/spec.md.
+  const spec =
+    (await tryRead($, join(root, 'docs', slug, 'spec.md'))) ?? (await tryRead($, join(dir, 'spec.md')))
   return {
     slug,
     root,
@@ -261,6 +272,9 @@ export const register: Register = on => {
     if (!b) {
       return (
         <Box flexDirection="column">
+          <Button key="refresh" hotkey="r" onPress={() => void refresh($)}>
+            ↻ Refresh in {left} s
+          </Button>
           <Text dimColor>No tickets found.</Text>
           <Text dimColor>Looking for .scratch/&lt;slug&gt;/issues/ near {cut(cwd, width - 25)}</Text>
         </Box>

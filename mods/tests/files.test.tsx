@@ -38,8 +38,8 @@ test('the pane draws the tree with git marks on every surface', async ($, on) =>
     if (args.startsWith('rev-parse --verify')) return out('', 1)
     if (args.startsWith('rev-list --count')) return out('3\n')
     if (args.startsWith('merge-base')) return out('abc\n')
-    if (args.startsWith('diff --name-status')) return out('M\ta.md\nD\told.md\nA\tsrc/x.ts\n')
-    if (args.startsWith('diff --numstat')) return out('4\t1\ta.md\n')
+    if (args.startsWith('diff --name-status')) return out('M\u0000a.md\u0000D\u0000old.md\u0000A\u0000src/x.ts\u0000')
+    if (args.startsWith('diff --numstat')) return out('4\t1\ta.md\u0000')
     return out('')
   })
 
@@ -87,7 +87,7 @@ test('changed-only stays drawable on a branch with thousands of changes', async 
     if (args.startsWith('rev-parse --verify')) return out('', 1)
     if (args.startsWith('rev-list --count')) return out('565\n')
     if (args.startsWith('merge-base')) return out('abc\n')
-    if (args.startsWith('diff --name-status')) return out(files.map(f => `M\t${f}`).join('\n'))
+    if (args.startsWith('diff --name-status')) return out(files.map(f => `M\u0000${f}\u0000`).join(''))
     return out('')
   })
 
@@ -118,8 +118,8 @@ test('clicking a file previews it, and a changed file shows its diff', async ($,
     if (args.startsWith('rev-parse --verify')) return out('', 1)
     if (args.startsWith('rev-list --count')) return out('1\n')
     if (args.startsWith('merge-base')) return out('abc\n')
-    if (args.startsWith('diff --name-status')) return out('M\ta.md\n')
-    if (args.startsWith('diff --no-color')) return out('diff --git a/a.md b/a.md\n@@ -1 +1 @@\n-old line\n+second line\n')
+    if (args.startsWith('diff --name-status')) return out('M\u0000a.md\u0000')
+    if (args.startsWith('diff --no-color')) return out('diff --git a/a.md b/a.md\n--- a/a.md\n+++ b/a.md\n@@ -1,2 +1,2 @@\n-old line\n--- old option\n+second line\n')
     return out('')
   })
 
@@ -128,6 +128,9 @@ test('clicking a file previews it, and a changed file shows its diff', async ($,
   expect((await ui.find({ type: 'Text', text: /second line/ }))?.text).toContain('2 second line')
   await ui.press({ key: 'preview-mode' })
   expect((await ui.find({ type: 'Text', text: /old line/ }))?.text).toBe('-old line')
+  // A removed line that starts with -- stays; the file header does not.
+  expect((await ui.find({ type: 'Text', text: /old option/ }))?.text).toBe('--- old option')
+  expect(await ui.find({ type: 'Text', text: /b\/a\.md/ })).toBeFalsy()
   await ui.press({ key: 'preview-back' })
   expect(await ui.find({ type: 'Text', text: /feat\/x/ })).toBeTruthy()
   await ui.unmount()
