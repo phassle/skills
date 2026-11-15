@@ -46,6 +46,12 @@ claude plugin test mods                         # run the mods' tests
 claude plugin install phassle@phassle      # install the mods alone
 ```
 
+Before pushing, check that every relative link and image in the READMEs resolves (`claude plugin validate` does not look at them):
+
+```bash
+for f in README.md mods/README.md skills/*/README.md; do d=$(dirname "$f"); grep -oE '\]\(\.{1,2}/[^)#]+' "$f" | sed 's/^](//' | while read -r p; do [ -e "$d/$p" ] || echo "BROKEN $f -> $p"; done; done
+```
+
 No CI, no linters configured. `claude plugin validate .` is the only automated gate for skills; mods add `claude plugin validate mods` and `claude plugin test mods`.
 
 Mods rules: one plugin may hook an event once without a matcher, so `session.start` lives in `mods/hooks/register.tsx` and calls each mod's `start`. `$` is spelled `$.noun.method(...)` at the call site or passed to a top-level function. A command file in `mods/commands/` gives the `phassle:` prefix; its `command.run` hook matches `{ command: 'phassle:<name>' }`. Never commit work-specific content (employer code, paths, ticket text): the repo is public.
