@@ -2,14 +2,14 @@
   "name": "phassle",
   "owner": {
     "name": "Per Hassle",
-    "url": "https://www.monterro.com"
+    "url": "https://www.linkedin.com/in/per-hassle-603ab9/"
   },
-  "description": "Monterro's shared agent skills, installable as Claude Code plugins.",
+  "description": "Per Hassle's agent skills and Claude Code mods: examples of how to work with AI coding agents, installable as Claude Code plugins.",
   "plugins": [
     {
       "name": "phassle-skills",
       "source": "./",
-      "description": "Monterro's agent skills — tokenomics (audit AI-tool token spend across Claude Code, Codex CLI and GitHub Copilot) and more to come.",
+      "description": "Per Hassle's released agent skills — tokenomics (audit AI-tool token spend across Claude Code, Codex CLI and GitHub Copilot).",
       "category": "productivity",
       "keywords": [
         "tokens",

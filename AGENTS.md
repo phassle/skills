@@ -6,7 +6,7 @@ At the end of each plan, list unresolved questions.
 
 ## WHAT
 
-Repo of Agent Skills for AI coding agents. Maintained by Per Hassle (Monterro). No app code, no build, no test suite. Content:
+Repo of Agent Skills and Claude Code mods for AI coding agents: Per Hassle's own examples of how to work with them. No app code, no build; only the mods have tests. Content:
 
 - Markdown skill bundles — `SKILL.md` + optional `references/`, `scripts/`, `agents/`.
 - Bash — `collect-usage.sh` (tokenomics collector).
@@ -92,7 +92,7 @@ Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`
 
 ## Index — read only what's relevant
 
-- `README.md` — user-facing quickstart + skill reference, grouped by category and by who can invoke.
+- `README.md` — user-facing: intro, **At a glance** table, Install, Skills, Mods, More. Skills before mods; only current items.
 - `docs/architectural_patterns.md` — recurring structural patterns across skills, including the cheapest-verified-step ladder (pattern 15) and the three knowledge stores (pattern 9). Read before adding a skill.
 - `docs/tokenomics-report.png` — screenshot used in README.
 - `docs/tokenomics-rationale.md` → symlink to the skill's `RATIONALE.md` — never replace it with a copy.
@@ -135,7 +135,7 @@ A difference means the installed copy probably won — it usually carries a safe
 
 1. Move folder to its category: `skills/productivity/<name>/` or `skills/engineering/<name>/`.
 2. Append `"./skills/<category>/<name>"` to `skills` in `plugin.json` and remove it from the `phassle-in-development` entry in `marketplace.json`; bump its `version` and the skill's own `metadata.version` together (see Versioning).
-3. Add a one-line entry under the matching heading in README.md's **Reference** section. Create the category heading only if this is its first released skill.
+3. Update its row in README.md's **At a glance** table (status: Released) and keep its section under **Skills**. README order: skills first, then mods; only current items — deprecated ones get one line under **More**.
 4. `claude plugin validate .`, then `npx skills@latest add phassle/skills --list` — confirm the skill lists as released, not Other.
 5. Commit + push. Plugin users get it on next update.
 
