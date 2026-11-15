@@ -12,11 +12,11 @@ import type { Board, Ticket, TicketState } from '../types'
 const PANE = 'implement-spec-board'
 const POLL_SECONDS = 3 * 60
 
-const board = atom({ plugin: 'phassle-mods', key: 'board' } as const, null, {
+const board = atom({ plugin: 'phassle', key: 'board' } as const, null, {
   shape: 'board-1',
 })
-const selected = atom({ plugin: 'phassle-mods', key: 'selected' } as const, null)
-const countdown = atom({ plugin: 'phassle-mods', key: 'countdown' } as const, POLL_SECONDS)
+const selected = atom({ plugin: 'phassle', key: 'selected' } as const, null)
+const countdown = atom({ plugin: 'phassle', key: 'countdown' } as const, POLL_SECONDS)
 
 // Matched anywhere in the state text ("implementer running (worktree wt/01)").
 // Active wins over done: "implementer done, merger running" is not merged yet.
@@ -241,7 +241,7 @@ export async function start($: EngineInterface, sessionCwd: string) {
 }
 
 export const register: Register = on => {
-  on('command.run', { command: 'phassle-mods:implement-spec-board' }, async ($, e) => {
+  on('command.run', { command: 'phassle:implement-spec-board' }, async ($, e) => {
     const b = await read($, board)
     await show($, slugFrom(e.args, b?.features) ?? null)
     return { text: 'Implement-spec board opened.' }

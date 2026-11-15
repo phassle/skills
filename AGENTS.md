@@ -13,13 +13,13 @@ Repo of Agent Skills and Claude Code mods for AI coding agents: Per Hassle's own
 - Python — `agent_log.py` (dynamic-implement activity logger).
 - Self-contained HTML+JS — `template.html`, one per report skill, same Monterro design system: tokenomics (functions `render`, `buildPrompt`, `claudePrompt`, `codexPrompt`, `copilotPrompt`, `getScope`, `mdToHtml`) and dynamic-run-dashboard (`renderBoard`, `mchips`, `cell`).
 - JSON manifests — `plugin.json`, `marketplace.json`.
-- Mods — `mods/`, a separate Claude Code plugin `phassle-mods`: TSX hooks modules in `mods/hooks/` (one file per mod exporting `register`, plus `start` for session-start work, wired in `mods/hooks/register.tsx`), slash commands in `mods/commands/<name>.md`, state contract in `mods/types/index.d.ts`, tests in `mods/tests/`. See `mods/README.md`.
+- Mods — `mods/`, a separate Claude Code plugin `phassle`: TSX hooks modules in `mods/hooks/` (one file per mod exporting `register`, plus `start` for session-start work, wired in `mods/hooks/register.tsx`), slash commands in `mods/commands/<name>.md`, state contract in `mods/types/index.d.ts`, tests in `mods/tests/`. See `mods/README.md`.
 
 Two distribution paths:
 
 - **skills.sh** (`npx skills@latest add phassle/skills`) — copies skill folders into the user's repo, editable. Reads the filesystem; sees every skill folder.
 - **Claude Code plugin** (`.claude-plugin/`) — read-only managed bundle. Ships only what the `skills` array in `plugin.json` lists.
-- **Mods plugin** (`mods/`, marketplace entry `phassle-mods`) — installed on its own; no `SKILL.md`, so skills.sh never sees it.
+- **Mods plugin** (`mods/`, marketplace entry `phassle`) — installed on its own; no `SKILL.md`, so skills.sh never sees it.
 
 Also installs into Codex, GitHub Copilot, other Agent-Skills-standard harnesses. Skills detect their harness and swap output mechanism (pattern 6).
 
@@ -43,12 +43,12 @@ claude plugin marketplace add phassle/skills    # add marketplace (one-time)
 claude plugin install phassle-skills@phassle    # install the plugin bundle
 claude plugin validate mods                     # validate the mods plugin
 claude plugin test mods                         # run the mods' tests
-claude plugin install phassle-mods@phassle      # install the mods alone
+claude plugin install phassle@phassle      # install the mods alone
 ```
 
 No CI, no linters configured. `claude plugin validate .` is the only automated gate for skills; mods add `claude plugin validate mods` and `claude plugin test mods`.
 
-Mods rules: one plugin may hook an event once without a matcher, so `session.start` lives in `mods/hooks/register.tsx` and calls each mod's `start`. `$` is spelled `$.noun.method(...)` at the call site or passed to a top-level function. A command file in `mods/commands/` gives the `phassle-mods:` prefix; its `command.run` hook matches `{ command: 'phassle-mods:<name>' }`. Never commit work-specific content (employer code, paths, ticket text): the repo is public.
+Mods rules: one plugin may hook an event once without a matcher, so `session.start` lives in `mods/hooks/register.tsx` and calls each mod's `start`. `$` is spelled `$.noun.method(...)` at the call site or passed to a top-level function. A command file in `mods/commands/` gives the `phassle:` prefix; its `command.run` hook matches `{ command: 'phassle:<name>' }`. Never commit work-specific content (employer code, paths, ticket text): the repo is public.
 
 ## skills.sh format — the published contract
 
@@ -99,7 +99,7 @@ Reference code by symbol name (`collect-usage.sh`, `buildPrompt`, `agent_log.py`
 - No `CLAUDE.md` anywhere in the repo, on purpose: Claude Code (v2.1.277+) reads `AGENTS.md` directly when no `CLAUDE.md` exists, and adding one would stop it loading this file.
 - `.claude-plugin/plugin.json` — released skill set (`skills`) + `version`. Release gate.
 - `.claude-plugin/marketplace.json` — marketplace manifest, `name: "phassle"`.
-- `mods/` — the `phassle-mods` plugin (Claude Code mods); `mods/README.md` for layout and how to add a mod.
+- `mods/` — the `phassle` plugin (Claude Code mods); `mods/README.md` for layout and how to add a mod.
 - `skills/<category>/<name>/SKILL.md` — one folder per skill. Frontmatter: `name`, `description`, plus `disable-model-invocation: true` for slash-only skills.
 - `skills/productivity/tokenomics/references/DATA-SHAPE.md` — JSON contract the report template consumes.
 - `skills/productivity/tokenomics/references/RATIONALE.md` — sourced why behind every config tip; embedded verbatim in the report. Update when tips, stats, or pricing change.

@@ -33,7 +33,7 @@ test('the board shows status, frontier and levels', async ($, on) => {
   await $.session.start({ cwd: '/w', surface: 'terminal', isInteractive: true })
 
   const ui = await $.ui.mount({
-    plugin: 'phassle-mods',
+    plugin: 'phassle',
     component: 'Pane',
     requestId: 'implement-spec-board',
     surface: 'terminal',
@@ -58,7 +58,7 @@ test('the board shows status, frontier and levels', async ($, on) => {
 })
 
 const PANE_PROPS = {
-  plugin: 'phassle-mods',
+  plugin: 'phassle',
   component: 'Pane',
   requestId: 'implement-spec-board',
   surface: 'terminal',

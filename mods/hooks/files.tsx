@@ -16,22 +16,22 @@ const WRITERS = new Set(['Edit', 'Write', 'MultiEdit', 'NotebookEdit', 'Bash', '
 
 // Folders opened by hand (normal view) and closed by hand (changed-only view,
 // where folders holding changes open by themselves).
-const expanded = atom({ plugin: 'phassle-mods', key: 'expanded' } as const, [] as RelPath[], { shape: 'exp-1' })
-const collapsed = atom({ plugin: 'phassle-mods', key: 'collapsed' } as const, [] as RelPath[], { shape: 'col-1' })
+const expanded = atom({ plugin: 'phassle', key: 'expanded' } as const, [] as RelPath[], { shape: 'exp-1' })
+const collapsed = atom({ plugin: 'phassle', key: 'collapsed' } as const, [] as RelPath[], { shape: 'col-1' })
 // Bumped when files may have changed, so git is read again.
-const tick = atom({ plugin: 'phassle-mods', key: 'tick' } as const, 0, { shape: 'tick-1' })
-const changedOnly = atom({ plugin: 'phassle-mods', key: 'changedOnly' } as const, false, { shape: 'co-1' })
-const mode = atom({ plugin: 'phassle-mods', key: 'mode' } as const, 'branch' as CompareMode, { shape: 'mode-1' })
+const tick = atom({ plugin: 'phassle', key: 'tick' } as const, 0, { shape: 'tick-1' })
+const changedOnly = atom({ plugin: 'phassle', key: 'changedOnly' } as const, false, { shape: 'co-1' })
+const mode = atom({ plugin: 'phassle', key: 'mode' } as const, 'branch' as CompareMode, { shape: 'mode-1' })
 // The file shown in the pane instead of the tree; '' shows the tree.
-const preview = atom({ plugin: 'phassle-mods', key: 'preview' } as const, '' as RelPath, { shape: 'prev-1' })
-const previewMode = atom({ plugin: 'phassle-mods', key: 'previewMode' } as const, 'content' as PreviewMode, {
+const preview = atom({ plugin: 'phassle', key: 'preview' } as const, '' as RelPath, { shape: 'prev-1' })
+const previewMode = atom({ plugin: 'phassle', key: 'previewMode' } as const, 'content' as PreviewMode, {
   shape: 'pmode-1',
 })
 const PREVIEW_MAX_LINES = 1500
 const PREVIEW_MAX_BYTES = 1_000_000
 
 // Absolute paths of files Claude edited or wrote this session.
-const touched = atom({ plugin: 'phassle-mods', key: 'touched' } as const, [] as string[], { shape: 'touch-1' })
+const touched = atom({ plugin: 'phassle', key: 'touched' } as const, [] as string[], { shape: 'touch-1' })
 
 type Mark = 'A' | 'M' | 'D'
 type Repo = { root: string; name: string; branch: string; base: string; from: string; count: number }
@@ -270,7 +270,7 @@ export async function start($: EngineInterface) {
 }
 
 export const register: Register = on => {
-  on('command.run', { command: 'phassle-mods:files' }, async $ => {
+  on('command.run', { command: 'phassle:files' }, async $ => {
     await update($, tick, n => n + 1)
     await $.ui.open({ id: PANE, title: TITLE, closeOnEscape: true, focus: true })
     return { text: 'Files pane opened.' }

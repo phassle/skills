@@ -40,7 +40,7 @@ export type Board = {
 
 declare module 'claude-code' {
   interface PluginState {
-    'phassle-mods': {
+    'phassle': {
       // files
       expanded: Shaped<RelPath[]>
       collapsed: Shaped<RelPath[]>

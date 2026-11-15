@@ -1,7 +1,7 @@
 import { expect, test } from 'claude-code/testing'
 
 const PANE = {
-  plugin: 'phassle-mods',
+  plugin: 'phassle',
   component: 'Pane',
   requestId: 'folder-view',
   props: {

@@ -1,7 +1,7 @@
 {
-  "name": "phassle-mods",
+  "name": "phassle",
   "version": "0.2.0",
-  "description": "phassle's Claude Code mods: /phassle-mods:implement-spec-board and /phassle-mods:files panes",
+  "description": "phassle's Claude Code mods: /phassle:implement-spec-board and /phassle:files panes",
   "author": {
     "name": "phassle",
     "url": "https://github.com/phassle"

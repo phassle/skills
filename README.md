@@ -15,8 +15,8 @@ By [Per Hassle](https://www.linkedin.com/in/per-hassle-603ab9/). Skills work in 
 | [`/spec-to-scenarios`](#spec-to-scenarios--turn-a-spec-into-tests-a-planner-can-run) | Turns a Spec into agreed Gherkin scenarios and a brief for Playwright's planner | In development |
 | [`/discover-conventions`](#discover-conventions--agree-on-how-the-codebase-is-written-decision-by-decision) | Finds a codebase's competing patterns and lets you decide which one becomes the rule | In development |
 | **Mods** | | |
-| [`/phassle-mods:implement-spec-board`](#implement-spec-board--watch-implement-spec-work-through-a-spec) | A pane showing the spec, its tickets by state and the dependency graph while `/implement-spec` runs | New |
-| [`/phassle-mods:files`](#files--the-working-directory-beside-the-chat) | A pane with the working directory's files, git change marks and a preview | New |
+| [`/phassle:implement-spec-board`](#implement-spec-board--watch-implement-spec-work-through-a-spec) | A pane showing the spec, its tickets by state and the dependency graph while `/implement-spec` runs | New |
+| [`/phassle:files`](#files--the-working-directory-beside-the-chat) | A pane with the working directory's files, git change marks and a preview | New |
 
 ## Install
 
@@ -45,7 +45,7 @@ The plugin keeps the skills as an always-current bundle you don't touch.
 
 ```bash
 claude plugin marketplace add phassle/skills
-claude plugin install phassle-mods@phassle
+claude plugin install phassle@phassle
 ```
 
 ## Skills
@@ -91,19 +91,19 @@ Re-running picks up where the last session stopped. Manual invocation only. Buil
 
 ## Mods
 
-Mods change Claude Code itself: panes and commands beside the chat. They live in [`mods/`](./mods/README.md) as their own plugin, `phassle-mods`.
+Mods change Claude Code itself: panes and commands beside the chat. They live in [`mods/`](./mods/README.md) as their own plugin, `phassle`.
 
 ### implement-spec-board — watch `/implement-spec` work through a spec
 
-`/phassle-mods:implement-spec-board [slug]` shows the spec Matt Pocock's `/implement-spec` is building: a progress bar, the tickets grouped as Building now, Ready to start, Waiting, Needs a person and Done, and the dependency graph by level. It opens by itself when `/implement-spec` starts and refreshes every 3 minutes, or at once with the refresh button.
+`/phassle:implement-spec-board [slug]` shows the spec Matt Pocock's `/implement-spec` is building: a progress bar, the tickets grouped as Building now, Ready to start, Waiting, Needs a person and Done, and the dependency graph by level. It opens by itself when `/implement-spec` starts and refreshes every 3 minutes, or at once with the refresh button.
 
-![implement-spec-board: the pane beside the chat while /implement-spec works through a spec](./docs/phassle-mods-implement-spec-board.svg)
+![implement-spec-board: the pane beside the chat while /implement-spec works through a spec](./docs/phassle-implement-spec-board.svg)
 
 ### files — the working directory beside the chat
 
-`/phassle-mods:files` lists the working directory's files with git change marks and line counts, highlights what Claude touched, and previews the selected file or its diff.
+`/phassle:files` lists the working directory's files with git change marks and line counts, highlights what Claude touched, and previews the selected file or its diff.
 
-![files: changed files with git marks and line counts, beside the chat](./docs/phassle-mods-files.svg)
+![files: changed files with git marks and line counts, beside the chat](./docs/phassle-files.svg)
 
 <sub>Illustrations with sample data, drawn from what each pane renders.</sub>
 
