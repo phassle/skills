@@ -21,9 +21,9 @@
       ]
     },
     {
-      "name": "phassle-mods",
+      "name": "phassle",
       "source": "./mods",
-      "description": "phassle's Claude Code mods: /phassle-mods:implement-spec-board and /phassle-mods:files panes.",
+      "description": "phassle's Claude Code mods: /phassle:implement-spec-board and /phassle:files panes.",
       "category": "productivity"
     },
     {
