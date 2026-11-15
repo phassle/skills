@@ -36,7 +36,14 @@ claude plugin install phassle-mods@phassle
 ```
 
 - **`/phassle-mods:implement-spec-board [slug]`** — a pane for Matt Pocock's `/implement-spec`: the spec, a progress bar, tickets grouped as Building now, Ready to start, Waiting, Needs a person and Done, and the dependency graph. Opens by itself when `/implement-spec` starts; refreshes every 3 minutes or on demand.
+
+![implement-spec-board: the pane beside the chat while /implement-spec works through a spec](./docs/phassle-mods-implement-spec-board.svg)
+
 - **`/phassle-mods:files`** — the working directory's files with git change marks and a preview of the selected file or its diff.
+
+![files: changed files with git marks and line counts, beside the chat](./docs/phassle-mods-files.svg)
+
+<sub>Illustrations with sample data, drawn from what each pane renders.</sub>
 
 ## `/tokenomics` — stop paying for context you never use
 
