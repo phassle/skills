@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="520" viewBox="0 0 1040 520" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">
+<rect width="1040" height="520" rx="12" fill="#16181d"/>
+<path d="M0 12a12 12 0 0 1 12-12h1016a12 12 0 0 1 12 12v22H0z" fill="#22252c"/>
+<circle cx="20" cy="17" r="6" fill="#ff5f57"/>
+<circle cx="40" cy="17" r="6" fill="#febc2e"/>
+<circle cx="60" cy="17" r="6" fill="#28c840"/>
+<text x="520.0" y="22" text-anchor="middle" fill="#8a8f98">claude — acme-shop</text>
+<text x="20" y="64" xml:space="preserve"><tspan fill="#8a8f98">&gt; </tspan><tspan fill="#e6e6e6" font-weight="700">Add cart totals to the checkout API, with tests</tspan></text>
+<text x="20" y="83" xml:space="preserve"></text>
+<text x="20" y="102" xml:space="preserve"><tspan fill="#e6e6e6">● </tspan><tspan fill="#e6e6e6" font-weight="700">Write</tspan><tspan fill="#8a8f98">(src/api/checkout/totals.ts)</tspan></text>
+<text x="20" y="121" xml:space="preserve"><tspan fill="#e6e6e6">● </tspan><tspan fill="#e6e6e6" font-weight="700">Update</tspan><tspan fill="#8a8f98">(src/api/checkout/cart.ts)</tspan></text>
+<text x="20" y="140" xml:space="preserve"><tspan fill="#e6e6e6">● </tspan><tspan fill="#e6e6e6" font-weight="700">Write</tspan><tspan fill="#8a8f98">(src/api/checkout/totals.test.ts)</tspan></text>
+<text x="20" y="159" xml:space="preserve"><tspan fill="#e6e6e6">● </tspan><tspan fill="#e6e6e6" font-weight="700">Bash</tspan><tspan fill="#8a8f98">(npm test)</tspan></text>
+<text x="20" y="178" xml:space="preserve"><tspan fill="#e6e6e6">  </tspan><tspan fill="#5fd38d">42 passed</tspan></text>
+<text x="20" y="197" xml:space="preserve"></text>
+<text x="20" y="216" xml:space="preserve"><tspan fill="#e6e6e6">● </tspan><tspan fill="#e6e6e6">Totals are computed server-side; the old</tspan></text>
+<text x="20" y="235" xml:space="preserve"><tspan fill="#e6e6e6">  </tspan><tspan fill="#e6e6e6">legacy-cart.ts is removed.</tspan></text>
+<rect x="16" y="462" width="438" height="34" rx="6" fill="none" stroke="#3a3f4b"/>
+<text x="28" y="484" xml:space="preserve"><tspan fill="#8a8f98">&gt; </tspan><tspan fill="#e6e6e6"></tspan></text>
+<rect x="470" y="48" width="554" height="456" rx="8" fill="#1b1e24" stroke="#3a3f4b"/>
+<rect x="484" y="40" width="55.15" height="16" fill="#1b1e24"/>
+<text x="492" y="52" xml:space="preserve"><tspan fill="#d97757" font-weight="700">Files</tspan></text>
+<rect x="480" y="102" width="135.28" height="18" rx="4" fill="#2c313b"/>
+<rect x="620.94" y="102" width="119.62" height="18" rx="4" fill="#2c313b"/>
+<text x="486" y="78" xml:space="preserve"><tspan fill="#e6e6e6" font-weight="700">📂 acme-shop</tspan></text>
+<text x="486" y="97" xml:space="preserve"><tspan fill="#5ccfe6">⎇ feature/checkout</tspan><tspan fill="#8a8f98"> · vs main · 9 changed</tspan></text>
+<text x="486" y="116" xml:space="preserve"><tspan fill="#5ccfe6">[✓ changed only]</tspan><tspan fill="#e6e6e6">  </tspan><tspan fill="#e6e6e6">[whole branch]</tspan></text>
+<text x="486" y="135" xml:space="preserve"><tspan fill="#5fd38d">+</tspan><tspan fill="#8a8f98"> added </tspan><tspan fill="#e48bd6">→</tspan><tspan fill="#8a8f98"> modified </tspan><tspan fill="#ff6b6b">−</tspan><tspan fill="#8a8f98"> deleted </tspan><tspan fill="#ffcc66">●</tspan><tspan fill="#8a8f98"> Claude</tspan></text>
+<text x="486" y="154" xml:space="preserve"><tspan fill="#8a8f98">▾ </tspan><tspan fill="#e6e6e6">  📁 </tspan><tspan fill="#ffcc66">src</tspan><tspan fill="#8a8f98"> (7)</tspan></text>
+<text x="486" y="173" xml:space="preserve"><tspan fill="#8a8f98">  ▾ </tspan><tspan fill="#e6e6e6">  📁 </tspan><tspan fill="#ffcc66">api</tspan><tspan fill="#8a8f98"> (4)</tspan></text>
+<text x="486" y="192" xml:space="preserve"><tspan fill="#8a8f98">    ▾ </tspan><tspan fill="#e6e6e6">  📁 </tspan><tspan fill="#ffcc66">checkout</tspan><tspan fill="#8a8f98"> (4)</tspan></text>
+<text x="486" y="211" xml:space="preserve"><tspan fill="#e6e6e6">        </tspan><tspan fill="#5fd38d" font-weight="700">+ </tspan><tspan fill="#e6e6e6">📄 </tspan><tspan fill="#5fd38d">totals.ts</tspan><tspan fill="#ffcc66"> ●</tspan><tspan fill="#5fd38d"> +84</tspan><tspan fill="#ff6b6b"> −0</tspan></text>
+<text x="486" y="230" xml:space="preserve"><tspan fill="#e6e6e6">        </tspan><tspan fill="#e48bd6" font-weight="700">→ </tspan><tspan fill="#e6e6e6">📄 </tspan><tspan fill="#e48bd6">cart.ts</tspan><tspan fill="#ffcc66"> ●</tspan><tspan fill="#5fd38d"> +12</tspan><tspan fill="#ff6b6b"> −3</tspan></text>
+<text x="486" y="249" xml:space="preserve"><tspan fill="#e6e6e6">        </tspan><tspan fill="#5fd38d" font-weight="700">+ </tspan><tspan fill="#e6e6e6">📄 </tspan><tspan fill="#5fd38d">totals.test.ts</tspan><tspan fill="#ffcc66"> ●</tspan><tspan fill="#5fd38d"> +61</tspan><tspan fill="#ff6b6b"> −0</tspan></text>
+<text x="486" y="268" xml:space="preserve"><tspan fill="#e6e6e6">        </tspan><tspan fill="#ff6b6b" font-weight="700">− </tspan><tspan fill="#e6e6e6">📄 </tspan><tspan fill="#ff6b6b" text-decoration="line-through">legacy-cart.ts</tspan><tspan fill="#5fd38d"> +0</tspan><tspan fill="#ff6b6b"> −40</tspan></text>
+<text x="486" y="287" xml:space="preserve"><tspan fill="#8a8f98">  ▾ </tspan><tspan fill="#e6e6e6">  📁 </tspan><tspan fill="#ffcc66">ui</tspan><tspan fill="#8a8f98"> (3)</tspan></text>
+<text x="486" y="306" xml:space="preserve"><tspan fill="#e6e6e6">      </tspan><tspan fill="#5fd38d" font-weight="700">+ </tspan><tspan fill="#e6e6e6">📄 </tspan><tspan fill="#5fd38d">AddressStep.tsx</tspan><tspan fill="#5fd38d"> +120</tspan><tspan fill="#ff6b6b"> −0</tspan></text>
+<text x="486" y="325" xml:space="preserve"><tspan fill="#e6e6e6">      </tspan><tspan fill="#e48bd6" font-weight="700">→ </tspan><tspan fill="#e6e6e6">📄 </tspan><tspan fill="#e48bd6">PaymentForm.tsx</tspan><tspan fill="#5fd38d"> +40</tspan><tspan fill="#ff6b6b"> −8</tspan></text>
+<text x="486" y="344" xml:space="preserve"><tspan fill="#e6e6e6">      </tspan><tspan fill="#e48bd6" font-weight="700">→ </tspan><tspan fill="#e6e6e6">📄 </tspan><tspan fill="#e48bd6">styles.css</tspan><tspan fill="#5fd38d"> +6</tspan><tspan fill="#ff6b6b"> −2</tspan></text>
+<text x="486" y="363" xml:space="preserve"><tspan fill="#e6e6e6">  </tspan><tspan fill="#e48bd6" font-weight="700">→ </tspan><tspan fill="#e6e6e6">📄 </tspan><tspan fill="#e48bd6">package.json</tspan><tspan fill="#5fd38d"> +2</tspan><tspan fill="#ff6b6b"> −1</tspan></text>
+<text x="486" y="382" xml:space="preserve"><tspan fill="#e6e6e6">  </tspan><tspan fill="#e48bd6" font-weight="700">→ </tspan><tspan fill="#e6e6e6">📄 </tspan><tspan fill="#e48bd6">README.md</tspan><tspan fill="#5fd38d"> +5</tspan><tspan fill="#ff6b6b"> −0</tspan></text>
+<text x="486" y="420" xml:space="preserve"><tspan fill="#8a8f98">Click a folder to open or close it, a file to preview it.</tspan></text>
+<text x="1016" y="508" text-anchor="end" fill="#8a8f98" font-size="11">Illustration · sample data</text>
+</svg>

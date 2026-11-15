@@ -21,6 +21,12 @@
       ]
     },
     {
+      "name": "phassle-mods",
+      "source": "./mods",
+      "description": "phassle's Claude Code mods: /phassle-mods:implement-spec-board and /phassle-mods:files panes.",
+      "category": "productivity"
+    },
+    {
       "name": "phassle-in-development",
       "source": "./skills/other",
       "strict": false,
