@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="760" viewBox="0 0 1040 760" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13">
+<rect width="1040" height="760" rx="12" fill="#16181d"/>
+<path d="M0 12a12 12 0 0 1 12-12h1016a12 12 0 0 1 12 12v22H0z" fill="#22252c"/>
+<circle cx="20" cy="17" r="6" fill="#ff5f57"/>
+<circle cx="40" cy="17" r="6" fill="#febc2e"/>
+<circle cx="60" cy="17" r="6" fill="#28c840"/>
+<text x="520.0" y="22" text-anchor="middle" fill="#8a8f98">claude — acme-shop</text>
+<text x="20" y="64" xml:space="preserve"><tspan fill="#8a8f98">&gt; </tspan><tspan fill="#e6e6e6" font-weight="700">/implement-spec docs/checkout/spec.md</tspan></text>
+<text x="20" y="83" xml:space="preserve"></text>
+<text x="20" y="102" xml:space="preserve"><tspan fill="#e6e6e6">● </tspan><tspan fill="#e6e6e6">Read the spec and its 7 tickets. Frontier: 03, 04.</tspan></text>
+<text x="20" y="121" xml:space="preserve"><tspan fill="#e6e6e6">● </tspan><tspan fill="#e6e6e6">Integration branch </tspan><tspan fill="#5ccfe6">checkout/integration</tspan><tspan fill="#e6e6e6"> created.</tspan></text>
+<text x="20" y="140" xml:space="preserve"><tspan fill="#e6e6e6">● </tspan><tspan fill="#e6e6e6">Implementer for </tspan><tspan fill="#7aa2ff" font-weight="700">03</tspan><tspan fill="#e6e6e6"> running in worktree wt/03.</tspan></text>
+<text x="20" y="159" xml:space="preserve"><tspan fill="#e6e6e6">● </tspan><tspan fill="#e6e6e6">Implementer for </tspan><tspan fill="#7aa2ff" font-weight="700">04</tspan><tspan fill="#e6e6e6"> running in worktree wt/04.</tspan></text>
+<text x="20" y="178" xml:space="preserve"><tspan fill="#e6e6e6">● </tspan><tspan fill="#e6e6e6">02 merged into the integration branch.</tspan></text>
+<text x="20" y="197" xml:space="preserve"><tspan fill="#e6e6e6">  </tspan><tspan fill="#8a8f98">New frontier: 05.</tspan></text>
+<text x="20" y="216" xml:space="preserve"></text>
+<text x="20" y="235" xml:space="preserve"><tspan fill="#d97757">✻ </tspan><tspan fill="#8a8f98">Waiting for implementers… (3m 12s)</tspan></text>
+<rect x="16" y="702" width="438" height="34" rx="6" fill="none" stroke="#3a3f4b"/>
+<text x="28" y="724" xml:space="preserve"><tspan fill="#8a8f98">&gt; </tspan><tspan fill="#e6e6e6"></tspan></text>
+<rect x="470" y="48" width="554" height="696" rx="8" fill="#1b1e24" stroke="#3a3f4b"/>
+<rect x="484" y="40" width="172.6" height="16" fill="#1b1e24"/>
+<text x="492" y="52" xml:space="preserve"><tspan fill="#d97757" font-weight="700">Implement-spec board</tspan></text>
+<rect x="480" y="64" width="160.77" height="18" rx="4" fill="#2c313b"/>
+<rect x="480" y="83" width="74.64" height="18" rx="4" fill="#3d5afe"/>
+<rect x="566.13" y="83" width="58.980000000000004" height="18" rx="4" fill="#2c313b"/>
+<text x="486" y="78" xml:space="preserve"><tspan fill="#e6e6e6">↻ Refresh in 142 s</tspan><tspan fill="#8a8f98">   Updated 14:05</tspan></text>
+<text x="486" y="97" xml:space="preserve"><tspan fill="#e6e6e6" font-weight="700">checkout</tspan><tspan fill="#e6e6e6">   search</tspan></text>
+<text x="486" y="116" xml:space="preserve"><tspan fill="#e6e6e6" font-weight="700">Checkout redesign: spec</tspan></text>
+<text x="486" y="135" xml:space="preserve"><tspan fill="#8a8f98">checkout · spec ready-for-agent · 7 tickets</tspan></text>
+<text x="486" y="154" xml:space="preserve"><tspan fill="#e6e6e6">Done </tspan><tspan fill="#5fd38d">███████████░░░░░░░░░░░░░░░░░</tspan><tspan fill="#8a8f98"> 2/7</tspan></text>
+<text x="486" y="173" xml:space="preserve"><tspan fill="#5fd38d">✓ 2 done  </tspan><tspan fill="#7aa2ff">◐ 2 in progress  </tspan><tspan fill="#e6e6e6">○ 1 ready  </tspan><tspan fill="#8a8f98">· 1 blocked  </tspan><tspan fill="#c792ea">◆ 1 human</tspan></text>
+<text x="486" y="211" xml:space="preserve"><tspan fill="#e6e6e6" font-weight="700">Dependency graph</tspan></text>
+<text x="486" y="230" xml:space="preserve"><tspan fill="#8a8f98">   </tspan><tspan fill="#5fd38d">✓01</tspan></text>
+<text x="486" y="249" xml:space="preserve"><tspan fill="#8a8f98"> → </tspan><tspan fill="#5fd38d">✓02 </tspan><tspan fill="#7aa2ff" font-weight="700">◐03</tspan></text>
+<text x="486" y="268" xml:space="preserve"><tspan fill="#8a8f98"> → </tspan><tspan fill="#7aa2ff" font-weight="700">◐04 </tspan><tspan fill="#e6e6e6" font-weight="700">○05</tspan></text>
+<text x="486" y="287" xml:space="preserve"><tspan fill="#8a8f98"> → </tspan><tspan fill="#8a8f98">·06 </tspan><tspan fill="#c792ea">◆07</tspan></text>
+<text x="486" y="325" xml:space="preserve"><tspan fill="#7aa2ff" font-weight="700">Building now (2)</tspan></text>
+<text x="486" y="344" xml:space="preserve"><tspan fill="#7aa2ff">◐ </tspan><tspan fill="#e6e6e6" font-weight="700">03 </tspan><tspan fill="#e6e6e6">Cart totals in the API</tspan><tspan fill="#8a8f98"> · implementer running</tspan></text>
+<text x="486" y="363" xml:space="preserve"><tspan fill="#7aa2ff">◐ </tspan><tspan fill="#e6e6e6" font-weight="700">04 </tspan><tspan fill="#e6e6e6">Payment form</tspan><tspan fill="#8a8f98"> · implementer running</tspan></text>
+<text x="486" y="401" xml:space="preserve"><tspan fill="#e6e6e6" font-weight="700">Ready to start (1)</tspan></text>
+<text x="486" y="420" xml:space="preserve"><tspan fill="#e6e6e6">○ </tspan><tspan fill="#e6e6e6" font-weight="700">05 </tspan><tspan fill="#e6e6e6">Order confirmation email</tspan><tspan fill="#8a8f98"> · ready-for-agent</tspan></text>
+<text x="486" y="458" xml:space="preserve"><tspan fill="#8a8f98" font-weight="700">Not started: waiting (1)</tspan></text>
+<text x="486" y="477" xml:space="preserve"><tspan fill="#8a8f98">· </tspan><tspan fill="#e6e6e6" font-weight="700">06 </tspan><tspan fill="#e6e6e6">Receipt PDF</tspan><tspan fill="#8a8f98"> · waits for 04</tspan></text>
+<text x="486" y="515" xml:space="preserve"><tspan fill="#c792ea" font-weight="700">Needs a person (1)</tspan></text>
+<text x="486" y="534" xml:space="preserve"><tspan fill="#c792ea">◆ </tspan><tspan fill="#e6e6e6" font-weight="700">07 </tspan><tspan fill="#e6e6e6">Live payment test</tspan><tspan fill="#8a8f98"> · waits for 04, 05</tspan></text>
+<text x="486" y="572" xml:space="preserve"><tspan fill="#5fd38d" font-weight="700">Done (2)</tspan></text>
+<text x="486" y="591" xml:space="preserve"><tspan fill="#5fd38d">✓ </tspan><tspan fill="#e6e6e6" font-weight="700">01 </tspan><tspan fill="#8a8f98">Checkout data model</tspan></text>
+<text x="486" y="610" xml:space="preserve"><tspan fill="#5fd38d">✓ </tspan><tspan fill="#e6e6e6" font-weight="700">02 </tspan><tspan fill="#8a8f98">Address step</tspan></text>
+<text x="1016" y="748" text-anchor="end" fill="#8a8f98" font-size="11">Illustration · sample data</text>
+</svg>

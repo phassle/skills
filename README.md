@@ -26,6 +26,27 @@ claude plugin install phassle-skills@phassle
 
 </details>
 
+**Mods** — Claude Code panes such as the [implement-spec board](#mods--claude-code-panes-installed-on-their-own) — are a separate plugin you install on their own: `claude plugin install phassle-mods@phassle`. See [Mods](#mods--claude-code-panes-installed-on-their-own) and [`mods/README.md`](./mods/README.md).
+
+## Mods — Claude Code panes, installed on their own
+
+Mods change Claude Code itself: panes and commands beside the chat. They live in [`mods/`](./mods/README.md) as their own plugin, `phassle-mods`, so you can install them without any skill, or skills without them. Claude Code only; skills.sh never offers them.
+
+```bash
+claude plugin marketplace add phassle/skills
+claude plugin install phassle-mods@phassle
+```
+
+- **`/phassle-mods:implement-spec-board [slug]`** — a pane for Matt Pocock's `/implement-spec`: the spec, a progress bar, tickets grouped as Building now, Ready to start, Waiting, Needs a person and Done, and the dependency graph. Opens by itself when `/implement-spec` starts; refreshes every 3 minutes or on demand.
+
+![implement-spec-board: the pane beside the chat while /implement-spec works through a spec](./docs/phassle-mods-implement-spec-board.svg)
+
+- **`/phassle-mods:files`** — the working directory's files with git change marks and a preview of the selected file or its diff.
+
+![files: changed files with git marks and line counts, beside the chat](./docs/phassle-mods-files.svg)
+
+<sub>Illustrations with sample data, drawn from what each pane renders.</sub>
+
 ## `/tokenomics` — stop paying for context you never use
 
 Every session loads plugins, skills, agents and MCP schemas before you type anything, on every message. Most of it is never invoked.
@@ -50,20 +71,20 @@ A Spec says what a feature should do. Playwright's planner agent needs more than
 
 It writes neither test code nor the test plan — that's the planner's job. Manual invocation only (`/spec-to-scenarios` in Claude Code, `$spec-to-scenarios` in Codex). Needs Matt Pocock's `grill-with-docs`, `grilling`, `domain-modeling` and `setup-matt-pocock-skills` installed alongside it; it stops and says so if they're missing.
 
-## `/discover-conventions` — agree on how the codebase is written, one decision at a time
+## `/discover-conventions` — agree on how the codebase is written, decision by decision
 
 Agents copy whatever they see. In a brownfield repo that means two error-handling styles, three names for the same thing, and a rule nobody wrote down.
 
 `/discover-conventions` scans the code, sorts what it finds, and lets the developer decide. Nothing becomes a rule without an explicit yes.
 
-- **Reads what's already decided** — AGENTS.md, glossary, ADRs, linter config, and earlier sessions, so settled questions are not asked again.
+- **Reads what's already decided** — AGENTS.md, `GLOSSARY.md`, ADRs, linter config, CI and pre-commit checks, and earlier sessions, so settled questions are not asked again.
 - **Classifies every finding** — *consistent* (confirm it), *competing* (two variants with real usage — you choose), *terminology* (synonyms — goes to the glossary), *deliberate absence* (is it intentional?), *drift* (code contradicts a documented decision — report only), and *discarded* (framework defaults and anything a linter already enforces).
-- **Publishes an HTML report** of the session, then interviews you: variant A vs B with real excerpts, counts, which is newer and a labelled recommendation. Widest blast radius first.
-- **Writes only approved decisions** — rules to a root `CODING_STANDARDS.md` (where Matt Pocock's `code-review` reads them and `retro` adds to them), terms to the glossary, big calls as ADRs, a decision log in `docs/coding-standards/`, and a single pointer line in AGENTS.md.
+- **Publishes an HTML report** of the session, then grills you in rounds: variant A vs B with real excerpts, counts, which is newer and a labelled recommendation. Widest blast radius first.
+- **Writes only approved decisions**, the way Matt Pocock's `retro` does — mechanical rules become linter rules, pre-commit hooks or CI jobs; judgement calls go to a root `CODING_STANDARDS.md` (where `code-review` reads them); terms to `GLOSSARY.md`, big calls as ADRs, and a decision log in `docs/coding-standards/`. AGENTS.md is left alone.
 
 ![The convention discovery report: findings counted by class, then how the code is layered today](./docs/discover-conventions-report.png)
 
-Re-running picks up where the last session stopped. Manual invocation only. Builds on Matt Pocock's `grilling`, `domain-modeling`, `writing-for-agents` and `setup-matt-pocock-skills`.
+Re-running picks up where the last session stopped. Manual invocation only. Builds on Matt Pocock's `grilling`, `domain-modeling` and `writing-for-agents`; hands off to `/setup-matt-pocock-skills`, `/to-questionnaire` and `/to-tickets`.
 
 ## Deprecated: `dynamic-*` — build a whole feature on the cheapest model that can do it
 
@@ -177,7 +198,12 @@ Everything up to the gate is autonomous — failing checks, dead agents, review 
 **In development** — installable via skills.sh, under **Phassle In Development** in the picker. Not in the main plugin; `claude plugin install phassle-in-development@phassle` for the plugin route.
 
 - **[spec-to-scenarios](./skills/other/spec-to-scenarios/SKILL.md)** — Spec → agreed Gherkin scenarios saved on the chosen ticket, plus a planner brief for Playwright. User-invoked; needs Matt Pocock's grilling/domain-modeling skills.
-- **[discover-conventions](./skills/other/discover-conventions/SKILL.md)** — find a brownfield repo's competing patterns, let the developer decide one at a time, write approved rules to `CODING_STANDARDS.md`. User-invoked; builds on Matt Pocock's skills.
+- **[discover-conventions](./skills/other/discover-conventions/SKILL.md)** — find a brownfield repo's competing patterns, let the developer decide each one, turn mechanical rules into checks and write judgement calls to `CODING_STANDARDS.md`. User-invoked; builds on Matt Pocock's skills.
+
+**Mods** — the separate `phassle-mods` plugin; Claude Code only. `claude plugin install phassle-mods@phassle`.
+
+- **[implement-spec-board](./mods/hooks/implement-spec-board.tsx)** — pane: spec, tickets by state and dependency graph while `/implement-spec` runs.
+- **[files](./mods/hooks/files.tsx)** — pane: working-directory files, git marks, preview.
 
 **Elsewhere** — skills that ship with the tool they drive.
 
